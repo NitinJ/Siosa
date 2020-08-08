@@ -1,0 +1,114 @@
+import threading
+import time
+import logging
+import Queue
+from scanf import scanf
+
+from .hideout_event import HideoutEvent
+from .trade_event import TradeEvent
+from .location_change_event import LocationChangeEvent
+
+class ClientLogListener(threading.Thread):
+    SLEEP_DURATION = 0.05
+    MAX_QUEUE_SIZE = 1000
+
+    def __init__(self,
+                 group=None,
+                 target=None,
+                 name=None,
+                 args=(),
+                 kwargs=None,
+                 verbose=None,
+                 client_log_file_path="C:\Program Files (x86)\Steam\steamapps\common\Path of Exile\logs\Client.txt"):
+        super(ClientLogListener, self).__init__()
+        self.logger = logging.getLogger(__name__)
+        self.logger.setLevel('DEBUG')
+        self.target = target
+        self.name = name
+        self.path = client_log_file_path
+        self.trade_event_queue = Queue.Queue(ClientLogListener.MAX_QUEUE_SIZE)
+        self.hideout_event_queue = Queue.Queue(
+            ClientLogListener.MAX_QUEUE_SIZE)
+        self.last_read_ptr = None
+        self.filters = self._get_filters()
+
+    def run(self):
+        while True:
+            for line in self.read_unread_lines():
+                for filter in self.filters:
+                    filter_output = filter(line)
+                    if filter_output['pass']:
+                        queue = filter_output['queue']
+                        queue.put(filter_output['data'])
+            time.sleep(ClientLogListener.SLEEP_DURATION)
+        return
+
+    def read_unread_lines(self):
+        lines = []
+        f = open(self.path, 'r')
+        if self.last_read_ptr is not None:
+            f.seek(self.last_read_ptr)
+        else:
+            f.seek(0, 2)
+
+        for line in f.readlines():
+            lines.append(line)
+
+        if len(lines):
+            self.logger.debug(
+                "Got {} new lines from client log.".format(len(lines)))
+
+        self.last_read_ptr = f.tell()
+        f.close()
+        return lines
+
+    def get_trade_request_queue(self):
+        return self.trade_event_queue
+
+    def get_hideout_event_queue(self):
+        return self.hideout_event_queue
+
+    def _filter(self, line):
+        for filter in self.filters:
+            val = filter(line)
+            if val['pass']:
+                return val['queue']
+        return None
+
+    def _get_filters(self):
+        return [
+            ClientLogListener.trade_event_filter,
+            ClientLogListener.hideout_event_filter,
+            ClientLogListener.location_change_event_filter
+        ]
+
+    def get_hideout_event_from_log_line(self, line):
+        hideout_event = line.strip().split("3020] : ")[1]
+        x = scanf("%s has joined the area.", hideout_event)
+        if x:
+            hideout_event
+        return None
+
+    def trade_event_filter(self, log_line):
+        data = TradeEvent.create(log_line)
+        return {
+            'pass': (data is not None),
+            'data': data,
+            'queue': self.trade_event_queue
+        }
+
+    def hideout_event_filter(self, x):
+        joined_str = "has joined the area"
+        is_pass = x.find(joined_str) > -1
+        return {
+            'pass': is_pass,
+            'queue': self.hideout_event_queue
+        }
+
+    def location_change_event_filter(self, x):
+        changed_location_str = "You have entered"
+        is_pass = x.find(changed_location_str) > -1
+        return {
+            'pass': is_pass,
+            'queue': self.location_change_event_queue
+        }

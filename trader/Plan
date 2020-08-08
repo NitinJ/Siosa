@@ -1,0 +1,3 @@
+1. Update log-listener to return built objects instead of strings.
+2. Make it possible for any object to wait on log-listener events.
+3. 
