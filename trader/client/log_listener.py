@@ -4,9 +4,9 @@ import logging
 import Queue
 from scanf import scanf
 
-from .hideout_event import HideoutEvent
-from .trade_event import TradeEvent
-from .location_change_event import LocationChangeEvent
+from hideout_event import HideoutEvent
+from trade_event import TradeEvent
+from location_change_event import ZoneChangeEvent
 
 class ClientLogListener(threading.Thread):
     SLEEP_DURATION = 0.05
@@ -42,6 +42,7 @@ class ClientLogListener(threading.Thread):
                     filter_output = filter(line)
                     if filter_output['pass']:
                         queue = filter_output['queue']
+                        self.logger.debug("Got event for line from client log. {}".format(line))
                         queue.put(filter_output['data'])
             time.sleep(ClientLogListener.SLEEP_DURATION)
         return
@@ -89,7 +90,7 @@ class ClientLogListener(threading.Thread):
         }
 
     def location_change_event_filter(self, log_line):
-        data = LocationChangeEvent.create(log_line)
+        data = ZoneChangeEvent.create(log_line)
         return {
             'pass': (data is not None),
             'data': data,

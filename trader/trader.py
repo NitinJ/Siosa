@@ -32,12 +32,16 @@ if __name__ == "__main__":
     api = PoeApi("MopedDriverr", "952f84865d28d000cba67dcb1d044914")
     
     exchange = CurrencyExchange(api)
+    
     log_listener = ClientLogListener(name='log-listener')
+    log_listener.start()
+
     game_controller = GameController(log_listener)
-    trade_controller = TradeController(game_controller, log_listener)
+    game_controller.initialize()
 
-    trade_controller.start_trading()
-
+    # trade_controller = TradeController(game_controller, log_listener)
+    # trade_controller.start_trading()
+       
     # exalt = Currency.create(CurrencyType.EXALT)
     # print exalt.get_value_in_chaos()
     # print exchange.get_exchange_rate(exalt)

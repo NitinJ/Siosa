@@ -32,7 +32,6 @@ class TradeController:
 
     def start_trading(self):
         self.logger.debug("Starting listening to logs")
-        self.log_listener.start()
         self._start_listening_for_incoming_trades()
 
     def _start_listening_for_incoming_trades(self):
