@@ -1,4 +1,4 @@
-from ..common.decorations import singleton
+from common.decorations import singleton
 from location import Location
 
 @singleton

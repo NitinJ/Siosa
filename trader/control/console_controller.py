@@ -1,5 +1,5 @@
 from keyboard_controller import KeyboardController
-from ..common.decorations import *
+from common.decorations import *
 
 import pyautogui
 import time

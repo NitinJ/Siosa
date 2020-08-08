@@ -25,11 +25,14 @@ class ClientLogListener(threading.Thread):
         self.logger.setLevel('DEBUG')
         self.target = target
         self.name = name
+        
         self.path = client_log_file_path
-        self.trade_event_queue = Queue.Queue(ClientLogListener.MAX_QUEUE_SIZE)
-        self.hideout_event_queue = Queue.Queue(
-            ClientLogListener.MAX_QUEUE_SIZE)
         self.last_read_ptr = None
+
+        self.trade_event_queue = Queue.Queue(ClientLogListener.MAX_QUEUE_SIZE)
+        self.hideout_event_queue = Queue.Queue(ClientLogListener.MAX_QUEUE_SIZE)
+        self.location_change_event_queue = Queue.Queue(ClientLogListener.MAX_QUEUE_SIZE)
+
         self.filters = self._get_filters()
 
     def run(self):
@@ -62,32 +65,12 @@ class ClientLogListener(threading.Thread):
         f.close()
         return lines
 
-    def get_trade_request_queue(self):
-        return self.trade_event_queue
-
-    def get_hideout_event_queue(self):
-        return self.hideout_event_queue
-
-    def _filter(self, line):
-        for filter in self.filters:
-            val = filter(line)
-            if val['pass']:
-                return val['queue']
-        return None
-
     def _get_filters(self):
         return [
-            ClientLogListener.trade_event_filter,
-            ClientLogListener.hideout_event_filter,
-            ClientLogListener.location_change_event_filter
+            self.trade_event_filter,
+            self.hideout_event_filter,
+            self.location_change_event_filter
         ]
-
-    def get_hideout_event_from_log_line(self, line):
-        hideout_event = line.strip().split("3020] : ")[1]
-        x = scanf("%s has joined the area.", hideout_event)
-        if x:
-            hideout_event
-        return None
 
     def trade_event_filter(self, log_line):
         data = TradeEvent.create(log_line)
@@ -97,18 +80,18 @@ class ClientLogListener(threading.Thread):
             'queue': self.trade_event_queue
         }
 
-    def hideout_event_filter(self, x):
-        joined_str = "has joined the area"
-        is_pass = x.find(joined_str) > -1
+    def hideout_event_filter(self, log_line):
+        data = HideoutEvent.create(log_line)
         return {
-            'pass': is_pass,
+            'pass': (data is not None),
+            'data': data,
             'queue': self.hideout_event_queue
         }
 
-    def location_change_event_filter(self, x):
-        changed_location_str = "You have entered"
-        is_pass = x.find(changed_location_str) > -1
+    def location_change_event_filter(self, log_line):
+        data = LocationChangeEvent.create(log_line)
         return {
-            'pass': is_pass,
+            'pass': (data is not None),
+            'data': data,
             'queue': self.location_change_event_queue
         }

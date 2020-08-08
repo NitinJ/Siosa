@@ -4,13 +4,15 @@ import json
 import math
 import logging
 
-from ..common.singleton import Singleton
-from ..network.poe_api import PoeApi
+from common.singleton import Singleton
+from network.poe_api import PoeApi
 
 REFRESH_DURATION = 10 * 60
 
 class CurrencyExchange(Singleton):
     def __init__(self, poe_api):
+        super(CurrencyExchange, self).__init__()
+
         self.logger = logging.getLogger()
         self.exchange_rate_in_chaos = {}
         self.poe_api = poe_api

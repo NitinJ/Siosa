@@ -10,11 +10,13 @@ from location.location_factory import LocationFactory, Locations
 from clipboard.poe_clipboard import PoeClipboard
 from data.poe_item_factory import PoeItemFactory
 from trade_request import TradeRequest
-from trade_controller import TradeController
 from network.poe_api import PoeApi
 from data.stash import Stash
 from data.poe_currencies import *
 from data.currency_exchange import CurrencyExchange
+from client.log_listener import ClientLogListener
+from control.game_controller import GameController
+from trade_controller import TradeController
 
 if __name__ == "__main__":
     # factory = LocationFactory()
@@ -26,17 +28,19 @@ if __name__ == "__main__":
     # item_factory = PoeItemFactory()
     # poe_clipboard = PoeClipboard(kc, item_factory)
     # print poe_clipboard.read_item_at_cursor()
-    
-    # trade_controller = TradeController()
-    # trade_controller.start_trading()
 
     api = PoeApi("MopedDriverr", "952f84865d28d000cba67dcb1d044914")
-    # api.get_exchange_rate("exalted", "chaos")
-
+    
     exchange = CurrencyExchange(api)
-    exalt = Currency.create(CurrencyType.EXALT)
-    print exalt.get_value_in_chaos()
-    print exchange.get_exchange_rate(exalt)
+    log_listener = ClientLogListener(name='log-listener')
+    game_controller = GameController(log_listener)
+    trade_controller = TradeController(game_controller, log_listener)
+
+    trade_controller.start_trading()
+
+    # exalt = Currency.create(CurrencyType.EXALT)
+    # print exalt.get_value_in_chaos()
+    # print exchange.get_exchange_rate(exalt)
 
     # stash = Stash(api)
     # stash.get_stash_contents(0)

@@ -1,6 +1,6 @@
-from ..control.console_controller import ConsoleController
-from ..control.keyboard_controller import KeyboardController
-from ..control.window_controller import WindowController
+from control.console_controller import ConsoleController
+from control.keyboard_controller import KeyboardController
+from control.window_controller import WindowController
 
 COMMANDS = {
     'INVITE_CHARACTER': "/invite {}"

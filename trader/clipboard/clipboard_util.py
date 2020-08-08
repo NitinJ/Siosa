@@ -1,5 +1,5 @@
 from enum import Enum
-from ..data.poe_item import ItemType
+from data.poe_item import ItemType
 
 LINE_FEED = '\r\n'
 SECTION_SEPARATOR = '--------' + LINE_FEED

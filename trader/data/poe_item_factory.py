@@ -1,6 +1,6 @@
 import logging
 
-from ..clipboard.clipboard_util import *
+from clipboard.clipboard_util import *
 from poe_item import ItemType
 from poe_currencies import *
 

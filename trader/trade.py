@@ -58,6 +58,7 @@ class Trade(threading.Thread):
 
     def __init__(self,
                  trade_info,
+                 game_controller,
                  group=None,
                  target=None,
                  name=None,
@@ -71,6 +72,7 @@ class Trade(threading.Thread):
         self.trade_info.register_listener_on_status_change(self)
         self.tries = 1
         self.item_sold = False
+        self.gc = game_controller
 
     def on_trade_status_change(self, trade_info, old_status, new_status):
         pass

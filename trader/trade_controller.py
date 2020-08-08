@@ -7,6 +7,7 @@ from client.log_listener import ClientLogListener
 from control.mouse_controller import MouseController
 from control.keyboard_controller import KeyboardController
 from control.window_controller import WindowController
+from control.game_controller import GameController
 from common.util import *
 
 class TradeController:
@@ -14,16 +15,20 @@ class TradeController:
     HIDEOUT_INVITE_LIFE = 15
     QUEUE_LISTEN_DELAY = 0.05
 
-    def __init__(self):
+    def __init__(self, game_controller, log_listener):
         self.logger = logging.getLogger(__name__)
         self.logger.setLevel('DEBUG')
 
         self.wc = WindowController()
 
         # Thread 1 for consuming trade log
-        self.log_listener = ClientLogListener(name='log-listener')
-        self.trade_req_queue = self.log_listener.get_trade_request_queue()
-        self.hideout_events_queue = self.log_listener.get_hideout_event_queue()
+        self.log_listener = log_listener
+
+        # Controlling all game related stuff.
+        self.game_controller = GameController.get_instance()
+        
+        self.trade_event_queue = self.log_listener.trade_event_queue
+        self.hideout_event_queue = self.log_listener.hideout_event_queue
 
     def start_trading(self):
         self.logger.debug("Starting listening to logs")
@@ -32,9 +37,9 @@ class TradeController:
 
     def _start_listening_for_incoming_trades(self):
         while True:
-            if not self.trade_req_queue.empty():
+            if not self.trade_event_queue.empty():
                 trade_request = TradeRequest.create_from(
-                    self.trade_req_queue.get())
+                    self.trade_event_queue.get())
                 self.logger.debug(
                     "Got a trade request : {}".format(trade_request))
                 if not trade_request.valid():
@@ -53,7 +58,7 @@ class TradeController:
         trade_info.update_status(TradeInfo.Status.INVITED)
 
         # Create trade thread and start.
-        trade = Trade(trade_info)
+        trade = Trade(trade_info, self.game_controller)
         trade.start()
 
         ts1 = time.time()
@@ -66,16 +71,11 @@ class TradeController:
                 trade.join()
                 break
 
-            if self.hideout_events_queue.empty():
+            if self.hideout_event_queue.empty():
                 time.sleep(TradeController.QUEUE_LISTEN_DELAY)
                 continue
 
-            hideout_event = self.log_listener.get_hideout_event_from_log_line(
-                self.hideout_events_queue.get())
-
-            if not hideout_event:
-                continue
-
+            hideout_event = self.log_listener.hideout_event_queue.get()
             if trade_info.get_player_entered_hideout_message() == hideout_event:
                 # Character is in the hideout.
                 self.logger.info("Player has joined hideout: {}".format(trader))

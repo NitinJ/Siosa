@@ -1,6 +1,6 @@
 import logging
 
-from ..common.decorations import singleton
+from common.decorations import singleton
 
 @singleton
 class Stash:
