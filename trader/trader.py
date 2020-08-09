@@ -17,6 +17,8 @@ from data.currency_exchange import CurrencyExchange
 from client.log_listener import ClientLogListener
 from control.game_controller import GameController
 from trade_controller import TradeController
+from control.game_state_updater import GameStateUpdater
+from control.game_state import GameState
 
 if __name__ == "__main__":
     # factory = LocationFactory()
@@ -29,19 +31,20 @@ if __name__ == "__main__":
     # poe_clipboard = PoeClipboard(kc, item_factory)
     # print poe_clipboard.read_item_at_cursor()
 
-    api = PoeApi("MopedDriverr", "952f84865d28d000cba67dcb1d044914")
+    # api = PoeApi("MopedDriverr", "952f84865d28d000cba67dcb1d044914")
     
-    exchange = CurrencyExchange(api)
+    # exchange = CurrencyExchange(api)
     
     log_listener = ClientLogListener(name='log-listener')
     log_listener.start()
 
     game_controller = GameController(log_listener)
-    game_controller.initialize()
+    # game_controller.sub
+    # game_controller.initialize()
 
     # trade_controller = TradeController(game_controller, log_listener)
     # trade_controller.start_trading()
-       
+
     # exalt = Currency.create(CurrencyType.EXALT)
     # print exalt.get_value_in_chaos()
     # print exchange.get_exchange_rate(exalt)
@@ -51,17 +54,6 @@ if __name__ == "__main__":
     # api.get_stash_metadata()
     # api.get_all_trades("https://www.pathofexile.com/trade/search/Harvest/WQgb7Gmum")
 
-    # Thread 2 for currency exchange.
-    # Thread 3 for updating stash information. stashes,locations,contents.
-
-    # while True:
-    #     if not tradeQueue.empty():
-    #         line = tradeQueue.get()
-    #         print "Got new lines from queue: "
-    #         print line
-
-    #         if line:
-    #             print "LINE: " + line
-    #             print TradeRequest.create_from(line)
-
-    #         time.sleep(0.05)
+    # gs = GameState()
+    # gsu = GameStateUpdater(gs)
+    # gsu.start()

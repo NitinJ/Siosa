@@ -5,3 +5,8 @@ def singleton(class_):
             instances[class_] = class_(*args, **kwargs)
         return instances[class_]
     return getinstance
+
+def abstractmethod(func_):
+    def abstract_method(*args,**kwargs):
+        raise Exception("In-implemented abstract method Exception!")
+    return abstract_method

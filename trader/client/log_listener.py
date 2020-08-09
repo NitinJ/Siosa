@@ -42,7 +42,7 @@ class ClientLogListener(threading.Thread):
                     filter_output = filter(line)
                     if filter_output['pass']:
                         queue = filter_output['queue']
-                        self.logger.debug("Got event for line from client log. {}".format(line))
+                        self.logger.debug("Adding queue event for line from client log. {}".format(line))
                         queue.put(filter_output['data'])
             time.sleep(ClientLogListener.SLEEP_DURATION)
         return

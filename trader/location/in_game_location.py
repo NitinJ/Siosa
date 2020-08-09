@@ -1,6 +1,6 @@
 import random
 
-class Location:
+class InGameLocation:
     def __init__(self, x1, x2, y1, y2):
         self.x1 = x1
         self.y1 = y1

@@ -41,5 +41,5 @@ class TradeEvent:
             position = {'left': x[4], 'top': x[5]}
             return TradeEvent(raw_event, trader, item_name, currency, league, stash, position)
         except Exception:
-            self.logger.error("Error parsing log_line for trade request", exc_info=True)
+            # self.logger.error("Error parsing log_line for trade request", exc_info=True)
             return None

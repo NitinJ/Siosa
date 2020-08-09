@@ -24,3 +24,6 @@ class MouseController:
 
 	def get_current_location(self):
 		return self.current_location
+
+	def move_to_screen_center(self):
+		self.move_mouse(self.location_factory.get_center_of_screen())

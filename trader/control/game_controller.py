@@ -4,82 +4,51 @@ import logging
 
 from window_controller import WindowController
 from console_controller import ConsoleController
+from game_state_updater import PlayerInHideoutUpdater, ZoneUpdater
 from common.singleton import Singleton
 from data.zones import Zones
+from game_state import GameState
+from init_task import InitTask
 
 class GameController(Singleton):
-    LOCATION_ENTRY_WAIT_TIME = 100
-
     def __init__(self, client_log_listener):
         super(GameController, self).__init__()
         self.logger = logging.getLogger(__name__)
-
-        self.mouse_position = None
-        self.is_stash_open = False
-        self.player_position = None
-        self.current_stash_tab = None
-        self.current_zone = None
-        self.inventory = []
-
-        self.wc = WindowController()
-        self.cc = ConsoleController()
-
         self.log_listener = client_log_listener
-        self.location_queue = self.log_listener.location_change_event_queue
+        self.game_state = GameState()
+        self.game_state_updaters = [
+            PlayerInHideoutUpdater(self.game_state, self.log_listener),
+            ZoneUpdater(self.game_state, self.log_listener)
+        ]
+        self.wc = WindowController()
+        self.cc = ConsoleController()       
+        self.running_task = None
+        self.not_running_tasks = []
 
-    def initialize(self):
-        # Move to poe
-        self.wc.move_to_poe()
-        self.current_zone = Zones.HIDEOUT
+        self._start_game_state_updaters()
+        self._initialize()
 
-        # Trying to get the player on the way point exactly.
-        self.move_to_zone(Zones.METAMORPH)
-        time.sleep(0.5)
-        self.move_to_zone(Zones.HIDEOUT)
+    def _start_game_state_updaters(self):
+        for updater in self.game_state_updaters:
+            updater.start()
+            
+    def _initialize(self):
+        self.submit_task(InitTask(self.game_state))
 
-        # Open stash
-        
-        # Organize stash
-        # Ready !
-        pass
-
-    def _wait_for_zone(self, zone):
-        t1 = time.time()
-        while True:
-            t2 = time.time()
-            if t2 - t1 > GameController.LOCATION_ENTRY_WAIT_TIME:
-                return False
-            if not self.location_queue.empty():
-                location_change_event = self.location_queue.get()
-                if location_change_event.zone == zone:
-                    return True
-            time.sleep(0.05)
-
-    def _get_is_stash_open(self):
-        pass
-    
-    def _open_stash(self):
-        pass
-
-    def _move_currency_in_invent_to_stash(self):
-        pass
-
-    def _open_stash_tab(self, tab_index):
-        pass
-
-    def _pickup_item_from_stash_tab(self, tab_index, stash_item):
-        pass
-
-    def _move_item_to_trade_window(self, inventory_item):
-        pass
-
-    def trade_item(self, trade):
-        pass
-
-    def move_to_zone(self, zone):
-        self.cc.console_command("/" + str(zone.value))
-        success = self._wait_for_zone(zone)
-        if not success:
-            raise Exception("Cannot travel to zone: {}".format(zone))
-        self.logger.debug("Moved to zone {}".format(zone.value))
-        self.current_zone = zone
+    def submit_task(self, task):
+        self.logger.debug("New task submitted: {}".format(task.name))
+        if not self.running_task or not self.running_task.is_alive():
+            self.not_running_tasks.append(task)
+        task_with_max_priority = {
+            'priority': 0,
+            'task': None
+        }
+        for i in xrange(0, len(self.not_running_tasks)):
+            _task = self.not_running_tasks[i]
+            if _task.priority > task_with_max_priority['priority']:
+                task_with_max_priority = {
+                    'priority': _task.priority,
+                    'task': _task
+                }
+        self.running_task = task_with_max_priority['task']
+        self.running_task.start()

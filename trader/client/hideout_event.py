@@ -1,16 +1,19 @@
 from scanf import scanf
 
 class HideoutEvent:
-    def __init__(self, player):
+    def __init__(self, player, joined):
         self.player = player
+        self.joined = joined
 
     @staticmethod
     def create(log_line):
-        is_pass = log_line.find("has joined the area") > -1
-        if not is_pass:
+        if log_line.find("has joined the area") > -1:
+            hideout_event = log_line.strip().split("3020] : ")[1][:-1]
+            player = scanf("%s has joined the area.", hideout_event)
+            return HideoutEvent(player, joined=True)
+        elif log_line.find("has left the area") > -1:
+            hideout_event = log_line.strip().split("3020] : ")[1][:-1]
+            player = scanf("%s has left the area.", hideout_event)
+            return HideoutEvent(player, joined=True)
+        else:
             return None
-        hideout_event = log_line.strip().split("3020] : ")[1][:-1]
-        player = scanf("%s has joined the area.", hideout_event)
-        if player:
-            return HideoutEvent(player)
-        return None
