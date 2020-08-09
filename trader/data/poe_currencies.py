@@ -12,8 +12,10 @@ class Currency:
     def __init__(self, name, max_stack_in_trade):
         self.name = name
         self.max_stack_in_trade = max_stack_in_trade
+        
         self.type = self._get_type()
         self.trade_name = self._get_trade_name()
+        
         self.exchange = CurrencyExchange.get_instance()
 
     def _get_trade_name(self):
@@ -50,7 +52,7 @@ class CurrencyItem(Item):
     def __init__(self, currency, quantity):
         self.currency = currency
         self.quantity = quantity
-        Item.__init__(self, ItemType.CURRENCY)
+        Item.__init__(self, self.currency.name, ItemType.CURRENCY)
 
     def get_value_in_chaos(self):
         return self.currency.get_value_in_chaos() * self.quantity

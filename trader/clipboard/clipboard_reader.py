@@ -1,7 +1,10 @@
 import win32clipboard
 
-class ClipboardReader():
+from common.singleton import Singleton
+
+class ClipboardReader(Singleton):
     def __init__(self):
+        Singleton.__init__(self)
         self.last_read_data = None
         self.last_write_data = None
         self.previously_written_data = None

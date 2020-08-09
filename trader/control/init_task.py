@@ -2,7 +2,7 @@ import logging
 import time
 
 from game_task import Task
-from game_step import OpenStash, SwitchToGame, ChangeZone, Wait
+from game_step import *
 from data import zones
 
 class InitTask(Task):
@@ -21,8 +21,9 @@ class InitTask(Task):
     def get_steps(game_state):
         return [
             SwitchToGame(game_state),
+            CloseAllWindows(game_state),
+            ChangeZone(game_state, zones.Zones.HIDEOUT),
+            PlaceStash(game_state),
             OpenStash(game_state),
-            ChangeZone(game_state, zones.Zones.METAMORPH),
-            Wait(game_state, 2),
-            ChangeZone(game_state, zones.Zones.HIDEOUT)
+            ScanInventory(game_state)
         ]

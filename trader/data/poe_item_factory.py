@@ -40,4 +40,14 @@ class PoeItemFactory:
 
     def _create_general_item(self, data):
         self.logger.debug("Creating general item")
-        return None
+        data_sections = get_all_sections(data)
+        name_section = data_sections[0].split(LINE_FEED)[0]
+
+        rarity = name_section[0].split("Rarity: ")[1].strip()
+        name = " ".join([name_section[1], name_section[2]]).strip()
+        self.logger.debug("Creating non-currency item : {}.{}".format(rarity, name))
+
+        item = Item(name, rarity)
+        self.logger.debug("Created item [{}]".format(str(item)))
+
+        return item

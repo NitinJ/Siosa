@@ -13,6 +13,10 @@ class ItemType(Enum):
     ITEM = 2
 
 class Item:
-    def __init__(self, type=ItemType.UNKNOWN, rarity=ItemRarities.UNKNOWN):
+    def __init__(self, name, type=ItemType.UNKNOWN, rarity=ItemRarities.UNKNOWN):
         self.type = type
         self.rarity = rarity
+        self.name = name
+    
+    def __str__(self):
+        return "Rarity: {}, Name: {}".format(self.rarity, self.name)

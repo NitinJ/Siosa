@@ -13,6 +13,7 @@ class TaskState(Enum):
     COMPLETE = 4
 
 class Task(threading.Thread):
+    STEP_EXECUTION_DELAY = 0.1
     def __init__(self, game_state, priority, steps, name='GameTask'):
         threading.Thread.__init__(self, name=name)
         self.logger = logging.getLogger(__name__)
@@ -73,6 +74,7 @@ class Task(threading.Thread):
         if self.step_index >= len(self.steps):
             self.state = TaskState.COMPLETE
             return
+        time.sleep(Task.STEP_EXECUTION_DELAY)
         self.steps[self.step_index].execute()
         self.step_index = self.step_index + 1
 

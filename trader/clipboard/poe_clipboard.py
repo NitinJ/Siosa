@@ -1,16 +1,17 @@
 import logging
 
 from clipboard_reader import ClipboardReader
-
+from control.keyboard_controller import KeyboardController
+from data.poe_item_factory import PoeItemFactory
 
 class PoeClipboard:
-    def __init__(self, keyboard_controller, item_factory):
+    def __init__(self):
         self.logger = logging.getLogger(__name__)
         self.logger.setLevel('DEBUG')
 
-        self.clipboard_reader = ClipboardReader()
-        self.keyboard_controller = keyboard_controller
-        self.item_factory = item_factory
+        self.clipboard_reader = ClipboardReader.get_instance()
+        self.keyboard_controller = KeyboardController()
+        self.item_factory = PoeItemFactory()
 
     def read_item_at_cursor(self):
         self.logger.debug("Reading data from clipboard")

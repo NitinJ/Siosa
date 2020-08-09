@@ -6,5 +6,7 @@ class Singleton(object):
         return class_._instance
     
     @classmethod
-    def get_instance(class_):
-        return class_._instance
+    def get_instance(class_, *args, **kwargs):
+        if class_._instance:
+            return class_._instance
+        return class_.__new__(class_, *args, **kwargs)

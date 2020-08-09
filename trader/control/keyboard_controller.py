@@ -13,6 +13,7 @@ class KeyboardController:
         self.unhold()
 
     def hold_modifier(self, key):
+        key = key.lower()
         if key in self.held_modifier_keys.keys():
             return
         sleep(self.key_press_delay)
@@ -20,6 +21,7 @@ class KeyboardController:
         self.held_modifier_keys[key] = 1
     
     def unhold_modifier(self, key):
+        key = key.lower()
         if key not in self.held_modifier_keys.keys():
             return
         sleep(self.key_press_delay)            
