@@ -24,11 +24,12 @@ class KeyboardController:
         key = key.lower()
         if key not in self.held_modifier_keys.keys():
             return
-        sleep(self.key_press_delay)            
+        sleep(self.key_press_delay)
         pyautogui.keyUp(key)
+        self.held_modifier_keys.pop(key)
 
     def keypress(self, key):
-        self.logger.debug('keypress {}'.format(key))
+        self.logger.debug('keypress {} {}'.format("+".join(self.held_modifier_keys), key))
         sleep(self.key_press_delay)
         pyautogui.press(key)
 
