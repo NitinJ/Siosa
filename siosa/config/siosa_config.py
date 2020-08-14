@@ -1,0 +1,25 @@
+import json
+import logging
+
+from siosa.common.singleton import Singleton
+
+
+class SiosaConfig(Singleton):
+    def __init__(self, config_file_path):
+        super(SiosaConfig, self).__init__()
+        
+        self.path = config_file_path;
+        self.logger = logging.getLogger(__name__)
+        self.logger.setLevel(logging.DEBUG)
+        
+        # Can probably use configparser or a jsonconfig parser.
+        self.config = json.load(open(config_file_path, 'r'))
+        self.logger.debug("Initialized config: {}".format(str(self.config)))
+        
+    def update(self, config={}):
+        self.logger.info("Updating config with {}".format(str(config)))
+        self.config.update(config)
+        self._write_updated_config()
+    
+    def _write_updated_config(self):
+        json.dump(self.config, open(path, 'w'))
