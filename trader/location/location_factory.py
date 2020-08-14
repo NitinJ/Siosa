@@ -2,7 +2,7 @@ from common.singleton import Singleton
 from in_game_location import InGameLocation
 
 class LocationFactory(Singleton):
-    def __init__(self, res_x=1920, res_y=1020):
+    def __init__(self, res_x=1920, res_y=1080):
         Singleton.__init__(self)
         self.res_x = res_x
         self.res_y = res_y
