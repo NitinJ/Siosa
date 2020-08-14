@@ -4,6 +4,7 @@ import time
 import logging
 
 from common.decorations import abstractmethod
+from window_controller import WindowController
 
 class TaskState(Enum):
     NOT_STARTED = 0
@@ -23,6 +24,7 @@ class Task(threading.Thread):
         self.step_index = 0
         self.priority = priority
         self.state = TaskState.NOT_STARTED
+        self.wc = WindowController()
     
     def get_steps(self):
         return self.steps
@@ -77,6 +79,9 @@ class Task(threading.Thread):
         time.sleep(Task.STEP_EXECUTION_DELAY)
         self.steps[self.step_index].execute()
         self.step_index = self.step_index + 1
+        if not self.wc.is_poe_in_foreground():
+            self.state = TaskState.PAUSED
+            return
 
     def pause(self):
         self.state = TaskState.PAUSED
