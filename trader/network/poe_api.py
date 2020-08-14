@@ -12,6 +12,7 @@ TRADE_PAGE = "https://www.pathofexile.com/trade/search/Harvest/"
 SEARCH_API = "https://www.pathofexile.com/api/trade/search/Harvest"
 FETCH_API = "https://www.pathofexile.com/api/trade/fetch/"
 EXCHANGE_API = "https://www.pathofexile.com/api/trade/exchange/Harvest"
+STATIC_DATA_API = "https://www.pathofexile.com/api/trade/data/static"
 STASH_INFO_API = "https://www.pathofexile.com/character-window/get-stash-items?accountName={}&realm=pc&league={}&tabs=1"
 SCRAPE_STR1 = 'require(["main"], function(){require(["trade"], function(t){    t('
 SCRAPE_STR2 = ');});});'
@@ -125,3 +126,11 @@ class PoeApi(Singleton):
             want_amount = exchange['listing']['price']['item']['amount']
             prices.append(want_amount*1.0/have_amount)
         return sum(prices)/len(prices)
+
+    def get_static_data(self):
+        url = STATIC_DATA_API
+        resp = requests.get(url, cookies=self.cookies).json()
+        if not resp or not resp['result']:
+            return
+        self.logger.debug("Got static data len=({}) ".format(len(resp['result'])))
+        return resp['result']
