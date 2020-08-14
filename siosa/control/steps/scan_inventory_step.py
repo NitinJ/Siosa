@@ -13,12 +13,11 @@ class ScanInventory(Step):
         self.logger.info("Executing step: {}".format(self.__class__.__name__))
         self.mc.move_mouse(self._get_location(0, 0))
         item = self.clipboard.read_item_at_cursor()
-        # for col in xrange(0, 12):
-        #     for row in xrange(0, 5):
-        #         self.mc.move_mouse(self._get_location(row, col))
-        #         item = self.clipboard.read_item_at_cursor()
-        #         self.items.append(item)
-        print self.items
+        for col in xrange(0, 12):
+            for row in xrange(0, 5):
+                self.mc.move_mouse(self._get_location(row, col))
+                item = self.clipboard.read_item_at_cursor()
+                self.items.append(item)
 
     def _get_location(self, r, c):
         # Invent box size
