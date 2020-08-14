@@ -1,4 +1,6 @@
+import win32clipboard
 from siosa.common.singleton import Singleton
+
 
 class ClipboardReader(Singleton):
     def __init__(self):

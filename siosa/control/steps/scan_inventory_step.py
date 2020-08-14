@@ -1,6 +1,7 @@
-from control.game_step import Step
-from clipboard.poe_clipboard import PoeClipboard
-from location.location_factory import Locations, LocationFactory
+from siosa.clipboard.poe_clipboard import PoeClipboard
+from siosa.control.game_step import Step
+from siosa.location.location_factory import LocationFactory, Locations
+
 
 class ScanInventory(Step):
     def __init__(self, game_state):

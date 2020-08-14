@@ -1,6 +1,7 @@
 import time
 
-from control.game_step import Step
+from siosa.control.game_step import Step
+
 
 class Wait(Step):
     def __init__(self, game_state, wait_time_in_secs):

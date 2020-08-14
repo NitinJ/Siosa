@@ -1,4 +1,5 @@
-from control.game_step import Step
+from siosa.control.game_step import Step
+
 
 class OpenStash(Step):
     def __init__(self, game_state):

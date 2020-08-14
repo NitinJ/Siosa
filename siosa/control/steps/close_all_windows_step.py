@@ -1,4 +1,5 @@
-from control.game_step import Step
+from siosa.control.game_step import Step
+
 
 class CloseAllWindows(Step):
     def __init__(self, game_state):
@@ -10,4 +11,3 @@ class CloseAllWindows(Step):
         self.kc.keypress("`")
         self.kc.unhold_modifier('Ctrl')
         self.game_state.update({'stash_open': False, 'inventory_open': False})
-

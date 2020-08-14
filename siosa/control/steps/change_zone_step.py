@@ -1,7 +1,8 @@
 import time
 
-from control.game_step import Step
-from data.zones import Zones
+from siosa.control.game_step import Step
+from siosa.data.zones import Zones
+
 
 class ChangeZone(Step):
     LOCATION_ENTRY_WAIT_TIME = 10
