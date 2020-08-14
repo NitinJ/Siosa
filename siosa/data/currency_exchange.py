@@ -95,8 +95,8 @@ class Exchanger(threading.Thread):
 
     def run(self):
         while True:
+            time.sleep(REFRESH_DURATION)
             self.exchange.update_rates({
                 'exalted': int(math.floor(
                     self.api.get_exchange_rate("exalted", "chaos")))
             })
-            time.sleep(REFRESH_DURATION)
