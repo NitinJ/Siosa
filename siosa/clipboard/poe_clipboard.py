@@ -1,8 +1,10 @@
 import logging
+import time
 
 from siosa.clipboard.clipboard_reader import ClipboardReader
 from siosa.control.keyboard_controller import KeyboardController
 from siosa.data.poe_item_factory import PoeItemFactory
+
 
 class PoeClipboard:
     def __init__(self):
@@ -19,5 +21,6 @@ class PoeClipboard:
         self.keyboard_controller.hold_modifier('ctrl')
         self.keyboard_controller.keypress('c')
         self.keyboard_controller.unhold_modifier('ctrl')
+        time.sleep(0.01)
         data = self.clipboard_reader.get_clipboard_data()
         return self.item_factory.get_item(data)
