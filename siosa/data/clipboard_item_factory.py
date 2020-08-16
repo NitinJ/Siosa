@@ -17,7 +17,7 @@ class ClipboardItemFactory:
         self.poe_api = PoeApi.get_instance()
         self.exchange = CurrencyExchange.get_instance()
         
-    def get_item(self, data):
+    def get_item(self, clipboard_data):
         if not clipboard_data or clipboard_data.find(LINE_FEED) == -1:
             return None
         self.logger.debug("Getting item from clipboard data")
@@ -75,14 +75,94 @@ class ClipboardItemFactory:
             return ItemType.UNKNOWN
         rarity = self._get_rarity(data_sections)
         if rarity == "Currency":
-            return ItemType.CURRENCY
+            return self._get_currency_item_type(data_sections)
         elif rarity == "Divination Card":
             return ItemType.DIVINATION_CARD
         elif rarity == "Gem":
             return ItemType.GEM
         else:
-            return ItemType.ITEM
+            return self._get_item_type(data_sections)
 
+    def _get_item_type(self, data_sections):
+        rarity = self._get_rarity(data_sections)
+        if self._is_scarab(data_sections, rarity):
+            return ItemType.SCARAB
+        elif self._is_fragment(data_sections, rarity):
+            return ItemType.FRAGMENT
+        elif self._is_map(data_sections, rarity):
+            return ItemType.MAP
+        # TODO: Add support for more ItemTypes.
+        return ItemType.ITEM
+        
+    def _get_currency_item_type(self, data_sections):
+        if self._is_delirium_orb(data_sections):
+            return ItemType.DELIRIUM_ORB
+        elif self._is_catalyst(data_sections):
+            return ItemType.CATALYST
+        elif self._is_oil(data_sections):
+            return ItemType.OIL
+        elif self._is_delve_fossil(data_sections):
+            return ItemType.DELVE_FOSSIL
+        elif self._is_delve_resonator(data_sections):
+            return ItemType.DELVE_RESONATOR
+        return ItemType.CURRENCY
+
+    def _is_map(self, data_sections, rarity):
+        try:
+            return data_sections[1][0].startswith("Map Tier:") and \
+                data_sections[5][0] == "Travel to this Map by using it in a personal Map Device. Maps can only be used once." and \
+                len(data_sections[5]) == 1
+        except:
+            return False
+        
+    def _is_fragment(self, data_sections, rarity):
+        try:
+            return rarity == 'Normal' and \
+                data_sections[0][1].endswith("Scarab") and \
+                data_sections[2][0] == "Can be used in a personal Map Device." and \
+                len(data_sections[2]) == 1
+        except:
+            return False
+        
+    def _is_scarab(self, data_sections, rarity):
+        try:
+            return rarity == 'Normal' and \
+                data_sections[0][1].endswith("Scarab") and \
+                data_sections[3][0].find("Can be used in a personal Map Device to add modifiers to a Map.") > -1
+        except:
+            return False
+
+    def _is_delve_resonator(self, data_sections):
+        try:
+            return data_sections[0][1].find("Resonator") > -1 and \
+                data_sections[4][0].find("All sockets must be filled with Fossils before this item can be used.") > -1
+        except:
+            return False
+        
+    def _is_delve_fossil(self, data_sections):
+        try:
+            return data_sections[0][1].find("Fossil") > -1 and \
+                data_sections[3][0].find("Place in a Resonator to influence item crafting.") > -1
+        except:
+            return False
+        
+    def _is_oil(self, data_sections):
+        try:
+            return data_sections[0][1].find("Oil") > -1 and \
+                data_sections[2][0].find("Can be combined with other Oils at Cassia to Enchant") > -1
+        except:
+            return False
+    
+    def _is_catalyst(self, data_sections):
+        try:
+            return data_sections[0][1].find("Catalyst") > -1 and \
+                data_sections[2][0].find("Adds quality that enhances") > -1
+        except:
+            return False
+
+    def _is_delirium_orb(self, data_sections):
+        return data_sections[0][1].find("Delirium Orb") > -1
+        
     def _get_all_sections(self, data):
         data = data.split(SECTION_SEPARATOR)
         sections = []

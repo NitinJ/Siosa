@@ -1,22 +1,41 @@
 import math
 from enum import Enum
 
-
+class ItemRarity(Enum):
+    UNKNOWN = 'Unknown'
+    CURRENCY = 'Currency'
+    GEM = 'Gem'
+    DIVINATION_CARD = 'Divination Card'
+    NORMAL = 'Normal'
+    MAGIC = 'Magic'
+    RARE = 'Rare'
+    UNIQUE = 'Unique'
+    
 class ItemType(Enum):
     UNKNOWN = 0
     CURRENCY = 1
-    ITEM = 2
-    GEM = 3
-    DIVINATION_CARD = 4
-    FRAGMENT = 5
-    DELIRIUM_ORB = 6
-    CATALYST = 7
-    OIL = 8
-    INCUBATOR = 9
-    SCARAB = 10
-    DELVE_RESONATOR = 11
-    DELVE_FOSSIL = 12
-    MAP = 13
+    ITEM = 2 #rarity: Normal,Magic,Rare,Unique
+    GEM = 3 #rarity: Gem
+    DIVINATION_CARD = 4 #rarity: divination card
+    
+    DELIRIUM_ORB = 6 #rarity: Currency
+    CATALYST = 7 #rarity: Currency
+    OIL = 8 #rarity: Currency
+    DELVE_RESONATOR = 11 #rarity: Currency
+    DELVE_FOSSIL = 12 #rarity: Currency
+    SPLINTER = 14 #rarity: Currency
+    SIMULACRUM_SPLINTER = 20 #rarity: Currency
+        
+    INCUBATOR = 9 #rarity: Normal
+    SCARAB = 10 #rarity: Normal
+    FRAGMENT = 5 #rarity: Normal
+    MAP = 13 #rarity: Normal
+    OFFERING = 15 #rarity: Normal
+    DIVINE_VESSEL = 16 #rarity: Normal
+    TIMELESS_EMBLEM = 17 #rarity: Normal
+    ORGAN = 18 #rarity: Normal
+    SIMULACRUM = 19 #rarity: Normal
+    
 
 class Item(object):
     def __init__(self, item_info={}, item_type=ItemType.UNKNOWN):

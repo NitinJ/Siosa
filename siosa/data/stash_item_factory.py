@@ -96,9 +96,3 @@ class StashItemFactory:
         item = Item(item_info=info, item_type=ItemType.ITEM)
         self.logger.debug("Created general item [{}]".format(str(item)))
         return item
-
-    def _get_item_type(self, data):
-        if not set.isdisjoint(set(STASH_CURRENCY_KEYS), set(data.keys())):
-            return ItemType.CURRENCY
-        else:
-            return ItemType.ITEM
