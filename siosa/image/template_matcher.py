@@ -34,6 +34,7 @@ class TemplateMatcher:
 
     def match(self, location):
         # The screen part to capture
+        ts1 = time.time()
         screen_location = self._get_grab_params(location)
         image = self.sct.grab(screen_location)
         image_bytes_rgb = Image.frombytes(
@@ -64,9 +65,11 @@ class TemplateMatcher:
             if dmin[0] <= tmin[0] and dmin[1] <= tmin[1] and dmin[2] <= tmin[2]:
                 pt = (point[0] + template_width//2,
                       point[1] + template_height//2)
-                cv2.rectangle(image_bytes_bgr, pt, pt, (0, 0, 255), 1)
+                cv2.rectangle(image_bytes_bgr, pt, pt, (0, 0, 255), 4)
                 points.append(pt)
-
+        
+        self.logger.info("Template matcher took {}".format(time.time() - ts1))
+        
         if self.debug:
             cv2.imshow('image', image_bytes_bgr)
             cv2.waitKey(0)
