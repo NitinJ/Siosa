@@ -14,8 +14,8 @@ class ClipboardItemFactory:
     def __init__(self):
         self.logger = logging.getLogger(__name__)
         self.logger.setLevel('DEBUG')
-        self.poe_api = PoeApi.get_instance()
-        self.exchange = CurrencyExchange.get_instance()
+        self.poe_api = PoeApi()
+        self.exchange = CurrencyExchange()
         
     def get_item(self, clipboard_data):
         if not clipboard_data or clipboard_data.find(LINE_FEED) == -1:
