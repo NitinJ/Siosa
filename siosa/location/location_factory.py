@@ -2,9 +2,8 @@ from siosa.common.singleton import Singleton
 from siosa.location.in_game_location import InGameLocation
 
 
-class LocationFactory(Singleton):
+class LocationFactory(metaclass=Singleton):
     def __init__(self, res_x=1920, res_y=1080):
-        Singleton.__init__(self)
         self.res_x = res_x
         self.res_y = res_y
 
@@ -45,7 +44,10 @@ class Locations:
     # Stash
     FIRST_STASH_TAB_RIGHT_LIST = InGameLocation(693, 136, 855, 152)
     # Inventory
-    INVENTORY_0_0 = InGameLocation(1300, 614, 1300, 614)
+    INVENTORY = InGameLocation(1260, 579, 1915, 861)
+    INVENTORY_0_0 = InGameLocation(1274, 590, 1324, 640)
+    INVENTORY_DIVIDER_HORIZONTAL = InGameLocation(1283, 638, 1315, 644)
+    INVENTORY_DIVIDER_VERTICAL = InGameLocation(1321, 599, 1327, 631)
     # Player items
     CHEST_PEICE = InGameLocation(1577, 269, 1596, 288)
     # Banners
