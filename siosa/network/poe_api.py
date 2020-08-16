@@ -18,7 +18,7 @@ SCRAPE_STR2 = ');});});'
 MAX_ITEMS_FOR_CALCULATING_EXCHANGE = 20
 
 
-class PoeApi(Singleton):
+class PoeApi(metaclass=Singleton):
     def __init__(self, account_name, poe_session_id, league="Harvest"):
         self.logger = logging.getLogger(__name__)
         self.logger.setLevel('DEBUG')
