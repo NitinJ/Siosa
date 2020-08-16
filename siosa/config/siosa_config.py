@@ -4,7 +4,7 @@ import logging
 from siosa.common.singleton import Singleton
 
 
-class SiosaConfig(Singleton):
+class SiosaConfig(metaclass=Singleton):
     def __init__(self, config_file_path):
         super(SiosaConfig, self).__init__()
 

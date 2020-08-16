@@ -12,7 +12,7 @@ from siosa.control.window_controller import WindowController
 from siosa.data.zones import Zones
 
 
-class GameController(Singleton):
+class GameController(metaclass=Singleton):
     def __init__(self, client_log_listener):
         super(GameController, self).__init__()
         self.logger = logging.getLogger(__name__)
@@ -45,7 +45,7 @@ class GameController(Singleton):
             'priority': 0,
             'task': None
         }
-        for i in xrange(0, len(self.not_running_tasks)):
+        for i in range(0, len(self.not_running_tasks)):
             _task = self.not_running_tasks[i]
             if _task.priority > task_with_max_priority['priority']:
                 task_with_max_priority = {

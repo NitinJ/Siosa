@@ -25,7 +25,7 @@ class TradeController:
         self.log_listener = log_listener
 
         # Controlling all game related stuff.
-        self.game_controller = GameController.get_instance()
+        self.game_controller = GameController()
         
         self.trade_event_queue = self.log_listener.trade_event_queue
         self.hideout_event_queue = self.log_listener.hideout_event_queue

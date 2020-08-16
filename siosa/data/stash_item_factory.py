@@ -26,8 +26,8 @@ class StashItemFactory:
     def __init__(self):
         self.logger = logging.getLogger(__name__)
         self.logger.setLevel('DEBUG')
-        self.poe_api = PoeApi.get_instance()
-        self.exchange = CurrencyExchange.get_instance()
+        self.poe_api = PoeApi()
+        self.exchange = CurrencyExchange()
 
     def get_item(self, item_data):
         """Creates a POE item from data obtained from stash.

@@ -1,6 +1,6 @@
 from siosa.common.singleton import Singleton
 
-class Inventory(Singleton):
+class Inventory(metaclass=Singleton):
     def __init__():
         pass
     

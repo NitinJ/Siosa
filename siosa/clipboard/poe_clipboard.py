@@ -11,7 +11,7 @@ class PoeClipboard:
         self.logger = logging.getLogger(__name__)
         self.logger.setLevel('DEBUG')
 
-        self.clipboard_reader = ClipboardReader.get_instance()
+        self.clipboard_reader = ClipboardReader()
         self.keyboard_controller = KeyboardController()
         self.item_factory = PoeItemFactory()
 

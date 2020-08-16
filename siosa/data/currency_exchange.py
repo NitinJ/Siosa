@@ -11,7 +11,7 @@ from siosa.network.poe_api import PoeApi
 REFRESH_DURATION = 10 * 60
 
 
-class CurrencyExchange(Singleton):
+class CurrencyExchange(metaclass=Singleton):
     currency_data = None
 
     def __init__(self, poe_api):

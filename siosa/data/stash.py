@@ -13,7 +13,7 @@ class Stash:
         self.logger = logging.getLogger(__name__)
         self.logger.setLevel('DEBUG')
 
-        self.poe_api = PoeApi.get_instance()
+        self.poe_api = PoeApi()
         self.name_to_stash_tab = {}
         self.tabs = {}
         self.stash_metadata = None
@@ -75,7 +75,7 @@ class StashTab:
     REFRESH_DURATION = 5*60  # 5 mins
 
     def __init__(self, data):
-        self.api = PoeApi.get_instance()
+        self.api = PoeApi()
         self.type = data['type']
         self.index = data['index']
         self.name = data['name']

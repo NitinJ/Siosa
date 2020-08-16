@@ -4,9 +4,8 @@ import logging
 from siosa.common.singleton import Singleton
 
 
-class ClipboardReader(Singleton):
+class ClipboardReader(metaclass=Singleton):
     def __init__(self):
-        Singleton.__init__(self)
         self.logger = logging.getLogger(__name__)
         self.logger.setLevel('DEBUG')
         self.last_read_data = None

@@ -9,7 +9,7 @@
 <br />
 <p align="center">
   <a href="https://github.com/othneildrew/Best-README-Template">
-    <img src="siosa/images/Siosa_npc_screenshot.jpg" alt="Logo">
+    <img src="siosa/resources/images/Siosa_npc_screenshot.jpg" alt="Logo">
   </a>
 
   <h3 align="center">Best-README-Template</h3>

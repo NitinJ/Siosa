@@ -19,7 +19,7 @@ class PlaceStash(Step):
         
         self.mc.click_at_location(Locations.STASH_DECORATION)
         self.mc.click_at_location(Locations.CLOSE_DECORATIONS_BUTTON)
-        stash_location = LocationFactory.get_instance().create(
+        stash_location = LocationFactory().create(
             Locations.SCREEN_CENTER.x1 - 100, 
             Locations.SCREEN_CENTER.y1 - 100, 
             Locations.SCREEN_CENTER.x2 - 100, 

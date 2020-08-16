@@ -1,7 +1,7 @@
 import threading
 import time
 import logging
-import Queue
+import queue
 from scanf import scanf
 
 from siosa.client.hideout_event import HideoutEvent
@@ -27,9 +27,9 @@ class ClientLogListener(threading.Thread):
         self.path = client_log_file_path
         self.last_read_ptr = None
 
-        self.trade_event_queue = Queue.Queue(ClientLogListener.MAX_QUEUE_SIZE)
-        self.hideout_event_queue = Queue.Queue(ClientLogListener.MAX_QUEUE_SIZE)
-        self.location_change_event_queue = Queue.Queue(ClientLogListener.MAX_QUEUE_SIZE)
+        self.trade_event_queue = queue.Queue(ClientLogListener.MAX_QUEUE_SIZE)
+        self.hideout_event_queue = queue.Queue(ClientLogListener.MAX_QUEUE_SIZE)
+        self.location_change_event_queue = queue.Queue(ClientLogListener.MAX_QUEUE_SIZE)
 
         self.filters = self._get_filters()
 
