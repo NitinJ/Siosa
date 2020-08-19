@@ -10,10 +10,12 @@ from siosa.location.location_factory import Locations
 class GameState:
     def __init__(self):
         self.logger = logging.getLogger(__name__)
+        self.logger.setLevel(logging.DEBUG)
         self.state = {
             'stash_open': False,
             'inventory_open': False,
             'stash_location': None,
+            'open_stash_tab_index': 0,
             'inventory': [],
             'inventory_empty': True,
             'players_in_hideout': [],
@@ -25,7 +27,7 @@ class GameState:
     def update(self, state_dictionary={}):
         self.lock.acquire()
         self.state.update(state_dictionary)
-        self.logger.info("Updated game_state with {}".format(self.__str__()))
+        self.logger.info("Updated game_state with {}".format(str(state_dictionary)))
         self.lock.release()
     
     def get(self):
