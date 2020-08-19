@@ -42,7 +42,7 @@ class Locations:
     CLOSE_DECORATIONS_BUTTON = InGameLocation(1879, 60, 1892, 74)
     CLOSE_STASH_BUTTON = InGameLocation(620, 57, 636, 77)
     # Stash
-    FIRST_STASH_TAB_RIGHT_LIST = InGameLocation(693, 136, 855, 152)
+    FIRST_STASH_TAB_RIGHT_LIST = InGameLocation(690, 134, 860, 154)
     # Inventory
     INVENTORY = InGameLocation(1260, 579, 1915, 861)
     INVENTORY_0_0 = InGameLocation(1274, 590, 1324, 640)
