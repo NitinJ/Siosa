@@ -8,8 +8,8 @@ from siosa.location.location_factory import LocationFactory
 
 
 class MouseController(metaclass=Singleton):
-    TIME_BETWEEN_CLICKS = 0.1
-    def __init__(self, location_factory, mouse_move_duration=0.3, mouse_movement_curve=pyautogui.easeInOutQuad):
+    TIME_BETWEEN_CLICKS = 0.03
+    def __init__(self, location_factory, mouse_move_duration=0.2, mouse_movement_curve=pyautogui.easeInOutQuad):
         self.location_factory = location_factory
         self.current_location = self.location_factory.create(0, 0, 0, 0)
         self.mouse_move_duration = mouse_move_duration
