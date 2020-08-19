@@ -1,5 +1,7 @@
-import win32clipboard
 import logging
+import time
+
+import win32clipboard
 
 from siosa.common.singleton import Singleton
 
@@ -16,7 +18,7 @@ class ClipboardReader(metaclass=Singleton):
         self.previously_written_data = self._read_internal()
         self._write_internal(data)
         self.last_write_data = data
-    
+
     def get_clipboard_data(self):
         # get clipboard data
         data = self._read_internal()
@@ -32,11 +34,19 @@ class ClipboardReader(metaclass=Singleton):
                 win32clipboard.CloseClipboard()
                 return data
             except Exception as e:
-                self.logger.error("Error while reading clipboard: {}".format(str(e)))
-                
+                self.logger.error(
+                    "Error while reading clipboard: {}".format(str(e)))
+            time.sleep(0.01)
 
     def _write_internal(self, data):
-        win32clipboard.OpenClipboard()
-        win32clipboard.EmptyClipboard()
-        win32clipboard.SetClipboardText(data)
-        win32clipboard.CloseClipboard()
+        while True:
+            try:
+                win32clipboard.OpenClipboard()
+                win32clipboard.EmptyClipboard()
+                win32clipboard.SetClipboardText(data)
+                win32clipboard.CloseClipboard()
+                return
+            except Exception as e:
+                self.logger.error(
+                    "Error while writing to clipboard: {}".format(str(e)))
+            time.sleep(0.01)
