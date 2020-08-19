@@ -12,6 +12,12 @@ class ItemRarity(Enum):
     UNIQUE = 'Unique'
     
 class ItemType(Enum):
+    """Types of items.
+    Next value: 22
+    
+    Args:
+        Enum (int): Unique int value for item
+    """
     UNKNOWN = 0
     CURRENCY = 1
     ITEM = 2 #rarity: Normal,Magic,Rare,Unique
@@ -25,6 +31,7 @@ class ItemType(Enum):
     DELVE_FOSSIL = 12 #rarity: Currency
     SPLINTER = 14 #rarity: Currency
     SIMULACRUM_SPLINTER = 20 #rarity: Currency
+    ESSENCE = 21 #rarity: Currency 
         
     INCUBATOR = 9 #rarity: Normal
     SCARAB = 10 #rarity: Normal
@@ -65,6 +72,9 @@ class Item(object):
             return None
         return None
 
+    def get_name(self):
+        return self.item_info['type_line']
+        
     def __str__(self):
         return "Item type: {}, item_info: {}".format(self.type, str(self.item_info))
 
