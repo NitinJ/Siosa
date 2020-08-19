@@ -1,6 +1,5 @@
 import logging
 
-from siosa.data.currency_exchange import CurrencyExchange
 from siosa.data.poe_currencies import *
 from siosa.data.poe_item import ItemType
 from siosa.network.poe_api import PoeApi
@@ -10,13 +9,13 @@ LINE_FEED = '\r\n'
 SECTION_SEPARATOR = '--------' + LINE_FEED
 INFLUENCES = Resource.get('influences')
 
+
 class ClipboardItemFactory:
     def __init__(self):
         self.logger = logging.getLogger(__name__)
         self.logger.setLevel('DEBUG')
         self.poe_api = PoeApi()
-        self.exchange = CurrencyExchange()
-        
+
     def get_item(self, clipboard_data):
         if not clipboard_data or clipboard_data.find(LINE_FEED) == -1:
             return None
@@ -24,15 +23,17 @@ class ClipboardItemFactory:
 
         data_sections = self._get_all_sections(clipboard_data)
         type = self._get_clipboard_item_type(data_sections)
-        self.logger.debug("Got {} from clipboard".format(type))
+        rarity = self._get_rarity(data_sections)
+        self.logger.debug(
+            "Got rarity({}), type({}) from clipboard".format(rarity, type))
 
-        if type == ItemType.CURRENCY:
-            return self._create_currency_item_from_clipboard(data_sections)
-        elif type == ItemType.ITEM:
-            return self._create_general_item_from_clipboard(data_sections)
-        return None
+        # TODO: Handle other rarities like divination card, gem etc.
+        if rarity == 'Currency':
+            return self._create_currency_item(type, data_sections)
+        else:
+            return self._create_general_item(type, data_sections)
 
-    def _create_currency_item_from_clipboard(self, data_sections):
+    def _create_currency_item(self, type, data_sections):
         # name for currency is it's type_line.
         name = self._get_type_line(data_sections)
         stack_size = self._get_stack_size(data_sections)
@@ -41,20 +42,22 @@ class ClipboardItemFactory:
         info = {
             'note': self._get_note(data_sections)
         }
-        currency = self.exchange.create_currency(
-            name=name,
-            stack_max_size=stack_max_size)
+        currency = Currency.create(
+            name=name, max_stack_in_trade=stack_max_size)
         if not currency:
+            self.logger.warning(
+                "Couldn't create currency item({}, {})".format(name, type))
             return None
 
-        item = CurrencyStack(currency, stack_size, item_info=info)
+        item = CurrencyStack(currency, stack_size,
+                             item_type=type, item_info=info)
         self.logger.debug("Created currency item [{}]".format(str(item)))
         return item
 
     def _get(self, obj, key, fallback):
         return obj[key] if key in obj.keys() else fallback
-    
-    def _create_general_item_from_clipboard(self, data_sections):
+
+    def _create_general_item(self, type, data_sections):
         self.logger.debug("Creating general item")
         info = {
             'rarity': self._get_rarity(data_sections),
@@ -66,7 +69,7 @@ class ClipboardItemFactory:
             'note': self._get_note(data_sections),
             'influences': self._get_influences(data_sections)
         }
-        item = Item(item_info=info, item_type=ItemType.ITEM)
+        item = Item(item_info=info, item_type=type)
         self.logger.debug("Created general item [{}]".format(str(item)))
         return item
 
@@ -83,17 +86,6 @@ class ClipboardItemFactory:
         else:
             return self._get_item_type(data_sections)
 
-    def _get_item_type(self, data_sections):
-        rarity = self._get_rarity(data_sections)
-        if self._is_scarab(data_sections, rarity):
-            return ItemType.SCARAB
-        elif self._is_fragment(data_sections, rarity):
-            return ItemType.FRAGMENT
-        elif self._is_map(data_sections, rarity):
-            return ItemType.MAP
-        # TODO: Add support for more ItemTypes.
-        return ItemType.ITEM
-        
     def _get_currency_item_type(self, data_sections):
         if self._is_delirium_orb(data_sections):
             return ItemType.DELIRIUM_ORB
@@ -105,7 +97,20 @@ class ClipboardItemFactory:
             return ItemType.DELVE_FOSSIL
         elif self._is_delve_resonator(data_sections):
             return ItemType.DELVE_RESONATOR
+        elif self._is_essence(data_sections):
+            return ItemType.ESSENCE
         return ItemType.CURRENCY
+
+    def _get_item_type(self, data_sections):
+        rarity = self._get_rarity(data_sections)
+        if self._is_scarab(data_sections, rarity):
+            return ItemType.SCARAB
+        elif self._is_fragment(data_sections, rarity):
+            return ItemType.FRAGMENT
+        elif self._is_map(data_sections, rarity):
+            return ItemType.MAP
+        # TODO: Add support for more ItemTypes.
+        return ItemType.ITEM
 
     def _is_map(self, data_sections, rarity):
         try:
@@ -114,45 +119,62 @@ class ClipboardItemFactory:
                 len(data_sections[5]) == 1
         except:
             return False
-        
+
     def _is_fragment(self, data_sections, rarity):
         try:
             return rarity == 'Normal' and \
-                data_sections[0][1].endswith("Scarab") and \
                 data_sections[2][0] == "Can be used in a personal Map Device." and \
                 len(data_sections[2]) == 1
         except:
             return False
-        
+
     def _is_scarab(self, data_sections, rarity):
         try:
             return rarity == 'Normal' and \
                 data_sections[0][1].endswith("Scarab") and \
-                data_sections[3][0].find("Can be used in a personal Map Device to add modifiers to a Map.") > -1
+                data_sections[3][0].find(
+                    "Can be used in a personal Map Device to add modifiers to a Map.") > -1
         except:
             return False
 
     def _is_delve_resonator(self, data_sections):
         try:
             return data_sections[0][1].find("Resonator") > -1 and \
-                data_sections[4][0].find("All sockets must be filled with Fossils before this item can be used.") > -1
+                data_sections[4][0].find(
+                    "All sockets must be filled with Fossils before this item can be used.") > -1
         except:
             return False
-        
+
+    def _is_essence(self, data_sections):
+        try:
+            return (
+                data_sections[0][1].find(" Essence of ") > -1
+                and data_sections[3][0].find("Right click this item then left click a ")
+                > -1
+            ) or (
+                data_sections[0][1] == "Remnant of Corruption"
+                and data_sections[2][0]
+                == "Corrupts the Essences trapping a monster, modifying them unpredictably"
+            )
+        except:
+            return False
+
     def _is_delve_fossil(self, data_sections):
         try:
             return data_sections[0][1].find("Fossil") > -1 and \
-                data_sections[3][0].find("Place in a Resonator to influence item crafting.") > -1
+                data_sections[3][0].find(
+                    "Place in a Resonator to influence item crafting.") > -1
         except:
             return False
-        
+
     def _is_oil(self, data_sections):
         try:
             return data_sections[0][1].find("Oil") > -1 and \
-                data_sections[2][0].find("Can be combined with other Oils at Cassia to Enchant") > -1
+                data_sections[2][0].find(
+                    "Can be combined with other Oils at Cassia to Enchant") > -1
         except:
             return False
-    
+
     def _is_catalyst(self, data_sections):
         try:
             return data_sections[0][1].find("Catalyst") > -1 and \
@@ -162,7 +184,7 @@ class ClipboardItemFactory:
 
     def _is_delirium_orb(self, data_sections):
         return data_sections[0][1].find("Delirium Orb") > -1
-        
+
     def _get_all_sections(self, data):
         data = data.split(SECTION_SEPARATOR)
         sections = []
@@ -174,11 +196,10 @@ class ClipboardItemFactory:
 
     def _get_rarity(self, sections):
         return sections[0][0].split("Rarity: ")[1].strip()
-       
+
     def _get(self, obj, key, fallback):
         return obj[key] if key in obj.keys() else fallback
- 
-    
+
     def _get_name(self, sections):
         return sections[0][1] if len(sections[0]) == 3 else ''
 
