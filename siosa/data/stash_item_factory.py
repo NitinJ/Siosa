@@ -1,6 +1,5 @@
 import logging
 
-from siosa.data.currency_exchange import CurrencyExchange
 from siosa.data.poe_currencies import *
 from siosa.data.poe_item import ItemType
 from siosa.network.poe_api import PoeApi
@@ -21,13 +20,15 @@ FRAMETYPE_TO_RARITY = {
     6: 'Divination Card'
 }
 
-# Creates poe items from poe stash api.
+
 class StashItemFactory:
+    """Creates poe items from poe stash api.
+    """
+
     def __init__(self):
         self.logger = logging.getLogger(__name__)
         self.logger.setLevel('DEBUG')
         self.poe_api = PoeApi()
-        self.exchange = CurrencyExchange()
 
     def get_item(self, item_data):
         """Creates a POE item from data obtained from stash.
@@ -58,29 +59,29 @@ class StashItemFactory:
         info = {
             'note': self._get(item_data, 'note', '')
         }
-        currency = self.exchange.create_currency(
+        currency = Currency.create(
             name=name,
-            stack_max_size=stack_max_size)
+            max_stack_in_trade=stack_max_size)
         if not currency:
             return None
 
         item = CurrencyStack(currency, stack_size, item_info=info)
         self.logger.debug("Created currency item [{}]".format(str(item)))
         return item
-    
+
     def _get_stash_item_type(self, data):
         if not set.isdisjoint(set(STASH_CURRENCY_KEYS), set(data.keys())):
             return ItemType.CURRENCY
         else:
             return ItemType.ITEM
-        
+
     def _get(self, obj, key, fallback):
         return obj[key] if key in obj.keys() else fallback
-       
+
     def _get_rarity_of_stash_item(self, item_data):
         frametype = self._get(item_data, 'frameType', 0)
         return self._get(FRAMETYPE_TO_RARITY, frametype, 'Normal')
-    
+
     def _create_general_item(self, item_data):
         self.logger.debug("Creating general item from stash data")
         info = {
