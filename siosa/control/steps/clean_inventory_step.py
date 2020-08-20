@@ -42,21 +42,30 @@ class CleanInventory(Step):
 
             items = self._get_items_in_positions(item_positions)
             item = self._get_next_item(items)
+            
+            # Move item to stash.
             self._move_item_to_stash(item)
 
-            # Get item positions again.
+            # Get item positions again to check if we actually moved the item.
             item_positions_new = self.inventory_scanner.scan()
+            self.logger.debug(
+                "Got {} new item_positions".format(len(item_positions_new)))
 
-            if not self._find_diff(item_positions, item_positions_new):
-                # There is no diff between new inventory items and previous one,
-                # means that we weren't able to move the item to current stash.
-                # Move the item position to an array to move all these items to
-                # dump stash later
+            if item['position'] in item_positions_new:
+                # We weren't able to move the item to current stash. Move the 
+                # item position to an array to move all these items to dump
+                # stash later.
+                self.logger.debug("Failed to move item({}) to stash({})".format(
+                    item['item'].get_name(), self.stash_tab_index))
                 item_positions_for_failed_moves.append(item['position'])
-
-            # Remove positions for items which failed to move.
-            item_positions = self._find_diff(
-                item_positions_new, item_positions_for_failed_moves)
+                
+                # Remove positions for items which failed to move and use the
+                # same positions array.
+                item_positions = self._find_diff(
+                    item_positions, item_positions_for_failed_moves)
+            else:
+                item_positions = self._find_diff(
+                    item_positions_new, item_positions_for_failed_moves)
 
         dump_stash_tabs = Stash().get_dump_stash_tabs()
         if not dump_stash_tabs:
@@ -84,7 +93,9 @@ class CleanInventory(Step):
         Returns:
             [type]: [description]
         """
-        return list(set(list_a).difference(set(list_b)))
+        diff = list(set(list_a).difference(set(list_b)))
+        self.logger.debug("Diff of two sets a,b : {}".format(str(diff)))
+        return diff
 
     def _get_next_item(self, items):
         """Returns the item to move to stash from a given list of items. Item 

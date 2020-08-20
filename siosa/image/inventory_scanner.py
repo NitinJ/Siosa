@@ -8,10 +8,10 @@ class InventoryScanner:
     ROWS = 5
     COLUMNS = 12
 
-    def __init__(self):
+    def __init__(self, debug=False):
         self.logger = logging.getLogger(__name__)
         self.logger.setLevel('DEBUG')
-        self.tm = TemplateMatcher(Locations.INVENTORY_0_0, debug=False)
+        self.tm = TemplateMatcher(Locations.INVENTORY_0_0, debug=debug)
 
     def scan(self):
         points = self.tm.match(Locations.INVENTORY)
@@ -32,6 +32,6 @@ class InventoryScanner:
                 if (i, j) not in positions_of_missing_items:
                     item_positions[(i, j)] = 1
         self.logger.debug(
-            "Found items at inventory cell locations: "+str(item_positions))
+            "Found {} items at inventory cell locations: {}".format(len(item_positions), str(item_positions)))
         # Return column sorted.
         return sorted(item_positions, key=(lambda x: x[1]))
