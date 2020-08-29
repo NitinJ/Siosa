@@ -11,9 +11,9 @@ from win32gui import GetForegroundWindow, GetWindowText
 class WindowController:
     def __init__(self):
         self.app = pwa.application.Application()
-        self.app.connect(title_re='Path of Exile')
 
     def move_to_poe(self):
+        self.app.connect(title_re='Path of Exile')
         if not self.app.is_process_running():
             raise Exception("Path of Exile is not running")
         app_dialog = self.app.window()
