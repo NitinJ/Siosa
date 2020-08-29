@@ -11,8 +11,8 @@ from siosa.location.location_factory import LocationFactory, Locations
 
 
 class ScanInventory(Step):
-    def __init__(self, game_state):
-        Step.__init__(self, game_state)
+    def __init__(self):
+        Step.__init__(self)
         self.logger = logging.getLogger(__name__)
         self.logger.setLevel('DEBUG')
         self.clipboard = PoeClipboard()
@@ -20,7 +20,9 @@ class ScanInventory(Step):
         self.stash = Stash()
         self.items = []
 
-    def execute(self):
+    def execute(self, game_state):
+        self.game_state = game_state
+        
         self.logger.info("Executing step: {}".format(self.__class__.__name__))
         item_positions = self.inventory_scanner.scan()
         for p in item_positions:

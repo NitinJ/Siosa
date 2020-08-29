@@ -9,14 +9,14 @@ from siosa.location.location_factory import LocationFactory, Locations
 
 
 class Step:
-    def __init__(self, game_state):
+    def __init__(self):
         self.logger = logging.getLogger(__name__)
-        self.game_state = game_state
+        self.game_state = None
         self.kc = KeyboardController()
         self.mc = MouseController(LocationFactory())
         self.cc = ConsoleController()
         self.wc = WindowController()
 
     @abstractmethod
-    def execute(self):
+    def execute(self, game_state):
         pass

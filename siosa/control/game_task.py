@@ -16,19 +16,29 @@ class TaskState(Enum):
 
 class Task(threading.Thread):
     STEP_EXECUTION_DELAY = 0.1
-    def __init__(self, game_state, priority, steps, name='GameTask'):
+    def __init__(self, priority, steps, name='GameTask'):
         threading.Thread.__init__(self, name=name)
         self.logger = logging.getLogger(__name__)
         
-        self.game_state = game_state
+        # Game state is provided at task runtime.
+        self.game_state = None
+        
         self.steps = steps
         self.step_index = 0
+        
+        # TODO: Move priorities to a different file and encorporate comparison
+        # logic there.
         self.priority = priority
+        
         self.state = TaskState.NOT_STARTED
         self.wc = WindowController()
     
     def get_steps(self):
         return self.steps
+    
+    def run_task(self, game_state):
+        self.game_state = game_state
+        return self.start()
 
     def run(self):
         self.logger.info("Running GameTask: {}".format(self.name))
@@ -69,8 +79,20 @@ class Task(threading.Thread):
         pass
 
     @abstractmethod
-    def resume(self):
+    def resume(self, game_state):
         pass
+
+    def is_paused(self):
+        return self.state is TaskState.PAUSED
+    
+    def has_started(self):
+        return self.state is not TaskState.NOT_STARTED
+        
+    def pause(self):
+        self.state = TaskState.PAUSED
+
+    def stop(self):
+        self.state = TaskState.STOPPED
 
     # Executes 1 step.
     def _execute(self):
@@ -78,14 +100,8 @@ class Task(threading.Thread):
             self.state = TaskState.COMPLETE
             return
         time.sleep(Task.STEP_EXECUTION_DELAY)
-        self.steps[self.step_index].execute()
+        self.steps[self.step_index].execute(self.game_state)
         self.step_index = self.step_index + 1
         if not self.wc.is_poe_in_foreground():
             self.state = TaskState.PAUSED
             return
-
-    def pause(self):
-        self.state = TaskState.PAUSED
-
-    def stop(self):
-        self.state = TaskState.STOPPED

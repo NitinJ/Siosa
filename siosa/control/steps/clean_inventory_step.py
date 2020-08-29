@@ -12,21 +12,25 @@ from siosa.location.location_factory import LocationFactory, Locations
 
 
 class CleanInventory(Step):
-    def __init__(self, game_state):
-        Step.__init__(self, game_state)
+    def __init__(self):
+        Step.__init__(self)
         self.logger = logging.getLogger(__name__)
         self.logger.setLevel('DEBUG')
         self.clipboard = PoeClipboard()
         self.inventory_scanner = InventoryScanner()
-        self.inventory_items = self.game_state.get()['inventory']
-        self.stash_tab_index = self.game_state.get()['open_stash_tab_index']
+        self.inventory_items = []
+        self.stash_tab_index = None
         # Positions already moved to stash.
         self.moved_to_stash = []
 
-    def execute(self):
+    def execute(self, game_state):
         self.logger.info("Executing step: {}".format(__name__))
-
-        if not self.game_state.get()['stash_open']:
+        self.game_state = game_state
+        self.inventory_items = self.game_state.get()['inventory']
+        self.stash_tab_index = self.game_state.get()['open_stash_tab_index']
+        state = game_state.get()
+        
+        if not state['stash_open']:
             raise Exception("Stash is not open. Cannot move items")
 
         if not self.inventory_items:
@@ -42,7 +46,7 @@ class CleanInventory(Step):
 
             items = self._get_items_in_positions(item_positions)
             item = self._get_next_item(items)
-            
+
             # Move item to stash.
             self._move_item_to_stash(item)
 
@@ -52,13 +56,13 @@ class CleanInventory(Step):
                 "Got {} new item_positions".format(len(item_positions_new)))
 
             if item['position'] in item_positions_new:
-                # We weren't able to move the item to current stash. Move the 
+                # We weren't able to move the item to current stash. Move the
                 # item position to an array to move all these items to dump
                 # stash later.
                 self.logger.debug("Failed to move item({}) to stash({})".format(
                     item['item'].get_name(), self.stash_tab_index))
                 item_positions_for_failed_moves.append(item['position'])
-                
+
                 # Remove positions for items which failed to move and use the
                 # same positions array.
                 item_positions = self._find_diff(
@@ -67,20 +71,25 @@ class CleanInventory(Step):
                 item_positions = self._find_diff(
                     item_positions_new, item_positions_for_failed_moves)
 
-        dump_stash_tabs = Stash().get_dump_stash_tabs()
-        if not dump_stash_tabs:
-            raise Exception("Cannot find any dump stash tabs !")
+        if item_positions_for_failed_moves:
+            failed_to_move_items = self._get_items_in_positions(
+                item_positions_for_failed_moves)
 
-        failed_to_move_items = self._get_items_in_positions(
-            item_positions_for_failed_moves)
-        for item in failed_to_move_items:
-            self._move_item_to_stash(item, stash_tab=dump_stash_tabs[0])
+            dump_stash_tabs = Stash().get_dump_stash_tabs()
+            if not dump_stash_tabs:
+                raise Exception("Cannot find any dump stash tabs !")
+            self.logger.debug("Moving items({}) which failed to move to their "
+                              "respective stashes to dump stash({})".format(
+                                  len(item_positions_for_failed_moves), dump_stash_tabs[0].name))
+            for item in failed_to_move_items:
+                self._move_item_to_stash(item, stash_tab=dump_stash_tabs[0])
 
         if self.inventory_scanner.scan():
             # Somehow couldnt' move some items to stash.
             raise Exception("Couldn't move some/all items to stash. \
                  Probably dump stash tab is also full")
-
+        
+        self._change_stash_tab_index(0)
         self.game_state.update({'inventory': []})
 
     def _find_diff(self, list_a, list_b):
@@ -150,7 +159,8 @@ class CleanInventory(Step):
         self.logger.debug("Moving item({}:{}) to stash({})".format(
             item['item'].get_name(), item['item'].type, item['stash_tab'].index))
 
-        self.mc.move_mouse(self._get_location(item['position'][0], item['position'][1]))
+        self.mc.move_mouse(self._get_location(
+            item['position'][0], item['position'][1]))
         self.kc.hold_modifier('Ctrl')
         self.mc.click()
         self.kc.unhold_modifier('Ctrl')

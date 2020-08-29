@@ -5,10 +5,7 @@ from siosa.location.location_factory import LocationFactory, Locations
 
 
 class PlaceStash(Step):
-    def __init__(self, game_state):
-        Step.__init__(self, game_state)
-    
-    def execute(self):
+     def execute(self, game_state):
         self.logger.info("Executing step: {}".format(self.__class__.__name__))
         self.mc.click_at_location(Locations.EDIT_HIDEOUT_ARROW)
         self.mc.click_at_location(Locations.EDIT_HIDEOUT_BUTTON)
@@ -25,6 +22,6 @@ class PlaceStash(Step):
             Locations.SCREEN_CENTER.x2 - 100, 
             Locations.SCREEN_CENTER.y2 - 100)
         self.mc.click_at_location(stash_location)
-        self.game_state.update({'stash_location': stash_location})
+        game_state.update({'stash_location': stash_location})
         self.mc.click_at_location(Locations.EDIT_HIDEOUT_BUTTON)
         self.mc.click_at_location(Locations.EDIT_HIDEOUT_DOWN_ARROW)

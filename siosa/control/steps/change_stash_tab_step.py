@@ -6,15 +6,18 @@ from siosa.data.zones import Zones
 
 
 class ChangeStashTab(Step):
-    def __init__(self, game_state, index_to):
-        Step.__init__(self, game_state)
+    def __init__(self, index_to):
+        Step.__init__(self)
         self.logger = logging.getLogger(__name__)
         self.logger.setLevel('DEBUG')
-        self.current_index = self.game_state.get()['open_stash_tab_index']
+        self.current_index = None
         self.index_to = index_to
 
-    def execute(self):
-        if not self.game_state.get()['stash_open']:
+    def execute(self, game_state):
+        self.game_state = game_state
+        state = self.game_state.get()
+        self.current_index = state['open_stash_tab_index']
+        if not state['stash_open']:
             raise Exception("Stash not open")
         if self.index_to == self.current_index:
             self.logger.debug(

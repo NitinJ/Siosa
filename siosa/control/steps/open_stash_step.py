@@ -2,12 +2,9 @@ from siosa.control.game_step import Step
 
 
 class OpenStash(Step):
-    def __init__(self, game_state):
-        Step.__init__(self, game_state)
-    
-    def execute(self):
+    def execute(self, game_state):
         self.logger.info("Executing step: OpenStash")
-        if not self.game_state.get()['stash_open']:
-            game_state = self.game_state.get()
-            self.mc.click_at_location(game_state['stash_location'])
-            self.game_state.update({'stash_open': True})
+        state = game_state.get()
+        if not state['stash_open']:
+            self.mc.click_at_location(state['stash_location'])
+            game_state.update({'stash_open': True})
