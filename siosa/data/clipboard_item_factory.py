@@ -1,4 +1,5 @@
 import logging
+from scanf import scanf
 
 from siosa.data.poe_currencies import *
 from siosa.data.poe_item import ItemType
@@ -97,8 +98,13 @@ class ClipboardItemFactory:
             return ItemType.DELVE_FOSSIL
         elif self._is_delve_resonator(data_sections):
             return ItemType.DELVE_RESONATOR
-        elif self._is_essence(data_sections):
-            return ItemType.ESSENCE
+        # elif self._is_essence(data_sections):
+        #     return ItemType.ESSENCE
+        elif self._is_splinter(data_sections):
+            return ItemType.SPLINTER
+        elif self._is_simulacrum_splinter(data_sections):
+            return ItemType.SIMULACRUM_SPLINTER
+        # TODO: Add support for more currency types.
         return ItemType.CURRENCY
 
     def _get_item_type(self, data_sections):
@@ -109,8 +115,61 @@ class ClipboardItemFactory:
             return ItemType.FRAGMENT
         elif self._is_map(data_sections, rarity):
             return ItemType.MAP
+        elif self._is_offering(data_sections):
+            return ItemType.OFFERING
+        elif self._is_divine_vessel(data_sections):
+            return ItemType.DIVINE_VESSEL
+        elif self._is_timeless_emblem(data_sections):
+            return ItemType.TIMELESS_EMBLEM
+        elif self._is_breachstone(data_sections):
+            return ItemType.BREACHSTONE
         # TODO: Add support for more ItemTypes.
         return ItemType.ITEM
+
+    def _is_divine_vessel(self, data_sections):
+        try:
+            return data_sections[0][1] == "Divine Vessel"
+        except:
+            return False
+        
+    def _is_offering(self, data_sections):
+        try:
+            return data_sections[0][1] == "Offering to the Goddess"
+        except:
+            return False
+        
+    def _is_timeless_emblem(self, data_sections):
+        try:
+            return scanf("Timeless %s Emblem", data_sections[0][1]) and \
+                data_sections[1][0] == "Place two or more different Emblems in " \
+                "a Map Device to access the Domain of Timeless Conflict. " \
+                "Can only be used once."
+        except:
+            return False
+
+    def _is_breachstone(self, data_sections):
+        try:
+            return data_sections[0][1].find("Breachstone") > -1 and \
+                scanf("Travel to %s Domain by using this item in a personal Map Device", data_sections[1][0])
+        except:
+            return False
+
+    def _is_simulacrum_splinter(self, data_sections):
+        try:
+            return data_sections[0][1] == "Simulacrum Splinter" and \
+                scanf("Combine %d Splinters to create a Simulacrum.", data_sections[2][0])
+        except:
+            return False
+        
+    def _is_splinter(self, data_sections):
+        try:
+            # Some splinter section lines have 'Splinters' and some have 
+            # 'splinters' :/
+            info_section = data_sections[2][0].lower()
+            return data_sections[0][1].find("Splinter") > -1 and \
+                scanf("combine %d splinters to create", info_section)
+        except:
+            return False
 
     def _is_map(self, data_sections, rarity):
         try:

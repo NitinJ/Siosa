@@ -35,13 +35,13 @@ class Stash(metaclass=Singleton):
             return None
         return self.tabs[index]
 
-    def get_stash_tab_by_name(self, name):
+    def get_stash_tabs_by_name(self, name):
         if name not in self.name_to_stash_tab.keys():
             self.logger.error("Stash tab with name={} is not present in Stash"
                               .format(name))
             return None
         # Return first stash tab incase there are multiple by the same name.
-        return self.name_to_stash_tab[name][0]
+        return self.name_to_stash_tab[name]
 
     def get_stash_tabs_for_item(self, item):
         stash_tab_type = self._get_stash_type_for_item(item)
@@ -86,13 +86,18 @@ class Stash(metaclass=Singleton):
             self.tabs[index] = stash_tab
 
     def get_currency_stash_tabs(self):
-        currency_tabs = self.config['stashes']['currency']
-        return [self.get_stash_tab_by_name(name) for name in currency_tabs]
+        return self._get_all_stashes_with_names(
+            self.config['stashes']['currency'])
 
     def get_dump_stash_tabs(self):
-        dump_tabs = self.config['stashes']['dump']
-        return [self.get_stash_tab_by_name(name) for name in dump_tabs]
+        return self._get_all_stashes_with_names(self.config['stashes']['dump'])
 
+    def _get_all_stashes_with_names(self, tab_names):
+        stash_tabs = []
+        for name in tab_names:
+            stash_tabs.extend(self.get_stash_tabs_by_name(name))
+        return stash_tabs
+        
     def _get_stash_type_for_item(self, item):
         if item.type == ItemType.CURRENCY:
             return StashTabType.CURRENCY
@@ -113,10 +118,13 @@ class Stash(metaclass=Singleton):
                            ItemType.FRAGMENT,
                            ItemType.OFFERING,
                            ItemType.DIVINE_VESSEL,
-                           ItemType.TIMELESS_EMBLEM):
+                           ItemType.TIMELESS_EMBLEM,
+                           ItemType.BREACHSTONE):
             return StashTabType.FRAGMENT
         elif item.type == ItemType.ESSENCE:
             return StashTabType.ESSENCE
+        elif item.type == ItemType.MAP:
+            return StashTabType.MAP
         else:
             return StashTabType.UNKNOWN
 

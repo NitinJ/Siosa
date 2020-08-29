@@ -13,35 +13,41 @@ class ItemRarity(Enum):
     
 class ItemType(Enum):
     """Types of items.
-    Next value: 22
+    Next value: 23
     
     Args:
         Enum (int): Unique int value for item
     """
     UNKNOWN = 0
     CURRENCY = 1
-    ITEM = 2 #rarity: Normal,Magic,Rare,Unique
+    
+    #rarity: Normal,Magic,Rare,Unique
+    ITEM = 2 
+    
     GEM = 3 #rarity: Gem
     DIVINATION_CARD = 4 #rarity: divination card
     
-    DELIRIUM_ORB = 6 #rarity: Currency
-    CATALYST = 7 #rarity: Currency
-    OIL = 8 #rarity: Currency
-    DELVE_RESONATOR = 11 #rarity: Currency
-    DELVE_FOSSIL = 12 #rarity: Currency
-    SPLINTER = 14 #rarity: Currency
-    SIMULACRUM_SPLINTER = 20 #rarity: Currency
-    ESSENCE = 21 #rarity: Currency 
-        
-    INCUBATOR = 9 #rarity: Normal
-    SCARAB = 10 #rarity: Normal
-    FRAGMENT = 5 #rarity: Normal
-    MAP = 13 #rarity: Normal
-    OFFERING = 15 #rarity: Normal
-    DIVINE_VESSEL = 16 #rarity: Normal
-    TIMELESS_EMBLEM = 17 #rarity: Normal
-    ORGAN = 18 #rarity: Normal
-    SIMULACRUM = 19 #rarity: Normal
+    #rarity: Currency
+    DELIRIUM_ORB = 6
+    CATALYST = 7
+    OIL = 8
+    DELVE_RESONATOR = 11
+    DELVE_FOSSIL = 12
+    SPLINTER = 14
+    SIMULACRUM_SPLINTER = 20
+    ESSENCE = 21 
+    
+     #rarity: Normal
+    INCUBATOR = 9
+    SCARAB = 10
+    FRAGMENT = 5
+    MAP = 13
+    OFFERING = 15
+    DIVINE_VESSEL = 16
+    TIMELESS_EMBLEM = 17
+    ORGAN = 18
+    SIMULACRUM = 19
+    BREACHSTONE = 22
     
 
 class Item(object):
@@ -74,6 +80,9 @@ class Item(object):
 
     def get_name(self):
         return self.item_info['type_line']
+    
+    def get_full_name(self):
+        return "{} {}".format(self.item_info['name'], self.item_info['type_line'])
         
     def __str__(self):
         return "Item type: {}, item_info: {}".format(self.type, str(self.item_info))
