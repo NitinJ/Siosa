@@ -5,6 +5,8 @@ import queue
 from scanf import scanf
 
 from siosa.client.hideout_event import HideoutEvent
+from siosa.client.trade_event import TradeEvent
+from siosa.client.location_change_event import ZoneChangeEvent
 
 class ClientLogListener(threading.Thread):
     SLEEP_DURATION = 0.05
