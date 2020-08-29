@@ -1,7 +1,8 @@
 import logging 
-from scanf import scanf 
-
+import re
+ 
 class TradeEvent:
+    REGX = re.compile('([-+]?\d+) (?s)(.*) in (?s)(.*) \(stash tab "(?s)(.*)"; position: left ([-+]?\d+), top ([-+]?\d+)\)')
     def __init__(self, raw_event, trader, item_name, currency, league, stash, position):
         self.logger = logging.getLogger(__name__)
         self.raw_event = raw_event
@@ -29,16 +30,18 @@ class TradeEvent:
 
             # Item name
             item_name = log_line.split(" Hi, I would like to buy your ")[1].split(" listed for ")[0]
+            if not item_name:
+                return None
             log_line = log_line.split(" listed for ")[1]
             
-            x = scanf("%d %s in %s (stash tab \"%s\"; position: left %d, top %d)", log_line)
-            if not item_name or not x:
+            x = TradeEvent.REGX.match(log_line).groups()
+            if not x:
                 return None
 
-            currency = {'type': x[1], 'amount': x[0]}
+            currency = {'type': x[1], 'amount': float(x[0])}
             league = x[2]
             stash = x[3]
-            position = {'left': x[4], 'top': x[5]}
+            position = {'x': int(x[4]), 'y': int(x[5])}
             return TradeEvent(raw_event, trader, item_name, currency, league, stash, position)
         except Exception:
             # self.logger.error("Error parsing log_line for trade request", exc_info=True)
