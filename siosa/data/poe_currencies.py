@@ -42,9 +42,6 @@ class Currency():
                 return None
         elif not trade_name:
             trade_name = sd.get_trade_id_for_name(name)
-            if not trade_name:
-                logger.warning("Cannot create currency as trade_name for name={} is null".format(name)) 
-                return None
         
         return Currency(CurrencyExchange(), name, trade_name, max_stack_in_trade)
 
