@@ -23,10 +23,7 @@ class TradeRequest:
             trade_event.league,
             trade_event.stash,
             trade_event.position)
-
-    def valid(self):
-        return True
-
+        
     def __str__(self):
         return "[{}] trader={}, item_name={}, currency={}, league={}, stash={}, position={}".format(
             self.ts,
