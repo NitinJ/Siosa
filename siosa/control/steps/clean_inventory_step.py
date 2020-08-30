@@ -174,7 +174,7 @@ class CleanInventory(Step):
         """
         self.logger.debug("Current item's stash({}) is not equal to \
             current_stash({})".format(index, self.stash_tab_index))
-        ChangeStashTab(self.game_state, index).execute()
+        ChangeStashTab(index).execute(self.game_state)
         self.stash_tab_index = index
 
     def _get_items_in_positions(self, positions):
