@@ -30,10 +30,9 @@ class InitTask(Task):
     def get_steps():
         return [
             SwitchToGame(),
-            # CloseAllWindows(game_state),
-            # ChangeZone(game_state, zones.Zones.HIDEOUT),
-            # PlaceStash(game_state),
-            # OpenStash(game_state),
-            # ScanInventory(game_state)
-            # TestStep(game_state)
+            CloseAllWindows(),
+            ChangeZone(zones.Zones.HIDEOUT),
+            PlaceStash(),
+            OpenStash().
+            ScanInventory()
         ]
