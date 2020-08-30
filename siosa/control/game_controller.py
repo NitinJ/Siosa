@@ -18,6 +18,7 @@ class GameController(metaclass=Singleton):
 
         self.game_state = GameState()
         self.task_executor = GameTaskExecutor(self.game_state)
+        self.task_executor.start()
 
         self.log_listener = client_log_listener
         self.game_state_updaters = [
@@ -35,5 +36,4 @@ class GameController(metaclass=Singleton):
         self.submit_task(InitTask())
 
     def submit_task(self, task):
-        self.logger.debug("New task submitted: {}".format(task.name))
         self.task_executor.submit_task(task)

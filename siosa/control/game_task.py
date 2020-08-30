@@ -18,7 +18,8 @@ class Task(threading.Thread):
     STEP_EXECUTION_DELAY = 0.1
     def __init__(self, priority, steps, name='GameTask'):
         threading.Thread.__init__(self, name=name)
-        self.logger = logging.getLogger(__name__)
+        self.logger = logging.getLogger(name)
+        self.logger.setLevel(logging.DEBUG)
         
         # Game state is provided at task runtime.
         self.game_state = None
@@ -80,18 +81,24 @@ class Task(threading.Thread):
 
     @abstractmethod
     def resume(self, game_state):
+        self.logger.info("Resuming task: {}".format(self.name))
         pass
 
     def is_paused(self):
         return self.state is TaskState.PAUSED
-    
+        
+    def pause(self):
+        self.logger.info("Pausing task: {}".format(self.name))
+        self.state = TaskState.PAUSED
+        
     def has_started(self):
         return self.state is not TaskState.NOT_STARTED
         
-    def pause(self):
-        self.state = TaskState.PAUSED
+    def is_running(self):
+        return self.state is TaskState.RUNNING
 
     def stop(self):
+        self.logger.info("Stopping task: {}".format(self.name))
         self.state = TaskState.STOPPED
 
     # Executes 1 step.
