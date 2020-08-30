@@ -17,10 +17,10 @@ class PlaceStash(Step):
         self.mc.click_at_location(Locations.STASH_DECORATION)
         self.mc.click_at_location(Locations.CLOSE_DECORATIONS_BUTTON)
         stash_location = LocationFactory().create(
-            Locations.SCREEN_CENTER.x1 - 100, 
-            Locations.SCREEN_CENTER.y1 - 100, 
-            Locations.SCREEN_CENTER.x2 - 100, 
-            Locations.SCREEN_CENTER.y2 - 100)
+            Locations.SCREEN_CENTER.x1, 
+            Locations.SCREEN_CENTER.y1, 
+            Locations.SCREEN_CENTER.x2, 
+            Locations.SCREEN_CENTER.y2)
         self.mc.click_at_location(stash_location)
         game_state.update({'stash_location': stash_location})
         self.mc.click_at_location(Locations.EDIT_HIDEOUT_BUTTON)
