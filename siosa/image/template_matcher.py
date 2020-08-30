@@ -22,17 +22,17 @@ class TemplateMatcher:
         self.sct = mss.mss()
         self.debug = debug
         self.confidence = confidence
-        
+        self.template_location = template_location
         if self.debug:
             time.sleep(2)
-            
+
+    def match(self, location):
         if not WindowController().is_poe_in_foreground():
             self.logger.error("POE is not in foreground to capture template.")
             raise(Exception("Path of Exile is not in foreground"))
-        
-        self.template_file_path = self._create_template(template_location)
 
-    def match(self, location):
+        self.template_file_path = self._create_template(self.template_location)
+
         # The screen part to capture
         ts1 = time.time()
         screen_location = self._get_grab_params(location)
@@ -67,9 +67,9 @@ class TemplateMatcher:
                       point[1] + template_height//2)
                 cv2.rectangle(image_bytes_bgr, pt, pt, (0, 0, 255), 4)
                 points.append(pt)
-        
+
         self.logger.info("Template matcher took {}".format(time.time() - ts1))
-        
+
         if self.debug:
             cv2.imshow('image', image_bytes_bgr)
             cv2.waitKey(0)
@@ -86,11 +86,11 @@ class TemplateMatcher:
         }
 
     def _get_template_output_file_path(self, name):
-        parent = lambda f: os.path.dirname(os.path.abspath(f))
+        def parent(f): return os.path.dirname(os.path.abspath(f))
         resources = os.path.join(parent(parent(__file__)), "resources")
         templates = os.path.join(resources, "templates")
         return os.path.join(templates, name)
-        
+
     def _create_template(self, location):
         image_location = self._get_grab_params(location)
         output_file_path = self._get_template_output_file_path(
