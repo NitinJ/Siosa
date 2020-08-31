@@ -19,7 +19,7 @@ class CurrencyExchange(metaclass=Singleton):
         self.exchange_rate_in_chaos = {}
         self.poe_api = poe_api
         # self.other_currencies_data = {}
-        
+
         self.lock = threading.Lock()
         self.exchanger = Exchanger(self.poe_api, self)
         self.exchanger.start()
@@ -45,6 +45,7 @@ class CurrencyExchange(metaclass=Singleton):
         rate = self.exchange_rate_in_chaos[currency.trade_name]
         self.lock.release()
         return rate
+
 
 class Exchanger(threading.Thread):
     def __init__(self, poe_api, exchange, args=()):

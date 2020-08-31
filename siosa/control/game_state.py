@@ -20,13 +20,13 @@ class GameState:
             'current_zone': Zones.HIDEOUT
         }
         self.lock = threading.Lock()
-    
+
     def update(self, state_dictionary={}):
         self.lock.acquire()
         self.state.update(state_dictionary)
         self.logger.info("Updated game_state with {}".format(str(state_dictionary)))
         self.lock.release()
-    
+
     def get(self):
         self.lock.acquire()
         state = self.state.copy()
@@ -35,6 +35,6 @@ class GameState:
 
     def __str__(self):
         s = ""
-        for k,v in self.state.items():
+        for k, v in self.state.items():
             s = s + "{}: {}, ".format(str(k), str(v))
         return s

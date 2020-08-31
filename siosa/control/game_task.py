@@ -14,29 +14,31 @@ class TaskState(Enum):
     STOPPED = 3
     COMPLETE = 4
 
+
 class Task(threading.Thread):
     STEP_EXECUTION_DELAY = 0.1
+
     def __init__(self, priority, steps, name='GameTask'):
         threading.Thread.__init__(self, name=name)
         self.logger = logging.getLogger(name)
         self.logger.setLevel(logging.DEBUG)
-        
+
         # Game state is provided at task runtime.
         self.game_state = None
-        
+
         self.steps = steps
         self.step_index = 0
-        
+
         # TODO: Move priorities to a different file and encorporate comparison
         # logic there.
         self.priority = priority
-        
+
         self.state = TaskState.NOT_STARTED
         self.wc = WindowController()
-    
+
     def get_steps(self):
         return self.steps
-    
+
     def run_task(self, game_state):
         self.game_state = game_state
         return self.start()
@@ -49,7 +51,7 @@ class Task(threading.Thread):
             state_now = self.state
             if state_now != state_old:
                 self._handle_state_change(state_old, state_now)
-                
+
             if state_now == TaskState.RUNNING:
                 self._execute()
             if state_now == TaskState.STOPPED:
@@ -62,7 +64,7 @@ class Task(threading.Thread):
                 break
             state_old = state_now
             time.sleep(0.05)
-    
+
     def _handle_state_change(self, old, new):
         if old == new:
             return
@@ -86,14 +88,14 @@ class Task(threading.Thread):
 
     def is_paused(self):
         return self.state is TaskState.PAUSED
-        
+
     def pause(self):
         self.logger.info("Pausing task: {}".format(self.name))
         self.state = TaskState.PAUSED
-        
+
     def has_started(self):
         return self.state is not TaskState.NOT_STARTED
-        
+
     def is_running(self):
         return self.state is TaskState.RUNNING
 

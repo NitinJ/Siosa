@@ -11,7 +11,7 @@ class KeyboardController:
         self.logger = logging.getLogger(__name__)
         self.logger.setLevel('DEBUG')
 
-    def __del__(self): 
+    def __del__(self):
         self.unhold()
 
     def hold_modifier(self, key):
@@ -21,7 +21,7 @@ class KeyboardController:
         sleep(self.key_press_delay)
         pyautogui.keyDown(key)
         self.held_modifier_keys[key] = 1
-    
+
     def unhold_modifier(self, key):
         key = key.lower()
         if key not in self.held_modifier_keys.keys():

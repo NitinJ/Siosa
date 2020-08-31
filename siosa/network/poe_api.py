@@ -135,8 +135,8 @@ class PoeApi(metaclass=Singleton):
         for exchange in exchanges:
             have_amount = exchange['listing']['price']['exchange']['amount']
             want_amount = exchange['listing']['price']['item']['amount']
-            prices.append(want_amount*1.0/have_amount)
-        return sum(prices)/len(prices)
+            prices.append(want_amount * 1.0 / have_amount)
+        return sum(prices) / len(prices)
 
     def get_static_data(self):
         url = STATIC_DATA_API

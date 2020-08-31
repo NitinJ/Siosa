@@ -5,6 +5,7 @@ COMMANDS = {
     'INVITE_CHARACTER': "/invite {}"
 }
 
+
 def invite_character_to_party(character_name):
     window_controller = WindowController()
     window_controller.move_to_poe()

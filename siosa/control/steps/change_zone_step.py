@@ -6,10 +6,11 @@ from siosa.data.zones import Zones
 
 class ChangeZone(Step):
     LOCATION_ENTRY_WAIT_TIME = 10
+
     def __init__(self, zone):
         Step.__init__(self)
         self.zone = zone
-    
+
     def execute(self, game_state):
         self.game_state = game_state
         self.logger.info("Executing step: ChangeZone")

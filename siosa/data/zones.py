@@ -1,5 +1,6 @@
 from enum import Enum
 
+
 class Zones(Enum):
     UNKNOWN = 'Unknown'
     HIDEOUT = 'hideout'

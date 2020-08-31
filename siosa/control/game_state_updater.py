@@ -10,17 +10,18 @@ class GameStateUpdater(threading.Thread):
         threading.Thread.__init__(self)
         self.logger = logging.getLogger(__name__)
         self.game_state = game_state
-    
+
     @abstractmethod
     def run(self):
         pass
+
 
 class PlayerInHideoutUpdater(GameStateUpdater):
     def __init__(self, game_state, log_listener):
         GameStateUpdater.__init__(self, game_state)
         self.log_listener = log_listener
         self.hideout_event_queue = self.log_listener.hideout_event_queue
-    
+
     def run(self):
         self.logger.info("Starting GameStateUpdater: {}".format(self.__class__.__name__))
         while True:
@@ -34,12 +35,13 @@ class PlayerInHideoutUpdater(GameStateUpdater):
                 self.game_state.update({'players_in_hideout': players})
             time.sleep(0.05)
 
+
 class ZoneUpdater(GameStateUpdater):
     def __init__(self, game_state, log_listener):
         GameStateUpdater.__init__(self, game_state)
         self.log_listener = log_listener
         self.location_change_event_queue = self.log_listener.location_change_event_queue
-    
+
     def run(self):
         self.logger.info("Starting GameStateUpdater: {}".format(self.__class__.__name__))
         while True:

@@ -19,16 +19,17 @@ class LocationFactory(metaclass=Singleton):
     def _scale_to_res(self, location):
         # Scales the internal locations to the given resolution
         return InGameLocation(
-            int(location.x1 * self.res_x / 1920), 
-            int(location.y1 * self.res_y / 1080), 
-            int(location.x2 * self.res_x / 1920), 
+            int(location.x1 * self.res_x / 1920),
+            int(location.y1 * self.res_y / 1080),
+            int(location.x2 * self.res_x / 1920),
             int(location.y2 * self.res_y / 1080))
 
     def get_center_of_screen(self):
-        return InGameLocation(self.res_x/2, self.res_y/2, self.res_x/2, self.res_y/2)
+        return InGameLocation(self.res_x / 2, self.res_y / 2, self.res_x / 2, self.res_y / 2)
+
 
 class Locations:
-    SCREEN_CENTER = InGameLocation(1920/2, 1080/2, 1920/2, 1080/2)
+    SCREEN_CENTER = InGameLocation(1920 / 2, 1080 / 2, 1920 / 2, 1080 / 2)
     # Currency tab
     CURRENCY_CENTER = InGameLocation(295, 396, 371, 555)
     CURRENCY_ALTERATION = InGameLocation(98, 275, 131, 311)

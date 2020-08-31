@@ -25,7 +25,7 @@ class ClientLogListener(threading.Thread):
         self.logger.setLevel('DEBUG')
         self.target = target
         self.name = name
-        
+
         self.path = client_log_file_path
         self.last_read_ptr = None
 

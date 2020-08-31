@@ -11,11 +11,11 @@ class ConsoleController(metaclass=Singleton):
     # done so that command and console messages don't interfare between image
     # parsing done in the app.
     CONSOLE_CLEAR_DELAY = 1.0
-    
+
     def __init__(self, delay=0.05):
         self.keyboard_controller = KeyboardController()
         self.delay = delay
-    
+
     def send_chat(self, to, chat):
         pyautogui.press('enter')
         time.sleep(self.delay)
@@ -30,10 +30,10 @@ class ConsoleController(metaclass=Singleton):
         time.sleep(self.delay)
         pyautogui.press('enter')
         self._clear()
-    
+
     def clear_console(self):
         self._clear()
-        
+
     def _clear(self):
         pyautogui.press('enter')
         time.sleep(ConsoleController.CONSOLE_CLEAR_DELAY)

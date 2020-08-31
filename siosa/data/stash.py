@@ -95,7 +95,7 @@ class Stash(metaclass=Singleton):
         for name in tab_names:
             stash_tabs.extend(self.get_stash_tabs_by_name(name))
         return stash_tabs
-        
+
     def _get_stash_type_for_item(self, item):
         if item.type == ItemType.CURRENCY:
             return StashTabType.CURRENCY
@@ -142,7 +142,7 @@ class StashTabType(Enum):
 
 
 class StashTab:
-    REFRESH_DURATION = 5*60  # 5 mins
+    REFRESH_DURATION = 5 * 60  # 5 mins
 
     def __init__(self, data):
         self.api = PoeApi()

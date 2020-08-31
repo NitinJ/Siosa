@@ -1,8 +1,11 @@
-import logging 
+import logging
 import re
- 
+
+
 class TradeEvent:
-    REGX = re.compile('([-+]?\d+) (?s)(.*) in (?s)(.*) \(stash tab "(?s)(.*)"; position: left ([-+]?\d+), top ([-+]?\d+)\)')
+    REGX = re.compile(
+        '([-+]?\d+) (?s)(.*) in (?s)(.*) \(stash tab "(?s)(.*)"; position: left ([-+]?\d+), top ([-+]?\d+)\)')
+
     def __init__(self, raw_event, trader, item_name, currency, league, stash, position):
         self.logger = logging.getLogger(__name__)
         self.raw_event = raw_event
@@ -33,7 +36,7 @@ class TradeEvent:
             if not item_name:
                 return None
             log_line = log_line.split(" listed for ")[1]
-            
+
             x = TradeEvent.REGX.match(log_line).groups()
             if not x:
                 return None

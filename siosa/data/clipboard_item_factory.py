@@ -130,113 +130,114 @@ class ClipboardItemFactory:
             return data_sections[0][1] == "Divine Vessel"
         except:
             return False
-        
+
     def _is_offering(self, data_sections):
         try:
             return data_sections[0][1] == "Offering to the Goddess"
         except:
             return False
-        
+
     def _is_timeless_emblem(self, data_sections):
         try:
             return scanf("Timeless %s Emblem", data_sections[0][1]) and \
-                data_sections[1][0] == "Place two or more different Emblems in " \
-                "a Map Device to access the Domain of Timeless Conflict. " \
-                "Can only be used once."
+                   data_sections[1][0] == "Place two or more different Emblems in " \
+                                          "a Map Device to access the Domain of Timeless Conflict. " \
+                                          "Can only be used once."
         except:
             return False
 
     def _is_breachstone(self, data_sections):
         try:
             return data_sections[0][1].find("Breachstone") > -1 and \
-                scanf("Travel to %s Domain by using this item in a personal Map Device", data_sections[1][0])
+                   scanf("Travel to %s Domain by using this item in a personal Map Device", data_sections[1][0])
         except:
             return False
 
     def _is_simulacrum_splinter(self, data_sections):
         try:
             return data_sections[0][1] == "Simulacrum Splinter" and \
-                scanf("Combine %d Splinters to create a Simulacrum.", data_sections[2][0])
+                   scanf("Combine %d Splinters to create a Simulacrum.", data_sections[2][0])
         except:
             return False
-        
+
     def _is_splinter(self, data_sections):
         try:
             # Some splinter section lines have 'Splinters' and some have 
             # 'splinters' :/
             info_section = data_sections[2][0].lower()
             return data_sections[0][1].find("Splinter") > -1 and \
-                scanf("combine %d splinters to create", info_section)
+                   scanf("combine %d splinters to create", info_section)
         except:
             return False
 
     def _is_map(self, data_sections, rarity):
         try:
             return data_sections[1][0].startswith("Map Tier:") and \
-                data_sections[5][0] == "Travel to this Map by using it in a personal Map Device. Maps can only be used once." and \
-                len(data_sections[5]) == 1
+                   data_sections[5][
+                       0] == "Travel to this Map by using it in a personal Map Device. Maps can only be used once." and \
+                   len(data_sections[5]) == 1
         except:
             return False
 
     def _is_fragment(self, data_sections, rarity):
         try:
             return rarity == 'Normal' and \
-                data_sections[2][0] == "Can be used in a personal Map Device." and \
-                len(data_sections[2]) == 1
+                   data_sections[2][0] == "Can be used in a personal Map Device." and \
+                   len(data_sections[2]) == 1
         except:
             return False
 
     def _is_scarab(self, data_sections, rarity):
         try:
             return rarity == 'Normal' and \
-                data_sections[0][1].endswith("Scarab") and \
-                data_sections[3][0].find(
-                    "Can be used in a personal Map Device to add modifiers to a Map.") > -1
+                   data_sections[0][1].endswith("Scarab") and \
+                   data_sections[3][0].find(
+                       "Can be used in a personal Map Device to add modifiers to a Map.") > -1
         except:
             return False
 
     def _is_delve_resonator(self, data_sections):
         try:
             return data_sections[0][1].find("Resonator") > -1 and \
-                data_sections[4][0].find(
-                    "All sockets must be filled with Fossils before this item can be used.") > -1
+                   data_sections[4][0].find(
+                       "All sockets must be filled with Fossils before this item can be used.") > -1
         except:
             return False
 
     def _is_essence(self, data_sections):
         try:
             return (
-                data_sections[0][1].find(" Essence of ") > -1
-                and data_sections[3][0].find("Right click this item then left click a ")
-                > -1
-            ) or (
-                data_sections[0][1] == "Remnant of Corruption"
-                and data_sections[2][0]
-                == "Corrupts the Essences trapping a monster, modifying them unpredictably"
-            )
+                           data_sections[0][1].find(" Essence of ") > -1
+                           and data_sections[3][0].find("Right click this item then left click a ")
+                           > -1
+                   ) or (
+                           data_sections[0][1] == "Remnant of Corruption"
+                           and data_sections[2][0]
+                           == "Corrupts the Essences trapping a monster, modifying them unpredictably"
+                   )
         except:
             return False
 
     def _is_delve_fossil(self, data_sections):
         try:
             return data_sections[0][1].find("Fossil") > -1 and \
-                data_sections[3][0].find(
-                    "Place in a Resonator to influence item crafting.") > -1
+                   data_sections[3][0].find(
+                       "Place in a Resonator to influence item crafting.") > -1
         except:
             return False
 
     def _is_oil(self, data_sections):
         try:
             return data_sections[0][1].find("Oil") > -1 and \
-                data_sections[2][0].find(
-                    "Can be combined with other Oils at Cassia to Enchant") > -1
+                   data_sections[2][0].find(
+                       "Can be combined with other Oils at Cassia to Enchant") > -1
         except:
             return False
 
     def _is_catalyst(self, data_sections):
         try:
             return data_sections[0][1].find("Catalyst") > -1 and \
-                data_sections[2][0].find("Adds quality that enhances") > -1
+                   data_sections[2][0].find("Adds quality that enhances") > -1
         except:
             return False
 

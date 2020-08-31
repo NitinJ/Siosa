@@ -5,6 +5,7 @@ from enum import Enum
 class TradeInfo:
     """All the information about a trade including state.
     """
+
     class Status(Enum):
         NOT_STARTED = 'not_started'
         STARTING = 'starting'
@@ -22,5 +23,5 @@ class TradeInfo:
         self.trade_request = trade_request
         self.stash_tab = stash_tab
         self.item = item
-    
+
         self.status = TradeInfo.Status.NOT_STARTED

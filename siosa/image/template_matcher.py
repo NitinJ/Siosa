@@ -26,7 +26,7 @@ class TemplateMatcher:
     def match(self, location):
         if not WindowController().is_poe_in_foreground():
             self.logger.error("POE is not in foreground to capture template.")
-            raise(Exception("Path of Exile is not in foreground"))
+            raise (Exception("Path of Exile is not in foreground"))
 
         self.template_file_path = self._create_template(self.template_location)
 
@@ -57,11 +57,11 @@ class TemplateMatcher:
         points = []
         for point in zip(*match_locations[::-1]):
             cropedImg = image_bytes_bgr_copy[point[1]:point[1] +
-                                             template_height, point[0]:point[0] + template_width]
+                                                      template_height, point[0]:point[0] + template_width]
             dmin, dmax = self._getBGRMinMax(cropedImg)
             if dmin[0] <= tmin[0] and dmin[1] <= tmin[1] and dmin[2] <= tmin[2]:
-                pt = (point[0] + template_width//2,
-                      point[1] + template_height//2)
+                pt = (point[0] + template_width // 2,
+                      point[1] + template_height // 2)
                 cv2.rectangle(image_bytes_bgr, pt, pt, (0, 0, 255), 4)
                 points.append(pt)
 
@@ -78,12 +78,13 @@ class TemplateMatcher:
         return {
             "top": location.y1,
             "left": location.x1,
-            "width": location.x2-location.x1,
-            "height": location.y2-location.y1
+            "width": location.x2 - location.x1,
+            "height": location.y2 - location.y1
         }
 
     def _get_template_output_file_path(self, name):
         def parent(f): return os.path.dirname(os.path.abspath(f))
+
         resources = os.path.join(parent(parent(__file__)), "resources")
         templates = os.path.join(resources, "templates")
         return os.path.join(templates, name)

@@ -1,4 +1,4 @@
-#-*-coding:utf8-*-
+# -*-coding:utf8-*-
 import time
 
 import pywinauto as pwa
@@ -19,6 +19,7 @@ class WindowController:
     @staticmethod
     def is_poe_in_foreground():
         return GetWindowText(GetForegroundWindow()) == 'Path of Exile'
+
 
 if __name__ == "__main__":
     for i in range(0, 15):

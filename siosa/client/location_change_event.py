@@ -1,5 +1,6 @@
 from siosa.data.zones import Zones
 
+
 class ZoneChangeEvent:
     MAP = {
         'The Menagerie': Zones.MENAERIE,
@@ -8,6 +9,7 @@ class ZoneChangeEvent:
         'Tane\'s Laboratory': Zones.METAMORPH,
         'Aspirants\' Plaza': Zones.ASPIRANTS_PLAZA
     }
+
     def __init__(self, zone_str):
         self.zone_str = zone_str
         self.zone = self._get_zone_type()
@@ -20,7 +22,7 @@ class ZoneChangeEvent:
         if zone:
             return ZoneChangeEvent(zone)
         return None
-    
+
     def _get_zone_type(self):
         if self.zone_str.find("Hideout") > -1:
             return Zones.HIDEOUT

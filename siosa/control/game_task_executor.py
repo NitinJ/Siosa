@@ -31,22 +31,22 @@ class GameTaskExecutor(threading.Thread):
             self.lock.acquire()
             task = self.task_store.get_next()
             self.lock.release()
-            
+
             if task:
                 if self.running_task is None:
-                    #self.logger.debug("Starting executing task: {}".format(task.name))
+                    # self.logger.debug("Starting executing task: {}".format(task.name))
                     self.running_task = task
                     task.run_task(self.game_state)
                 elif self.running_task != task:
                     self.logger.debug("Starting executing a new task: {}".format(task.name))
                     if self.running_task.is_running():
                         self.running_task.pause()
-                    
+
                     self.running_task = task
                     if task.is_paused():
                         task.resume(self.game_state)
                     else:
                         # Not started.
                         task.run_task(self.game_state)
-                        
+
             time.sleep(GameTaskExecutor.TASK_STATE_CHECK_DELAY)

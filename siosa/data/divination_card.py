@@ -1,5 +1,6 @@
 from siosa.data.poe_item import Item
 
+
 class DivinationCard():
     def __init__(self, name, max_stack_size, gives):
         self.name = name
@@ -18,6 +19,7 @@ class DivinationCard():
             return val
         return False
 
+
 class DivinationCardStack(Item):
     def __init__(self, card, quantity, item_info={}):
         self.card = card
@@ -30,6 +32,6 @@ class DivinationCardStack(Item):
         }
         item_info.update(info)
         Item.__init__(self, item_info=item_info, item_type=ItemType.DIVINATION_CARD)
-    
+
     def is_complete_set(self):
         return (self.quantity == self.card.max_stack_size)

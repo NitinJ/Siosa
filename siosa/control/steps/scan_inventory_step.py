@@ -19,22 +19,22 @@ class ScanInventory(Step):
 
     def execute(self, game_state):
         self.game_state = game_state
-        
+
         self.logger.info("Executing step: {}".format(self.__class__.__name__))
         item_positions = self.inventory_scanner.scan()
         for p in item_positions:
             self.mc.move_mouse(self._get_location(p))
             item = self.clipboard.read_item_at_cursor()
             stash_tabs = self.stash.get_stash_tabs_for_item(item)
-            
+
             if not stash_tabs:
                 raise Exception("Couldn't find a stash tab for item.")
-            
+
             stash_tab = stash_tabs[0]
-            
+
             self.logger.info("Stash tab for item:{!s} is:{!s}".format(
                 item, stash_tab))
-            
+
             self.items.append({
                 'item': item,
                 'position': p,

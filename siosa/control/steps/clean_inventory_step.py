@@ -26,7 +26,7 @@ class CleanInventory(Step):
         self.inventory_items = self.game_state.get()['inventory']
         self.stash_tab_index = self.game_state.get()['open_stash_tab_index']
         state = game_state.get()
-        
+
         if not state['stash_open']:
             raise Exception("Stash is not open. Cannot move items")
 
@@ -77,7 +77,7 @@ class CleanInventory(Step):
                 raise Exception("Cannot find any dump stash tabs !")
             self.logger.debug("Moving items({}) which failed to move to their "
                               "respective stashes to dump stash({})".format(
-                                  len(item_positions_for_failed_moves), dump_stash_tabs[0].name))
+                len(item_positions_for_failed_moves), dump_stash_tabs[0].name))
             for item in failed_to_move_items:
                 self._move_item_to_stash(item, stash_tab=dump_stash_tabs[0])
 
@@ -85,7 +85,7 @@ class CleanInventory(Step):
             # Somehow couldnt' move some items to stash.
             raise Exception("Couldn't move some/all items to stash. \
                  Probably dump stash tab is also full")
-        
+
         self._change_stash_tab_index(0)
         self.game_state.update({'inventory': []})
 

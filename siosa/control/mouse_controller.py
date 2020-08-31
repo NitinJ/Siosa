@@ -8,6 +8,7 @@ from siosa.location.location_factory import LocationFactory
 
 class MouseController(metaclass=Singleton):
     TIME_BETWEEN_CLICKS = 0.03
+
     def __init__(self, location_factory, mouse_move_duration=0.2, mouse_movement_curve=pyautogui.easeInOutQuad):
         self.location_factory = location_factory
         self.current_location = self.location_factory.create(0, 0, 0, 0)
@@ -23,13 +24,13 @@ class MouseController(metaclass=Singleton):
         self.current_location = location
 
     def right_click(self):
-        if self.last_click_ts: 
+        if self.last_click_ts:
             time.sleep(max(0, MouseController.TIME_BETWEEN_CLICKS - time.time() - self.last_click_ts))
         pyautogui.click(button='right')
         self.last_click_ts = time.time()
 
     def click(self):
-        if self.last_click_ts: 
+        if self.last_click_ts:
             time.sleep(max(0, MouseController.TIME_BETWEEN_CLICKS - time.time() - self.last_click_ts))
         pyautogui.click(button='left')
         self.last_click_ts = time.time()
@@ -46,6 +47,7 @@ class MouseController(metaclass=Singleton):
             self.click()
         else:
             self.right_click()
+
 
 if __name__ == "__main__":
     location_factory = LocationFactory()

@@ -24,7 +24,7 @@ class InventoryScanner:
         width = Locations.INVENTORY_0_0.get_width()
         height = Locations.INVENTORY_0_0.get_height()
 
-        positions_of_missing_items = [(abs(p[1] - offset_y)//height, abs(p[0] - offset_x)//width)
+        positions_of_missing_items = [(abs(p[1] - offset_y) // height, abs(p[0] - offset_x) // width)
                                       for p in points]
         item_positions = {}
         for i in range(0, InventoryScanner.ROWS):

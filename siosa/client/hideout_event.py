@@ -1,5 +1,6 @@
 from scanf import scanf
 
+
 class HideoutEvent:
     def __init__(self, player, joined):
         self.player = player

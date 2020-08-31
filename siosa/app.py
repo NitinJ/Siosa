@@ -27,7 +27,7 @@ def run():
     log_listener.start()
 
     gc = GameController(log_listener)
-    
+
     # Submit test task to test out stuff. All testing needs to be done through
     # test task.
     gc.submit_task(TestTask())
