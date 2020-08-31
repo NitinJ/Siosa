@@ -1,9 +1,9 @@
 {
-    "account_name": "MopedDriverr",
-    "poe_session_id": "952f84865d28d000cba67dcb1d044914",
+    "account_name": "",
+    "poe_session_id": "",
     "stashes": {
-        "dump": ["~price 10 chaos", "4x4"],
-        "sell": ["SELL", "SELL2"],
-        "currency": ["$-$-$"]
+        "dump": [""],
+        "sell": [""],
+        "currency": [""]
     }
 }
