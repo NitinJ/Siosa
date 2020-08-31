@@ -3,7 +3,7 @@ import threading
 import time
 from enum import Enum
 
-from siosa.common.decorations import abstractmethod
+from siosa.common.decorations import abstractmethod, synchronized
 from siosa.control.window_controller import WindowController
 
 
@@ -17,11 +17,12 @@ class TaskState(Enum):
 
 class Task(threading.Thread):
     STEP_EXECUTION_DELAY = 0.1
-
+    
     def __init__(self, priority, steps, name='GameTask'):
         threading.Thread.__init__(self, name=name)
         self.logger = logging.getLogger(name)
         self.logger.setLevel(logging.DEBUG)
+        self.lock = threading.RLock()
 
         # Game state is provided at task runtime.
         self.game_state = None
@@ -29,8 +30,8 @@ class Task(threading.Thread):
         self.steps = steps
         self.step_index = 0
 
-        # TODO: Move priorities to a different file and encorporate comparison
-        # logic there.
+        # TODO: Move priorities to a different file and encorporate
+        #  comparison logic there.
         self.priority = priority
 
         self.state = TaskState.NOT_STARTED
@@ -43,9 +44,13 @@ class Task(threading.Thread):
         self.game_state = game_state
         return self.start()
 
+    @synchronized
+    def set_state(self, state):
+        self.state = state
+
     def run(self):
         self.logger.info("Running GameTask: {}".format(self.name))
-        self.state = TaskState.RUNNING
+        self.set_state(TaskState.RUNNING)
         state_old = self.state
         while True:
             state_now = self.state
@@ -56,11 +61,9 @@ class Task(threading.Thread):
                 self._execute()
             if state_now == TaskState.STOPPED:
                 self.logger.info("GameTask stopped: {}".format(self.name))
-                self.cleanup()
                 break
             if state_now == TaskState.COMPLETE:
                 self.logger.info("GameTask complete: {}".format(self.name))
-                self.cleanup()
                 break
             state_old = state_now
             time.sleep(0.05)
@@ -68,49 +71,74 @@ class Task(threading.Thread):
     def _handle_state_change(self, old, new):
         if old == new:
             return
-        if old == TaskState.RUNNING and new in (TaskState.PAUSED, TaskState.STOPPED):
-            self.cleanup()
+
+        if old == TaskState.RUNNING and new in (
+                TaskState.PAUSED, TaskState.STOPPED):
+            self._cleanup()
         elif old == TaskState.RUNNING and new == TaskState.NOT_STARTED:
-            self.logger.warning("Task state shifted from {} to {}".format(old, new))
-        elif old == TaskState.PAUSED and new == TaskState.RUNNING:
-            self.resume()
+            self.logger.error(
+                "Task state shifted from {} to {}".format(old, new))
         elif old == TaskState.STOPPED:
-            self.logger.warning("Task state transition from STOPPED")
+            self.logger.error("Task state transition from STOPPED")
 
-    @abstractmethod
-    def cleanup(self):
+    def _cleanup(self):
+        self.logger.info(
+            "Cleaning up task: {} on state: {}".format(self.name, self.state))
+        self._cleanup_internal()
         pass
 
-    @abstractmethod
+    @synchronized
     def resume(self, game_state):
+        self.game_state = game_state
+        self.set_state(TaskState.RUNNING)
         self.logger.info("Resuming task: {}".format(self.name))
-        pass
+        self._resume_internal()
 
+    @synchronized
     def is_paused(self):
         return self.state is TaskState.PAUSED
 
     def pause(self):
         self.logger.info("Pausing task: {}".format(self.name))
-        self.state = TaskState.PAUSED
+        self.set_state(TaskState.PAUSED)
 
+    @synchronized
     def has_started(self):
         return self.state is not TaskState.NOT_STARTED
 
+    @synchronized
     def is_running(self):
         return self.state is TaskState.RUNNING
 
     def stop(self):
         self.logger.info("Stopping task: {}".format(self.name))
-        self.state = TaskState.STOPPED
+        self.set_state(TaskState.STOPPED)
 
     # Executes 1 step.
     def _execute(self):
+        self.lock.acquire()
+
         if self.step_index >= len(self.steps):
             self.state = TaskState.COMPLETE
+            self.lock.release()
             return
+
         time.sleep(Task.STEP_EXECUTION_DELAY)
         self.steps[self.step_index].execute(self.game_state)
+
         self.step_index = self.step_index + 1
+
         if not self.wc.is_poe_in_foreground():
             self.state = TaskState.PAUSED
+            self.lock.release()
             return
+
+        self.lock.release()
+
+    @abstractmethod
+    def _resume_internal(self):
+        pass
+
+    @abstractmethod
+    def _cleanup_internal(self):
+        pass
