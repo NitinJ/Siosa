@@ -1,0 +1,12 @@
+requests==2.24.0
+opencv_python==4.4.0.40
+PyAutoGUI==0.9.50
+numpy==1.19.1
+pywin32==228
+scanf==1.5.2
+mss==6.0.0
+pywinauto==0.6.8
+PyTweening==1.0.3
+pygtail==0.11.1
+Pillow==7.2.0
+win32gui==221.6
