@@ -38,7 +38,7 @@ game including trading, inventory management, item rolling, not-afking etc.
 
 
 ### Built With
-Built with python
+Python
 
 
 
@@ -57,7 +57,7 @@ This is an example of how to list things you need to use the software and how to
 * Git
 * Github Desktop (optional)
 
-### Installation
+### Project setup
 
 1. Get access to this repo.
 2. Go to pycharm and start a new project by cloning from Git.
@@ -66,20 +66,20 @@ environment with these requirements.
 4. Enter details in config.json file present in project root.
     5. Enter account name and infromation about stash tabs.
     6. Enter your POE session-id. POE session id can be found [here](siosa/resources/images/poesessionid.png)
+5. Create a run configuration in pyCharm. Select module name (siosa).
 
 <!-- USAGE EXAMPLES -->
-## Usage
-
-Use this space to show useful examples of how a project can be used. Additional screenshots, code examples and demos work well in this space. You may also link to more resources.
-
-_For more examples, please refer to the [Documentation](https://example.com)_
+## Testing
 
 
+
+<!-- USAGE EXAMPLES -->
+## Architecture
 
 <!-- ROADMAP -->
 ## Roadmap
 
-See the [open issues](https://github.com/othneildrew/Best-README-Template/issues) for a list of proposed features (and known issues).
+See the [open issues](https://github.com/nitinj/siosa/issues) for a list of proposed features (and known issues).
 
 
 
@@ -121,15 +121,14 @@ Project Link: [https://github.com/nitinj/siosa](https://github.com/nitinj/siosa)
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
 [contributors-shield]: https://img.shields.io/github/contributors/othneildrew/Best-README-Template.svg?style=flat-square
-[contributors-url]: https://github.com/othneildrew/Best-README-Template/graphs/contributors
+[contributors-url]: https://github.com/nitinj/siosa/graphs/contributors
 [forks-shield]: https://img.shields.io/github/forks/othneildrew/Best-README-Template.svg?style=flat-square
-[forks-url]: https://github.com/othneildrew/Best-README-Template/network/members
+[forks-url]: https://github.com/nitinj/siosa/network/members
 [stars-shield]: https://img.shields.io/github/stars/othneildrew/Best-README-Template.svg?style=flat-square
-[stars-url]: https://github.com/othneildrew/Best-README-Template/stargazers
+[stars-url]: https://github.com/nitinj/siosa/stargazers
 [issues-shield]: https://img.shields.io/github/issues/othneildrew/Best-README-Template.svg?style=flat-square
-[issues-url]: https://github.com/othneildrew/Best-README-Template/issues
+[issues-url]: https://github.com/nitinj/siosa/issues
 [license-shield]: https://img.shields.io/github/license/othneildrew/Best-README-Template.svg?style=flat-square
-[license-url]: https://github.com/othneildrew/Best-README-Template/blob/master/LICENSE.txt
+[license-url]: https://github.com/nitinj/siosa/blob/master/LICENSE.txt
 [linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=flat-square&logo=linkedin&colorB=555
-[linkedin-url]: https://linkedin.com/in/othneildrew
-[product-screenshot]: images/screenshot.png
+[linkedin-url]: https://linkedin.com/in/nitinjaglan
