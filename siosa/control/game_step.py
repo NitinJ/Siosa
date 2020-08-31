@@ -11,6 +11,7 @@ from siosa.location.location_factory import LocationFactory
 class Step:
     def __init__(self):
         self.logger = logging.getLogger(__name__)
+        self.logger.setLevel(logging.DEBUG)
         self.game_state = None
         self.kc = KeyboardController()
         self.mc = MouseController(LocationFactory())
