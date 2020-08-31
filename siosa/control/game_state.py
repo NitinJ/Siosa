@@ -17,7 +17,7 @@ class GameState:
             'inventory_empty': True,
             'players_in_hideout': [],
             'on_going_task': [],
-            'current_zone': Zones.HIDEOUT
+            'current_zone': Zones.UNKNOWN
         }
         self.lock = threading.Lock()
 
