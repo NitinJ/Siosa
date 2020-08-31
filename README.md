@@ -33,8 +33,6 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-[![Product Name Screen Shot][product-screenshot]](https://example.com)
-
 Siosa is a python library (atleast intended to be) which can do a lot of tasks inside the
 game including trading, inventory management, item rolling, not-afking etc.
 
