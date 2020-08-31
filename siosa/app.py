@@ -14,23 +14,34 @@ logging.basicConfig(format=FORMAT)
 
 
 def run():
-    # time.sleep(2)
+    # Setup common components which will be used for everything.
+
+    # Configuration
     config_file_path = os.path.join(os.path.dirname(__file__), "config.json")
     config = SiosaConfig(config_file_path).config
 
-    api = PoeApi(config['account_name'], config['poe_session_id'])
+    # Currency exchange for getting chaos-exalt ratios and creating currency
+    # items. Uses PoeApi object. PoeApi is used for fetching stuff using poe
+    # web api restful endpoints.
+    exchange = CurrencyExchange(
+        PoeApi(config['account_name'], config['poe_session_id']))
 
-    exchange = CurrencyExchange(api)
+    # Stash object for managing stash, stash-tabs and getting static stash
+    # information for the account such as - number of tabs, their contents etc.
     stash = Stash()
 
+    # Log listener listens on the client log for incoming events like- trades,
+    # location change events.
     log_listener = ClientLogListener()
     log_listener.start()
 
+    # Game controller handles everything that happens in-game. Runs and manages
+    # tasks,steps in game.
     gc = GameController(log_listener)
 
     # Submit test task to test out stuff. All testing needs to be done through
     # test task.
-    gc.submit_task(TestTask())
+    gc.submit_task(TestTask(15))
 
 
 if __name__ == "__main__":
