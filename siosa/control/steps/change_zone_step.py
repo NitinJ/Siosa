@@ -5,7 +5,7 @@ from siosa.data.zones import Zones
 
 
 class ChangeZone(Step):
-    LOCATION_ENTRY_WAIT_TIME = 10
+    LOCATION_ENTRY_WAIT_TIME = 20
 
     def __init__(self, zone):
         Step.__init__(self)
@@ -16,10 +16,12 @@ class ChangeZone(Step):
         self.logger.info("Executing step: ChangeZone")
         self.cc.console_command("/" + str(self.zone.value))
         success = self._wait_for_zone()
+
         if not success:
             raise Exception("Cannot travel to zone: {}".format(self.zone))
+
         self.logger.debug("Moved to zone {}".format(self.zone.value))
-        self.game_state.update({'current_zone': Zones.HIDEOUT})
+        self.game_state.update({'current_zone': self.zone})
 
     def _wait_for_zone(self):
         self.logger.debug("Waiting to enter zone: {}".format(self.zone))
