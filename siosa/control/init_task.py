@@ -2,6 +2,7 @@ import logging
 
 from siosa.control.game_task import Task
 from siosa.control.steps.change_zone_step import ChangeZone
+from siosa.control.steps.clean_inventory_step import CleanInventory
 from siosa.control.steps.close_all_windows_step import CloseAllWindows
 from siosa.control.steps.open_stash_step import OpenStash
 from siosa.control.steps.place_stash_step import PlaceStash
@@ -16,11 +17,10 @@ class InitTask(Task):
         self.steps = InitTask.get_steps()
         Task.__init__(self, 11, self.steps, name='InitTask')
 
-    def cleanup(self):
+    def _cleanup_internal(self):
         pass
 
-    def resume(self, game_state):
-        self.game_state = game_state
+    def _resume_internal(self):
         pass
 
     @staticmethod
@@ -28,8 +28,14 @@ class InitTask(Task):
         return [
             SwitchToGame(),
             CloseAllWindows(),
+            # Go to a zone and back to make sure we are in the hideout.
+            # TODO: figure out a way to know the current zone of the
+            # player, without changing it twice. Maybe we can read the log file
+            # in reverse and find the last zone event.
+            ChangeZone(zones.Zones.METAMORPH),
             ChangeZone(zones.Zones.HIDEOUT),
             PlaceStash(),
             OpenStash(),
-            ScanInventory()
+            ScanInventory(),
+            CleanInventory()
         ]
