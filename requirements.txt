@@ -9,4 +9,3 @@ pywinauto==0.6.8
 PyTweening==1.0.3
 pygtail==0.11.1
 Pillow==7.2.0
-win32gui==221.6

@@ -33,6 +33,6 @@ class InitTask(Task):
             CloseAllWindows(),
             ChangeZone(zones.Zones.HIDEOUT),
             PlaceStash(),
-            OpenStash().
+            OpenStash(),
             ScanInventory()
         ]
