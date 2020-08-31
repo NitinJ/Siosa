@@ -2,21 +2,21 @@ import logging
 
 from siosa.control.game_task import Task
 from siosa.control.steps.clean_inventory_step import CleanInventory
+from siosa.control.steps.test_step import TestStep
 
 
 class TestTask(Task):
-    def __init__(self):
+    def __init__(self, priority):
         self.logger = logging.getLogger(__name__)
         self.steps = TestTask.get_steps()
-        Task.__init__(self, 10, self.steps, name=__name__)
+        Task.__init__(self, priority, self.steps, name=__name__)
 
-    def cleanup(self):
+    def _resume_internal(self):
         pass
 
-    def resume(self, game_state):
-        self.game_state = game_state
+    def _cleanup_internal(self):
         pass
 
     @staticmethod
     def get_steps():
-        return [CleanInventory()]
+        return [TestStep()]
