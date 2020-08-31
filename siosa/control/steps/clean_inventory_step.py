@@ -75,8 +75,8 @@ class CleanInventory(Step):
             dump_stash_tabs = Stash().get_dump_stash_tabs()
             if not dump_stash_tabs:
                 raise Exception("Cannot find any dump stash tabs !")
-            self.logger.debug("Moving items({}) which failed to move to their "
-                              "respective stashes to dump stash({})".format(
+            self.logger.debug("Moving items({}) which failed to move to "\
+                    "their respective stashes to dump stash({})".format(
                 len(item_positions_for_failed_moves), dump_stash_tabs[0].name))
             for item in failed_to_move_items:
                 self._move_item_to_stash(item, stash_tab=dump_stash_tabs[0])
