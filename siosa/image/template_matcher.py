@@ -9,9 +9,6 @@ import mss.tools
 import numpy as np
 from PIL import Image
 
-from siosa.clipboard.poe_clipboard import PoeClipboard
-from siosa.control.game_step import Step
-from siosa.location.location_factory import LocationFactory, Locations
 from siosa.control.window_controller import WindowController
 
 

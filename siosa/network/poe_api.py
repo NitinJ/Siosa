@@ -1,6 +1,5 @@
 import json
 import logging
-import math
 import time
 
 import requests

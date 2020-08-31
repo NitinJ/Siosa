@@ -1,5 +1,4 @@
 from siosa.control.console_controller import ConsoleController
-from siosa.control.keyboard_controller import KeyboardController
 from siosa.control.window_controller import WindowController
 
 COMMANDS = {

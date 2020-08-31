@@ -1,8 +1,6 @@
 import logging
-import time
 
 from siosa.control.game_task import Task
-from siosa.control.steps.scan_inventory_step import ScanInventory
 from siosa.control.steps.clean_inventory_step import CleanInventory
 
 

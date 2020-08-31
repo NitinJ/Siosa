@@ -1,8 +1,5 @@
 import logging
 
-import mss
-import mss.tools
-
 from siosa.clipboard.poe_clipboard import PoeClipboard
 from siosa.control.game_step import Step
 from siosa.control.steps.change_stash_tab_step import ChangeStashTab

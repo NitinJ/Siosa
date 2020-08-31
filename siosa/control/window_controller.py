@@ -2,9 +2,6 @@
 import time
 
 import pywinauto as pwa
-import pywinauto.handleprops as _handleprops
-import pywinauto.win32functions as _win32functions
-
 from win32gui import GetForegroundWindow, GetWindowText
 
 

@@ -1,4 +1,3 @@
-import logging
 from scanf import scanf
 
 from siosa.data.poe_currencies import *

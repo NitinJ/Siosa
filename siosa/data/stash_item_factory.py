@@ -1,9 +1,6 @@
-import logging
-
 from siosa.data.poe_currencies import *
 from siosa.data.poe_item import ItemType
 from siosa.network.poe_api import PoeApi
-from siosa.resources.resource import Resource
 
 # Keys that are only present in the item (data obtained from stash) if item
 # is a currency item.

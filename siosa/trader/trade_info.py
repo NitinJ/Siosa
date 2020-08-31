@@ -1,10 +1,6 @@
 import logging
-import threading
-import time
 from enum import Enum
 
-from siosa.control.window_controller import WindowController
-from siosa.network.poe_api import PoeApi
 
 class TradeInfo:
     """All the information about a trade including state.

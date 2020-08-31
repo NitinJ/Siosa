@@ -1,10 +1,8 @@
-from enum import Enum
 import logging
 
-from siosa.data.poe_item import *
-from siosa.network.poe_api import PoeApi
-from siosa.data.static_data import StaticData
 from siosa.data.currency_exchange import CurrencyExchange
+from siosa.data.poe_item import *
+from siosa.data.static_data import StaticData
 
 
 class Currency():

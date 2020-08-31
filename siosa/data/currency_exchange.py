@@ -5,7 +5,6 @@ import threading
 import time
 
 from siosa.common.singleton import Singleton
-from siosa.network.poe_api import PoeApi
 
 REFRESH_DURATION = 10 * 60
 

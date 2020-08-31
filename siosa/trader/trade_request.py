@@ -1,5 +1,3 @@
-from scanf import scanf
-import logging
 import json
 import time
 

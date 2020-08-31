@@ -1,5 +1,4 @@
 import logging
-import time
 
 from siosa.control.game_task import Task
 

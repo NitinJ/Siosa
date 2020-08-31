@@ -1,22 +1,16 @@
-import copy
-import os
 import threading
 import time
-from pprint import pprint
 
-import cv2.cv2 as cv2
-import mss
-import mss.tools
-import numpy as np
 import pyautogui
-import pytweening
-from PIL import Image
 
-from siosa.clipboard.poe_clipboard import PoeClipboard
 from siosa.control.game_step import Step
-from siosa.control.keyboard_controller import KeyboardController
-from siosa.control.mouse_controller import MouseController
-from siosa.location.location_factory import LocationFactory, Locations
+import threading
+import time
+
+import pyautogui
+
+from siosa.control.game_step import Step
+
 
 # pyautogui.FAILSAFE = False
 

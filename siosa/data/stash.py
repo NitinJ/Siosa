@@ -1,9 +1,7 @@
 import logging
-import random
 import time
 from enum import Enum
 
-from siosa.common.decorations import singleton
 from siosa.common.singleton import Singleton
 from siosa.config.siosa_config import SiosaConfig
 from siosa.data.poe_item import ItemType
