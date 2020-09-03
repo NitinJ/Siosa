@@ -1,0 +1,10 @@
+class Resolution:
+    def __init__(self, w, h):
+        self.w = w
+        self.h = h
+
+
+class Resolutions:
+    p1080 = Resolution(1920, 1080)
+    p720 = Resolution(1280, 720)
+

@@ -9,6 +9,8 @@ from siosa.location.location_factory import LocationFactory, Locations
 
 
 class CleanInventory(Step):
+    INVENTORY_INNER_BORDER_SIZE = 3
+
     def __init__(self):
         Step.__init__(self)
         self.logger = logging.getLogger(__name__)
@@ -17,6 +19,8 @@ class CleanInventory(Step):
         self.inventory_scanner = InventoryScanner()
         self.inventory_items = []
         self.stash_tab_index = None
+        self.lf = LocationFactory()
+        self.inventory_0_0 = self.lf.get(Locations.INVENTORY_0_0)
         # Positions already moved to stash.
         self.moved_to_stash = []
 
@@ -75,8 +79,8 @@ class CleanInventory(Step):
             dump_stash_tabs = Stash().get_dump_stash_tabs()
             if not dump_stash_tabs:
                 raise Exception("Cannot find any dump stash tabs !")
-            self.logger.debug("Moving items({}) which failed to move to "\
-                    "their respective stashes to dump stash({})".format(
+            self.logger.debug("Moving items({}) which failed to move to " \
+                              "their respective stashes to dump stash({})".format(
                 len(item_positions_for_failed_moves), dump_stash_tabs[0].name))
             for item in failed_to_move_items:
                 self._move_item_to_stash(item, stash_tab=dump_stash_tabs[0])
@@ -154,7 +158,8 @@ class CleanInventory(Step):
             self._change_stash_tab_index(index)
 
         self.logger.debug("Moving item({}:{}) to stash({})".format(
-            item['item'].get_name(), item['item'].type, item['stash_tab'].index))
+            item['item'].get_name(), item['item'].type,
+            item['stash_tab'].index))
 
         self.mc.move_mouse(self._get_location(
             item['position'][0], item['position'][1]))
@@ -192,12 +197,14 @@ class CleanInventory(Step):
 
     def _get_location(self, r, c):
         # Invent box size
-        size_x = Locations.INVENTORY_0_0.get_width() + 3
-        size_y = Locations.INVENTORY_0_0.get_height() + 3
+        size_x = self.lf.get(
+            Locations.INVENTORY_0_0_WITH_RIGHT_BORDER).get_width()
+        size_y = self.lf.get(
+            Locations.INVENTORY_0_0_WITH_BOTTOM_BORDER).get_height()
 
         # Location of (0, 0)
-        x, y = Locations.INVENTORY_0_0.get_center()
+        x, y = self.inventory_0_0.get_center()
 
         x2 = x + c * size_x
         y2 = y + r * size_y
-        return LocationFactory().create(x2, y2, x2, y2)
+        return self.lf.create(x2, y2, x2, y2)

@@ -20,6 +20,7 @@ class TemplateMatcher:
         self.debug = debug
         self.confidence = confidence
         self.template_location = template_location
+        self.template_file_path = ''
         if self.debug:
             time.sleep(2)
 
@@ -32,7 +33,7 @@ class TemplateMatcher:
 
         # The screen part to capture
         ts1 = time.time()
-        screen_location = self._get_grab_params(location)
+        screen_location = TemplateMatcher._get_grab_params(location)
         image = self.sct.grab(screen_location)
         image_bytes_rgb = Image.frombytes(
             'RGB',
@@ -45,7 +46,7 @@ class TemplateMatcher:
 
         template = cv2.imread(self.template_file_path)
 
-        tmin, tmax = self._getBGRMinMax(template)
+        tmin, tmax = self._get_bgr_min_max(template)
         template_gray = cv2.cvtColor(template, cv2.COLOR_BGR2GRAY)
         template_width, template_height = template_gray.shape[::-1]
 
@@ -56,9 +57,10 @@ class TemplateMatcher:
 
         points = []
         for point in zip(*match_locations[::-1]):
-            cropedImg = image_bytes_bgr_copy[point[1]:point[1] +
-                                                      template_height, point[0]:point[0] + template_width]
-            dmin, dmax = self._getBGRMinMax(cropedImg)
+            cropped_img = image_bytes_bgr_copy[point[1]:point[1] +
+                                                        template_height,
+                          point[0]:point[0] + template_width]
+            dmin, dmax = self._get_bgr_min_max(cropped_img)
             if dmin[0] <= tmin[0] and dmin[1] <= tmin[1] and dmin[2] <= tmin[2]:
                 pt = (point[0] + template_width // 2,
                       point[1] + template_height // 2)
@@ -74,7 +76,8 @@ class TemplateMatcher:
 
         return points
 
-    def _get_grab_params(self, location):
+    @staticmethod
+    def _get_grab_params(location):
         return {
             "top": location.y1,
             "left": location.x1,
@@ -82,7 +85,8 @@ class TemplateMatcher:
             "height": location.y2 - location.y1
         }
 
-    def _get_template_output_file_path(self, name):
+    @staticmethod
+    def _get_template_output_file_path(name):
         def parent(f): return os.path.dirname(os.path.abspath(f))
 
         resources = os.path.join(parent(parent(__file__)), "resources")
@@ -90,9 +94,9 @@ class TemplateMatcher:
         return os.path.join(templates, name)
 
     def _create_template(self, location):
-        image_location = self._get_grab_params(location)
-        output_file_path = self._get_template_output_file_path(
-            "sct-{top}x{left}_{width}x{height}.png".format(**image_location))
+        image_location = TemplateMatcher._get_grab_params(location)
+        output_file_path = TemplateMatcher._get_template_output_file_path(
+            "sct-template-{}.png".format(location.name))
 
         if os.path.isfile(output_file_path):
             self.logger.info(
@@ -110,7 +114,8 @@ class TemplateMatcher:
         self.logger.debug('Created template at: {}'.format(output_file_path))
         return output_file_path
 
-    def _getBGRMinMax(self, img):
+    @staticmethod
+    def _get_bgr_min_max(img):
         min_ch = (np.amin(img[:, :, 0]), np.amin(
             img[:, :, 1]), np.amin(img[:, :, 2]))
         max_ch = (np.amax(img[:, :, 0]), np.amax(

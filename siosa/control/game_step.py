@@ -14,7 +14,8 @@ class Step:
         self.logger.setLevel(logging.DEBUG)
         self.game_state = None
         self.kc = KeyboardController()
-        self.mc = MouseController(LocationFactory())
+        self.lf = LocationFactory()
+        self.mc = MouseController(self.lf)
         self.cc = ConsoleController()
         self.wc = WindowController()
 

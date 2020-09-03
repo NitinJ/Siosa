@@ -8,12 +8,17 @@ from siosa.location.location_factory import LocationFactory, Locations
 
 
 class ScanInventory(Step):
+    # TODO: Move this to a common place as it's also being used in clean
+    # inventory step.
+    INVENTORY_INNER_BORDER_SIZE = 3
+
     def __init__(self):
         Step.__init__(self)
         self.logger = logging.getLogger(__name__)
         self.logger.setLevel('DEBUG')
         self.clipboard = PoeClipboard()
         self.inventory_scanner = InventoryScanner()
+        self.inventory_0_0 = self.lf.get(Locations.INVENTORY_0_0)
         self.stash = Stash()
         self.items = []
 
@@ -44,12 +49,12 @@ class ScanInventory(Step):
 
     def _get_location(self, p):
         # Invent box size. + 3px border
-        size_x = Locations.INVENTORY_0_0.get_width() + 3
-        size_y = Locations.INVENTORY_0_0.get_height() + 3
+        size_x = self.inventory_0_0.get_width() + ScanInventory.INVENTORY_INNER_BORDER_SIZE
+        size_y = self.inventory_0_0.get_height() + ScanInventory.INVENTORY_INNER_BORDER_SIZE
 
         # Location of (0, 0)
-        x, y = Locations.INVENTORY_0_0.get_center()
+        x, y = self.inventory_0_0.get_center()
 
         x2 = x + p[1] * size_x
         y2 = y + p[0] * size_y
-        return LocationFactory().create(x2, y2, x2, y2)
+        return self.lf.create(x2, y2, x2, y2)
