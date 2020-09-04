@@ -64,8 +64,8 @@ This is an example of how to list things you need to use the software and how to
 3. Pycharm should automatically install requirements from requirements.txt file. Pycharm will setup a virtual
 environment with these requirements.
 4. Enter details in config.json file present in project root.
-    5. Enter account name and infromation about stash tabs.
-    6. Enter your POE session-id. POE session id can be found [here](siosa/resources/images/poesessionid.png)
+    * Enter account name and infromation about stash tabs.
+    * Enter your POE session-id. POE session id can be found [here](siosa/resources/images/poesessionid.png)
 5. Create a run configuration in pyCharm. Select module name (siosa).
 
 <!-- USAGE EXAMPLES -->
