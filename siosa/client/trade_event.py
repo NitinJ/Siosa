@@ -44,7 +44,7 @@ class TradeEvent:
             currency = {'type': x[1], 'amount': float(x[0])}
             league = x[2]
             stash = x[3]
-            position = {'x': int(x[4]), 'y': int(x[5])}
+            position = (int(x[4]) - 1, int(x[5]) - 1)
             return TradeEvent(raw_event, trader, item_name, currency, league, stash, position)
         except Exception:
             # self.logger.error("Error parsing log_line for trade request", exc_info=True)
