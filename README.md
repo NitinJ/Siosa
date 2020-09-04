@@ -70,9 +70,20 @@ environment with these requirements.
 
 <!-- USAGE EXAMPLES -->
 ## Testing
-Testing the app currently, involves writing/making-changes to TestTask and TestStep.
-* Make changes to TestTask (or its steps) and submit the TestTask to GameController (this is being done in the app.py right now)
-* Run the app (py -m siosa) or (using pycharm "Run")
+Testing the app -
+
+1. Writing/making-changes to TestTask and TestStep.
+    * Make changes to TestTask (or its steps) and submit the TestTask to GameController (this is being done in the app.py right now)
+    * Run the app (py -m siosa) or (using pycharm "Run")
+2. Using test utils
+    * Install the siosa package by running the following command from root of the project
+        ```
+        pip install -e .
+        ```
+    * Run any util as usual e.g - 
+        ```
+        python tools\template_creator.py
+        ```
 
 Following things happen - 
 1. Stash details are fetched.

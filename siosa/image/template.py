@@ -40,7 +40,7 @@ class Template:
         return cv2.resize(template, dim, interpolation=cv2.INTER_AREA)
 
     @staticmethod
-    def create(name, location, overwrite=False):
+    def create(name, location, overwrite=False, debug=False):
         """
         Creates a template with a given name by capturing screen at the given
         location.
@@ -69,6 +69,12 @@ class Template:
             'RGB',
             (image_location['width'], image_location['height']),
             image.rgb)
+
+        if debug:
+            cv2.imshow('Template', np.array(image_bytes_rgb))
+            cv2.waitKey(0)
+            cv2.destroyAllWindows()
+
         image_bytes_bgr = cv2.cvtColor(
             np.array(image_bytes_rgb), cv2.COLOR_RGB2BGR)
         cv2.imwrite(output_file_path, image_bytes_bgr)
