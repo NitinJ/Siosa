@@ -1,6 +1,5 @@
 import copy
 import logging
-import os
 import time
 
 import cv2.cv2 as cv2
@@ -13,23 +12,26 @@ from siosa.control.window_controller import WindowController
 
 
 class TemplateMatcher:
-    def __init__(self, template_location, confidence=0.75, debug=False):
+    def __init__(self, template, confidence=0.75, debug=False):
         self.logger = logging.getLogger(__name__)
         self.logger.setLevel(logging.DEBUG)
         self.sct = mss.mss()
         self.debug = debug
         self.confidence = confidence
-        self.template_location = template_location
-        self.template_file_path = ''
-        if self.debug:
-            time.sleep(2)
+        self.template = template
 
     def match(self, location):
+        """
+        Matches the template on a given screen location.
+        Args:
+            location: The location of the screen to match template with.
+
+        Returns:
+            The positions (relative to the location) of matches with template.
+        """
         if not WindowController().is_poe_in_foreground():
             self.logger.error("POE is not in foreground to capture template.")
             raise (Exception("Path of Exile is not in foreground"))
-
-        self.template_file_path = self._create_template(self.template_location)
 
         # The screen part to capture
         ts1 = time.time()
@@ -44,7 +46,11 @@ class TemplateMatcher:
         image_bytes_bgr_copy = copy.copy(image_bytes_bgr)
         image_bytes_gray = cv2.cvtColor(image_bytes_bgr, cv2.COLOR_BGR2GRAY)
 
-        template = cv2.imread(self.template_file_path)
+        template = self.template.get()
+        if self.debug:
+            cv2.imshow('image', template)
+            cv2.waitKey(0)
+            cv2.destroyAllWindows()
 
         tmin, tmax = self._get_bgr_min_max(template)
         template_gray = cv2.cvtColor(template, cv2.COLOR_BGR2GRAY)
@@ -84,35 +90,6 @@ class TemplateMatcher:
             "width": location.x2 - location.x1,
             "height": location.y2 - location.y1
         }
-
-    @staticmethod
-    def _get_template_output_file_path(name):
-        def parent(f): return os.path.dirname(os.path.abspath(f))
-
-        resources = os.path.join(parent(parent(__file__)), "resources")
-        templates = os.path.join(resources, "templates")
-        return os.path.join(templates, name)
-
-    def _create_template(self, location):
-        image_location = TemplateMatcher._get_grab_params(location)
-        output_file_path = TemplateMatcher._get_template_output_file_path(
-            "sct-template-{}.png".format(location.name))
-
-        if os.path.isfile(output_file_path):
-            self.logger.info(
-                'Template already exists at {}'.format(output_file_path))
-            return output_file_path
-
-        image = self.sct.grab(image_location)
-        image_bytes_rgb = Image.frombytes(
-            'RGB',
-            (image_location['width'], image_location['height']),
-            image.rgb)
-        image_bytes_bgr = cv2.cvtColor(
-            np.array(image_bytes_rgb), cv2.COLOR_RGB2BGR)
-        cv2.imwrite(output_file_path, image_bytes_bgr)
-        self.logger.debug('Created template at: {}'.format(output_file_path))
-        return output_file_path
 
     @staticmethod
     def _get_bgr_min_max(img):

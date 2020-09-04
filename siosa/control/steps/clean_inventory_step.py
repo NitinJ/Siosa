@@ -3,14 +3,13 @@ import logging
 from siosa.clipboard.poe_clipboard import PoeClipboard
 from siosa.control.game_step import Step
 from siosa.control.steps.change_stash_tab_step import ChangeStashTab
+from siosa.data.inventory import Inventory
 from siosa.data.stash import Stash
 from siosa.image.inventory_scanner import InventoryScanner
 from siosa.location.location_factory import LocationFactory, Locations
 
 
 class CleanInventory(Step):
-    INVENTORY_INNER_BORDER_SIZE = 3
-
     def __init__(self):
         Step.__init__(self)
         self.logger = logging.getLogger(__name__)
@@ -97,8 +96,8 @@ class CleanInventory(Step):
         """Returns A-B
 
         Args:
-            list (arry): List A
-            list_new (array): List B
+            list_a:
+            list_b:
 
         Returns:
             [type]: [description]
@@ -108,8 +107,8 @@ class CleanInventory(Step):
         return diff
 
     def _get_next_item(self, items):
-        """Returns the item to move to stash from a given list of items. Item 
-        to be moved is selected based on current stash index and the stash 
+        """Returns the item to move to stash from a given list of items. Item
+        to be moved is selected based on current stash index and the stash
         index to which an item belongs to.
 
         Args:
@@ -161,8 +160,8 @@ class CleanInventory(Step):
             item['item'].get_name(), item['item'].type,
             item['stash_tab'].index))
 
-        self.mc.move_mouse(self._get_location(
-            item['position'][0], item['position'][1]))
+        cell_location = (item['position'][0], item['position'][1])
+        self.mc.move_mouse(Inventory.get_location(cell_location))
         self.kc.hold_modifier('Ctrl')
         self.mc.click()
         self.kc.unhold_modifier('Ctrl')
@@ -186,7 +185,7 @@ class CleanInventory(Step):
             positions (array): Positions for which to return items
 
         Returns:
-            array: Items in given positions. These are proper item objects and 
+            array: Items in given positions. These are proper item objects and
             not inventory item objects.
         """
         items = []
@@ -195,16 +194,3 @@ class CleanInventory(Step):
                 items.append(inventory_item)
         return items
 
-    def _get_location(self, r, c):
-        # Invent box size
-        size_x = self.lf.get(
-            Locations.INVENTORY_0_0_WITH_RIGHT_BORDER).get_width()
-        size_y = self.lf.get(
-            Locations.INVENTORY_0_0_WITH_BOTTOM_BORDER).get_height()
-
-        # Location of (0, 0)
-        x, y = self.inventory_0_0.get_center()
-
-        x2 = x + c * size_x
-        y2 = y + r * size_y
-        return self.lf.create(x2, y2, x2, y2)

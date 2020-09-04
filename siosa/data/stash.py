@@ -1,11 +1,9 @@
 import logging
-import time
-from enum import Enum
 
 from siosa.common.singleton import Singleton
 from siosa.config.siosa_config import SiosaConfig
 from siosa.data.poe_item import ItemType
-from siosa.data.poe_item_factory import PoeItemFactory
+from siosa.data.stash_tab import StashTabType, StashTab
 from siosa.network.poe_api import PoeApi
 
 
@@ -34,6 +32,11 @@ class Stash(metaclass=Singleton):
         return self.tabs[index]
 
     def get_stash_tabs_by_name(self, name):
+        """
+        Returns all stash tabs with a given name
+        Args:
+            name: Name of the stash tabs
+        """
         if name not in self.name_to_stash_tab.keys():
             self.logger.error("Stash tab with name={} is not present in Stash"
                               .format(name))
@@ -42,6 +45,11 @@ class Stash(metaclass=Singleton):
         return self.name_to_stash_tab[name]
 
     def get_stash_tabs_for_item(self, item):
+        """
+        Returns the stash tab to which the given item belongs.
+        Args:
+            item: Item
+        """
         stash_tab_type = self._get_stash_type_for_item(item)
         self.logger.info("Stash tab type={} for item_type=({})".format(
             stash_tab_type, item.type))
@@ -126,74 +134,3 @@ class Stash(metaclass=Singleton):
         else:
             return StashTabType.UNKNOWN
 
-
-class StashTabType(Enum):
-    UNKNOWN = 'Unknown'
-    CURRENCY = 'CurrencyStash'
-    MAP = 'MapStash'
-    ESSENCE = 'EssenceStash'
-    DIVINATION = 'DivinationCardStash'
-    FRAGMENT = 'FragmentStash'
-    UNIQUE = 'UniqueStash'
-    METAMORPH = 'MetamorphStash'
-    BLIGHT = 'BlightStash'
-    DELVE = 'DelveStash'
-    DELIRIUM = 'DeliriumStash'
-
-
-class StashTab:
-    REFRESH_DURATION = 5 * 60  # 5 mins
-
-    def __init__(self, data):
-        self.api = PoeApi()
-        self.type = data['type']
-        self.index = int(data['index'])
-        self.name = data['name']
-        self.is_quad = bool(data['is_quad'])
-        self.is_premium = bool(data['is_premium'])
-        self.item_factory = PoeItemFactory()
-        self.last_fetched_ts = 0
-
-        self.contents = []
-        self.items = {}
-
-    def get_type(self):
-        for t in StashTabType:
-            if t.value == self.type:
-                return t
-        return StashTabType.UNKNOWN
-
-    def get_item_at_location(self, x, y):
-        item = self._get_item(x, y)
-        if item:
-            return item
-        items = self._get_contents()
-        for item in items:
-            if item['x'] == x and item['y'] == y:
-                self.items[(x, y)] = self.item_factory.get_item(
-                    item, source='stash')
-                return self.items[(x, y)]
-        return None
-
-    def _get_contents(self):
-        if time.time() - self.last_fetched_ts > StashTab.REFRESH_DURATION:
-            self._refresh_data()
-        return self.contents
-
-    def _refresh_data(self):
-        self.contents = self.api.get_stash_contents(self.index)
-        self.items = {}
-        self.last_fetched_ts = time.time()
-
-    def _get_item(self, x, y):
-        if (x, y) in self.items.keys():
-            return self.items[(x, y)]
-        return None
-
-    def __str__(self):
-        return "type: {}, index: {}, name: {}, quad: {}, premium: {}".format(
-            self.type,
-            self.index,
-            self.name,
-            self.is_quad,
-            self.is_premium)

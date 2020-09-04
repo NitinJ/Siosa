@@ -30,8 +30,7 @@ class GameTaskStore:
         self.logger.debug("New task priorities: {}".format(self.tasks))
 
     def get_next(self):
-        """Returns the next task to run.
-        """
+        """Returns the next task to run."""
         self._update()
         if self.tasks:
             return self.tasks[0]

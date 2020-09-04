@@ -2,7 +2,7 @@ import logging
 import time
 
 from siosa.control.game_controller import GameController
-from siosa.control.trade_task import TradeTask
+from siosa.trader.trade_task import TradeTask
 from siosa.data.stash import Stash
 from siosa.trader.trade_info import TradeInfo
 from siosa.trader.trade_request import TradeRequest
@@ -61,18 +61,24 @@ class TradeController:
             boolean, TradeInfo: Whether the trade request is valid or not
             followed by the trade_info object.
         """
-        valid = True
-        trade_info = None
-
         stash = Stash()
         candidate_stash_tabs = stash.get_stash_tabs_by_name(
             trade_request.stash)
         if not candidate_stash_tabs:
+            self.logger.debug("TradeRequest invalid: Couldn't find "
+                              "candidate stash tabs for the item.")
             return None
 
         item, stash_tab = self._get_item_from_candidate_stash_tabs(
             candidate_stash_tabs, trade_request)
-        if not item or not self._is_item_valid(item):
+
+        if not item:
+            self.logger.debug("TradeRequest invalid: Couldn't find "
+                              "item in stash tabs.")
+            return None
+
+        if not self._is_item_valid(item):
+            self.logger.debug("TradeRequest invalid: Item isn't valid.")
             return None
 
         return TradeInfo(trade_request, stash_tab, item)
@@ -83,10 +89,10 @@ class TradeController:
 
     def _get_item_from_candidate_stash_tabs(self, candidate_stash_tabs, trade_request):
         for stash_tab in candidate_stash_tabs:
-            x = trade_request.position['x']
-            y = trade_request.position['y']
+            x = trade_request.position[0]
+            y = trade_request.position[1]
             # x,y are 1 indexed
-            item_at_location = stash_tab.get_item_at_location(x - 1, y - 1)
+            item_at_location = stash_tab.get_item_at_location(x, y)
             if item_at_location and item_at_location.get_full_name() == trade_request.item_name:
                 return item_at_location, stash_tab
         return None, None

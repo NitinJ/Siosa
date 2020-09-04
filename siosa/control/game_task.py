@@ -17,7 +17,7 @@ class TaskState(Enum):
 
 class Task(threading.Thread):
     STEP_EXECUTION_DELAY = 0.1
-    
+
     def __init__(self, priority, steps, name='GameTask'):
         threading.Thread.__init__(self, name=name)
         self.logger = logging.getLogger(name)
@@ -58,7 +58,12 @@ class Task(threading.Thread):
                 self._handle_state_change(state_old, state_now)
 
             if state_now == TaskState.RUNNING:
-                self._execute()
+                try:
+                    self._execute()
+                except Exception as err:
+                    self.logger.warning("Task failed !: {}: {}".format(
+                        self.name, err))
+                    self.set_state(TaskState.COMPLETE)
             if state_now == TaskState.STOPPED:
                 self.logger.info("GameTask stopped: {}".format(self.name))
                 break
@@ -124,7 +129,14 @@ class Task(threading.Thread):
             return
 
         time.sleep(Task.STEP_EXECUTION_DELAY)
-        self.steps[self.step_index].execute(self.game_state)
+        try:
+            self.steps[self.step_index].execute(self.game_state)
+        except Exception as err:
+            self.logger.warning("Task failed !: {}: {}".format(
+                self.name, err))
+            self.set_state(TaskState.STOPPED)
+            self.lock.release()
+            return
 
         self.step_index = self.step_index + 1
 

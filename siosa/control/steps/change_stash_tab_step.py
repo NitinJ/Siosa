@@ -9,26 +9,28 @@ class ChangeStashTab(Step):
         self.logger = logging.getLogger(__name__)
         self.logger.setLevel('DEBUG')
 
-        self.current_index = None
         self.index_to = index_to
 
     def execute(self, game_state):
         self.game_state = game_state
         state = self.game_state.get()
-        self.current_index = state['open_stash_tab_index']
 
         if not state['stash_open']:
             raise Exception("Stash not open")
-        if self.index_to == self.current_index:
-            self.logger.debug(
-                "Already at current stash tab({})".format(self.current_index))
+
+        current_index = state['open_stash_tab_index']
+
+        if self.index_to == current_index:
+            self.logger.debug("Already at current stash tab({})".format(
+                current_index))
             return
 
         self.logger.debug(
-            "Moving stash tabs from index ({})->({})".format(self.current_index, self.index_to))
+            "Moving stash tabs from index ({})->({})".format(
+                current_index, self.index_to))
 
-        key = 'right' if (self.index_to > self.current_index) else 'left'
-        diff = abs(self.index_to - self.current_index)
+        key = 'right' if (self.index_to > current_index) else 'left'
+        diff = abs(self.index_to - current_index)
 
         self.kc.hold_modifier('Ctrl')
         for i in range(0, diff):

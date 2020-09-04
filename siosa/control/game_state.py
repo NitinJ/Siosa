@@ -24,7 +24,8 @@ class GameState:
     def update(self, state_dictionary={}):
         self.lock.acquire()
         self.state.update(state_dictionary)
-        self.logger.info("Updated game_state with {}".format(str(state_dictionary)))
+        self.logger.info(
+            "Updated game_state with {}".format(str(state_dictionary)))
         self.lock.release()
 
     def get(self):

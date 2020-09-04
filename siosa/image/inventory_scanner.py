@@ -1,50 +1,34 @@
 import logging
 
 from siosa.control.console_controller import ConsoleController
+from siosa.data.inventory import Inventory
+from siosa.image.grid import Grid
+from siosa.image.template import Template
 from siosa.image.template_matcher import TemplateMatcher
+from siosa.image.template_registry import TemplateRegistry
 from siosa.location.location_factory import LocationFactory, Locations
 
 
 class InventoryScanner:
-    ROWS = 5
-    COLUMNS = 12
-
     def __init__(self, debug=False):
         self.logger = logging.getLogger(__name__)
         self.logger.setLevel('DEBUG')
         self.cc = ConsoleController()
         self.lf = LocationFactory()
-
+        self.grid = Grid(
+            Locations.INVENTORY,
+            Locations.INVENTORY_0_0,
+            Inventory.ROWS,
+            Inventory.COLUMNS,
+            Inventory.BORDER,
+            Inventory.BORDER)
         self.inventory = self.lf.get(Locations.INVENTORY)
-        self.inventory_0_0 = self.lf.get(Locations.INVENTORY_0_0)
-
-        self.tm = TemplateMatcher(self.inventory_0_0, debug=debug)
-
-    def _clear_screen(self):
-        self.cc.clear_console()
+        self.tm = TemplateMatcher(
+            Template.from_registry(TemplateRegistry.INVENTORY_0_0), debug=debug)
 
     def scan(self):
-        points = self.tm.match(self.inventory)
-        return self._convert_points_to_inventory_positions(points)
-
-    def _convert_points_to_inventory_positions(self, points):
-        center00_x, center00_y = self.inventory_0_0.get_center()
-        offset_x, offset_y = (
-            center00_x - self.inventory.x1,
-            center00_y - self.inventory.y1)
-        width = self.inventory_0_0.get_width()
-        height = self.inventory_0_0.get_height()
-
-        empty_positions = [
-            (abs(p[1] - offset_y) // height, abs(p[0] - offset_x) // width)
-            for p in points]
-        item_positions = {}
-        for i in range(0, InventoryScanner.ROWS):
-            for j in range(0, InventoryScanner.COLUMNS):
-                if (i, j) not in empty_positions:
-                    item_positions[(i, j)] = 1
-        self.logger.debug(
-            "Found {} items at inventory cell locations: {}".format(
-                len(item_positions), str(item_positions)))
-        # Return column sorted.
-        return sorted(item_positions, key=(lambda x: x[1]))
+        empty_cell_locations = self.tm.match(self.inventory)
+        cells_with_items = \
+            self.grid.get_cells_not_in_positions(empty_cell_locations)
+        self.sorted = sorted(cells_with_items, key=(lambda x: x[1]))
+        return self.sorted

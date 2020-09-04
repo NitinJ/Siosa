@@ -1,4 +1,5 @@
 import time
+from enum import Enum
 
 import pyautogui
 
@@ -29,14 +30,16 @@ class ConsoleController(metaclass=Singleton):
         pyautogui.write(command)
         time.sleep(self.delay)
         pyautogui.press('enter')
-        self._clear()
 
     def clear_console(self):
         self._clear()
 
     def _clear(self):
         pyautogui.press('enter')
-        time.sleep(ConsoleController.CONSOLE_CLEAR_DELAY)
-        pyautogui.write("/clear")
+        time.sleep(self.delay)
+        pyautogui.write('/clear')
         time.sleep(self.delay)
         pyautogui.press('enter')
+
+class Commands(Enum):
+    INVITE_TO_PARTY = (lambda x: "/invite {}".format(x))

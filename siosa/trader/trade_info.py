@@ -3,8 +3,7 @@ from enum import Enum
 
 
 class TradeInfo:
-    """All the information about a trade including state.
-    """
+    """All the information about a trade including state."""
 
     class Status(Enum):
         NOT_STARTED = 'not_started'

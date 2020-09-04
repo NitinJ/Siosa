@@ -12,4 +12,4 @@ class Location:
         self.x2 = x2
         self.y2 = y2
         self.resolution = resolution
-        self.name = ""
+        self.name = name
