@@ -15,7 +15,7 @@ class ItemRarity(Enum):
 class ItemType(Enum):
     """Types of items.
     Next value: 23
-    
+
     Args:
         Enum (int): Unique int value for item
     """
@@ -83,7 +83,12 @@ class Item(object):
         return self.item_info['type_line']
 
     def get_full_name(self):
-        return "{} {}".format(self.item_info['name'], self.item_info['type_line'])
+        if self.item_info['name'] and self.item_info['type_line']:
+            return "{} {}".format(self.item_info['name'], self.item_info['type_line'])
+        elif self.item_info['type_line']:
+            return self.item_info['type_line']
+        else:
+            return self.item_info['name']
 
     def __str__(self):
         return "Item type: {}, item_info: {}".format(self.type, str(self.item_info))
