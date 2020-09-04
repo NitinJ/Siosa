@@ -1,3 +1,0 @@
-py -m pip install --user virtualenv
-
-required- pip3, python3,Git,github desktop*,visual studio code/pycharm
