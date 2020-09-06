@@ -31,9 +31,17 @@ class KeyboardController:
         self.held_modifier_keys.pop(key)
 
     def keypress(self, key):
-        self.logger.debug('keypress {} {}'.format("+".join(self.held_modifier_keys), key))
+        self.logger.debug(
+            'keypress {} {}'.format("+".join(self.held_modifier_keys), key))
         sleep(self.key_press_delay)
         pyautogui.press(key)
+
+    def keypress_with_modifiers(self, keys):
+        pyautogui.hotkey(*keys, interval=self.key_press_delay)
+
+    def write(self, text):
+        sleep(self.key_press_delay)
+        pyautogui.write(text)
 
     def unhold(self):
         for key in self.held_modifier_keys.keys():

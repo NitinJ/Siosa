@@ -5,5 +5,8 @@
         "dump": [""],
         "sell": [""],
         "currency": [""]
+    },
+    "shortcuts": {
+      "close_all_user_interface": ["Ctrl", "`"]
     }
 }

@@ -96,7 +96,7 @@ class Locations:
     EDIT_HIDEOUT_DOWN_ARROW = Location(1172, 924, 1187, 937, Resolutions.p1080)
     EDIT_HIDEOUT_BUTTON = Location(1008, 963, 1064, 1035, Resolutions.p1080)
     OPEN_DECORATIONS_BUTTON = Location(1095, 960, 1143, 999, Resolutions.p1080)
-    STASH_DECORATION = Location(1416, 468, 1496, 542, Resolutions.p1080)
+    STASH_DECORATION_AFTER_SEARCHING = Location(1409, 232, 1498, 322, Resolutions.p1080)
     CLOSE_DECORATIONS_BUTTON = Location(1879, 60, 1892, 74, Resolutions.p1080)
     CLOSE_STASH_BUTTON = Location(620, 57, 636, 77, Resolutions.p1080)
 

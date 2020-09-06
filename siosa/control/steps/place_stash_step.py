@@ -6,6 +6,7 @@ from siosa.location.location_factory import Locations
 
 class PlaceStash(Step):
     DECORATIONS_LOAD_TIME = 1.5
+    SEARCH_BOX_DELAY = 0.3
 
     """
     Places stash on the center of the screen. We cannot move to or get
@@ -31,7 +32,11 @@ class PlaceStash(Step):
         # Sometimes the decorations take time to load.
         time.sleep(PlaceStash.DECORATIONS_LOAD_TIME)
 
-        self.mc.click_at_location(self.lf.get(Locations.STASH_DECORATION))
+        self.kc.keypress_with_modifiers(['ctrl', 'f'])
+        time.sleep(PlaceStash.SEARCH_BOX_DELAY)
+
+        self.kc.write('stash')
+        self.mc.click_at_location(self.lf.get(Locations.STASH_DECORATION_AFTER_SEARCHING))
         self.mc.click_at_location(
             self.lf.get(Locations.CLOSE_DECORATIONS_BUTTON))
         self.mc.click_at_location(stash_location)
