@@ -4,7 +4,7 @@ from enum import Enum
 class Zones(Enum):
     UNKNOWN = 'Unknown'
     HIDEOUT = 'hideout'
-    MENAERIE = 'menagerie'
+    MENAGERIE = 'menagerie'
     DELVE = 'delve'
     HARVEST = 'harvest'
     METAMORPH = 'metamorph'

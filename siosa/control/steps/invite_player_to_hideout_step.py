@@ -8,18 +8,10 @@ class InvitePlayerToHideoutStep(Step):
     PLAYER_ENTRY_WAIT_TIME = 15
 
     def __init__(self, player_account_name):
-        """
-        Args:
-            player_account_name:
-        """
         Step.__init__(self)
         self.player_account_name = player_account_name
 
     def execute(self, game_state):
-        """
-        Args:
-            game_state:
-        """
         self.game_state = game_state
         self.cc.console_command(
             Commands.INVITE_TO_PARTY(self.player_account_name))

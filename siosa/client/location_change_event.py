@@ -3,7 +3,7 @@ from siosa.data.zones import Zones
 
 class ZoneChangeEvent:
     MAP = {
-        'The Menagerie': Zones.MENAERIE,
+        'The Menagerie': Zones.MENAGERIE,
         'Azurite Mine': Zones.DELVE,
         'The Sacred Grove': Zones.HARVEST,
         'Tane\'s Laboratory': Zones.METAMORPH,
