@@ -10,9 +10,8 @@ class WindowController:
         self.app = pwa.application.Application()
 
     def move_to_poe(self):
-        # TODO: Fix this. This fails when there are multiple windows
-        #  with the same title(Path of Exile)
-        self.app.connect(title_re='Path of Exile')
+        # TODO: What if it's not the first window ?
+        self.app.connect(title_re='Path of Exile', found_index=0)
         if not self.app.is_process_running():
             raise Exception("Path of Exile is not running")
         app_dialog = self.app.window()
