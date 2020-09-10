@@ -5,7 +5,7 @@ from siosa.control.game_step import Step
 
 
 class InvitePlayerToHideoutStep(Step):
-    PLAYER_ENTRY_WAIT_TIME = 15
+    PLAYER_ENTRY_WAIT_TIME = 30
 
     def __init__(self, player_account_name):
         Step.__init__(self)
@@ -32,5 +32,7 @@ class InvitePlayerToHideoutStep(Step):
                 return False
             if self.player_account_name in self.game_state.get()[
                 'players_in_hideout']:
+                self.logger.debug("player({}) has entered hideout".format(
+                    self.player_account_name))
                 return True
             time.sleep(0.01)
