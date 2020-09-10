@@ -49,6 +49,8 @@ class Task(threading.Thread):
         self.state = state
 
     def run(self):
+        self.wc.move_to_poe()
+
         self.logger.info("Running GameTask: {}".format(self.name))
         self.set_state(TaskState.RUNNING)
         state_old = self.state
@@ -131,6 +133,8 @@ class Task(threading.Thread):
         time.sleep(Task.STEP_EXECUTION_DELAY)
         try:
             self.steps[self.step_index].execute(self.game_state)
+            self.logger.warning("Executed step: {}".format(
+                self.steps[self.step_index]))
         except Exception as err:
             self.logger.warning("Task failed !: {}: {}".format(
                 self.name, err))
