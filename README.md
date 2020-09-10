@@ -75,6 +75,19 @@ Testing the app -
 1. Writing/making-changes to TestTask and TestStep.
     * Make changes to TestTask (or its steps) and submit the TestTask to GameController (this is being done in the app.py right now)
     * Run the app (py -m siosa) or (using pycharm "Run")
+    
+    Following things happen - 
+    1. Stash details are fetched.
+    2. Currency exchange ratio is fetched for exalt-chaos.
+    3. InitTask is executed
+        1. Window is switched to game.
+        2. Zone is changed to HIDEOUT
+        3. Stash is placed and opened.
+        4. Inventory is cleaned.
+    4. TestTask is executed.
+    
+    Read logs for debugging.
+
 2. Using test utils
     * Install the siosa package by running the following command from root of the project
         ```
@@ -84,18 +97,6 @@ Testing the app -
         ```
         python tools\template_creator.py
         ```
-
-Following things happen - 
-1. Stash details are fetched.
-2. Currency exchange ratio is fetched for exalt-chaos.
-3. InitTask is executed
-    1. Window is switched to game.
-    2. Zone is changed to HIDEOUT
-    3. Stash is placed and opened.
-    4. Inventory is cleaned.
-4. TestTask is executed.
-
-Read logs for debugging.
 
 <!-- USAGE EXAMPLES -->
 ## Architecture
