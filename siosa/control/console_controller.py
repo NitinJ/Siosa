@@ -42,6 +42,9 @@ class ConsoleController(metaclass=Singleton):
         time.sleep(self.delay)
         pyautogui.press('enter')
 
+
 class Commands:
     INVITE_TO_PARTY = (lambda x: "/invite {}".format(x))
     TRADE = (lambda x: "/tradewith {}".format(x))
+    TRADE_THANK = (lambda x, msg: "@{} {}".format(x, msg))
+    KICK_FROM_PARTY = (lambda x: "/kick {}".format(x))
