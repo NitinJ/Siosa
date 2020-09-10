@@ -1,30 +1,23 @@
 # -*-coding:utf8-*-
-import time
 
 import pywinauto as pwa
-from win32gui import GetForegroundWindow, GetWindowText
+
+from siosa.common.singleton import Singleton
 
 
-class WindowController:
+class WindowController(metaclass=Singleton):
     def __init__(self):
         self.app = pwa.application.Application()
 
-    def move_to_poe(self):
         # TODO: What if it's not the first window ?
         self.app.connect(title_re='Path of Exile', found_index=0)
+
         if not self.app.is_process_running():
             raise Exception("Path of Exile is not running")
-        app_dialog = self.app.window()
-        app_dialog.set_focus()
+        self.app_dialog = self.app.window()
 
-    @staticmethod
-    def is_poe_in_foreground():
-        return GetWindowText(GetForegroundWindow()) == 'Path of Exile'
+    def move_to_poe(self):
+        self.app_dialog.set_focus()
 
-
-if __name__ == "__main__":
-    for i in range(0, 15):
-        print(WindowController.is_poe_in_foreground())
-        time.sleep(0.1)
-    wc = WindowController()
-    wc.move_to_poe()
+    def is_poe_in_foreground(self):
+        return self.app_dialog.is_active()
