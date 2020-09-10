@@ -45,7 +45,6 @@ class ClientLogListener(threading.Thread):
                         self.logger.debug("Adding queue event for line from client log. {}".format(line))
                         queue.put(filter_output['data'])
             time.sleep(ClientLogListener.SLEEP_DURATION)
-        return
 
     def read_unread_lines(self):
         lines = []
