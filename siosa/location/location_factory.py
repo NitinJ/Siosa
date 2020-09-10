@@ -85,6 +85,7 @@ class Locations:
     SCREEN_CENTER = Location(Resolutions.p1080.w / 2, Resolutions.p1080.h / 2,
                              Resolutions.p1080.w / 2, Resolutions.p1080.h / 2,
                              Resolutions.p1080)
+    OPEN_POSITION = Location(1342, 478, 1384, 522, Resolutions.p1080)
 
     # Currency tab
     CURRENCY_CENTER = Location(295, 396, 371, 555, Resolutions.p1080)
@@ -119,3 +120,15 @@ class Locations:
 
     # Banners
     STASH_BANNER = Location(288, 56, 375, 81, Resolutions.p1080)
+
+    # Trade
+    AWAITING_TRADE_BOX = Location(714, 568, 1203, 601, Resolutions.p1080)
+    AWAITING_TRADE_CANCEL_BUTTON = Location(1054, 544, 1176, 572, Resolutions.p1080)
+    TRADE_WINDOW_TITLE = Location(541, 78, 713, 114, Resolutions.p1080)
+
+    TRADE_WINDOW_ME = Location(309, 533, 944, 799, Resolutions.p1080)
+    TRADE_WINDOW_ME_0_0 = Location(312, 536, 363, 587, Resolutions.p1080)
+    TRADE_WINDOW_ME_EMPTY_TEXT = Location(469, 658, 785, 676, Resolutions.p1080)
+
+    TRADE_WINDOW_OTHER = Location(308, 200, 947, 471, Resolutions.p1080)
+    TRADE_WINDOW_OTHER_0_0 = Location(312, 205, 363, 256, Resolutions.p1080)
