@@ -6,16 +6,20 @@ import cv2.cv2 as cv2
 import mss
 import mss.tools
 import numpy as np
+import pyautogui
 from PIL import Image
 
 from siosa.control.window_controller import WindowController
 
 
 class TemplateMatcher:
-    def __init__(self, template, confidence=0.75, debug=False):
+    def __init__(self, template, confidence=0.75, debug=False, confirm_if_poe_not_in_foreground=False):
         self.logger = logging.getLogger(__name__)
         self.logger.setLevel(logging.DEBUG)
         self.sct = mss.mss()
+        self.wc =  WindowController()
+        self.confirm_if_poe_not_in_foreground = confirm_if_poe_not_in_foreground
+
         self.debug = debug
         self.confidence = confidence
         self.template = template
@@ -29,9 +33,15 @@ class TemplateMatcher:
         Returns:
             The positions (relative to the location) of matches with template.
         """
-        if not WindowController().is_poe_in_foreground():
-            self.logger.error("POE is not in foreground to capture template.")
-            raise (Exception("Path of Exile is not in foreground"))
+        if not self.wc.is_poe_in_foreground():
+            if self.confirm_if_poe_not_in_foreground:
+                pyautogui.confirm(
+                    text='Move to POE and press OK',
+                    title='Grab image',
+                    buttons=['OK'])
+            if not self.wc.is_poe_in_foreground():
+                self.logger.error("POE is not in foreground to capture template.")
+                raise (Exception("Path of Exile is not in foreground"))
 
         # The screen part to capture
         ts1 = time.time()
@@ -72,8 +82,6 @@ class TemplateMatcher:
                       point[1] + template_height // 2)
                 cv2.rectangle(image_bytes_bgr, pt, pt, (0, 0, 255), 4)
                 points.append(pt)
-
-        self.logger.info("Template matcher took {}".format(time.time() - ts1))
 
         if self.debug:
             cv2.imshow('image', image_bytes_bgr)
