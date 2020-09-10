@@ -12,8 +12,9 @@ class ConsoleController(metaclass=Singleton):
     # done so that command and console messages don't interfare between image
     # parsing done in the app.
     CONSOLE_CLEAR_DELAY = 1.0
+    CONSOLE_SPAWN_DELAY = 0.1
 
-    def __init__(self, delay=0.05):
+    def __init__(self, delay=CONSOLE_SPAWN_DELAY):
         self.keyboard_controller = KeyboardController()
         self.delay = delay
 
@@ -41,5 +42,6 @@ class ConsoleController(metaclass=Singleton):
         time.sleep(self.delay)
         pyautogui.press('enter')
 
-class Commands(Enum):
+class Commands:
     INVITE_TO_PARTY = (lambda x: "/invite {}".format(x))
+    TRADE = (lambda x: "/tradewith {}".format(x))
