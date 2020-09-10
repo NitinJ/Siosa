@@ -2,6 +2,7 @@ import logging
 import time
 
 from siosa.control.game_controller import GameController
+from siosa.data.stash_item import StashItem
 from siosa.trader.trade_task import TradeTask
 from siosa.data.stash import Stash
 from siosa.trader.trade_info import TradeInfo
@@ -69,21 +70,20 @@ class TradeController:
                               "candidate stash tabs for the item.")
             return None
 
-        item, stash_tab = self._get_item_from_candidate_stash_tabs(
+        stash_item = self._get_item_from_candidate_stash_tabs(
             candidate_stash_tabs, trade_request)
 
-        if not item:
+        if not stash_item:
             self.logger.debug("TradeRequest invalid: Couldn't find "
                               "item in stash tabs.")
             return None
-
-        if not self._is_item_valid(item):
+        if not self._is_item_valid(stash_item):
             self.logger.debug("TradeRequest invalid: Item isn't valid.")
             return None
 
-        return TradeInfo(trade_request, stash_tab, item)
+        return TradeInfo(trade_request, stash_item)
 
-    def _is_item_valid(self, item):
+    def _is_item_valid(self, stash_item):
         # TODO: Fill this up.
         return True
 
@@ -91,8 +91,7 @@ class TradeController:
         for stash_tab in candidate_stash_tabs:
             x = trade_request.position[0]
             y = trade_request.position[1]
-            # x,y are 1 indexed
             item_at_location = stash_tab.get_item_at_location(x, y)
             if item_at_location and item_at_location.get_full_name() == trade_request.item_name:
-                return item_at_location, stash_tab
+                return StashItem(item_at_location, stash_tab, (x, y))
         return None, None
