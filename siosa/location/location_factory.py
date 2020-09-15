@@ -1,3 +1,5 @@
+import logging
+
 import pyautogui
 
 from siosa.common.singleton import Singleton
@@ -8,7 +10,12 @@ from siosa.location.resolution import Resolutions, Resolution
 
 class LocationFactoryBase(metaclass=Singleton):
     def __init__(self, resolution=Resolutions.p1080):
+        self.logger = logging.getLogger(__name__)
+        self.logger.setLevel(logging.DEBUG)
         self.resolution = resolution
+
+        self.logger.debug("Created with resolution : {}".format(
+            str(self.resolution)))
 
     def get(self, location: Location) -> InGameLocation:
         return self._get_in_game_location(location)
@@ -110,6 +117,7 @@ class Locations:
     # Inventory
     INVENTORY = Location(1260, 579, 1915, 861, Resolutions.p1080)
     INVENTORY_0_0 = Location(1274, 590, 1324, 640, Resolutions.p1080)
+    INVENTORY_ROW1 = Location(1273, 589, 1903, 640, Resolutions.p1080)
     INVENTORY_0_0_WITH_RIGHT_BORDER = Location(1274, 590, 1327, 640, Resolutions.p1080)
     INVENTORY_0_0_WITH_BOTTOM_BORDER = Location(1274, 590, 1324, 643, Resolutions.p1080)
     INVENTORY_DIVIDER_HORIZONTAL = Location(1283, 638, 1315, 644, Resolutions.p1080)
@@ -131,4 +139,13 @@ class Locations:
     TRADE_WINDOW_ME_EMPTY_TEXT = Location(469, 658, 785, 676, Resolutions.p1080)
 
     TRADE_WINDOW_OTHER = Location(308, 200, 947, 471, Resolutions.p1080)
-    TRADE_WINDOW_OTHER_0_0 = Location(312, 205, 363, 256, Resolutions.p1080)
+    TRADE_WINDOW_OTHER_0_0 = Location(313, 206, 363, 256, Resolutions.p1080)
+    TRADE_WINDOW_OTHER_ROW1 = Location(311, 204, 942, 256, Resolutions.p1080)
+    TRADE_WINDOW_OTHER_0_0_COUNT = Location(315, 206, 336, 225, Resolutions.p1080)
+
+    TRADE_WINDOW_MOUSEOVER_WARNING_TEXT = Location(492, 828, 537, 842, Resolutions.p1080)
+    TRADE_ACCEPT_RETRACTED = Location(333, 823, 403, 848, Resolutions.p1080)
+    TRADE_ACCEPT_GREEN_AURA = Location(575, 160, 680, 202, Resolutions.p1080)
+    TRADE_ACCEPT_GREEN_AURA_ME = Location(466, 509, 702, 534, Resolutions.p1080)
+    CANCEL_TRADE_ACCEPT_BUTTON = Location(307, 821, 448, 849, Resolutions.p1080)
+    TRADE_ACCEPT_BUTTON = Location(307, 821, 448, 849, Resolutions.p1080)
