@@ -1,6 +1,9 @@
 import logging
+import time
 
+from siosa.client.log_listener import ClientLogListener
 from siosa.control.game_state import GameState
+from siosa.image.grid import Grid
 from siosa.image.template import Template
 from siosa.image.template_matcher import TemplateMatcher
 from siosa.image.template_registry import TemplateRegistry
@@ -10,17 +13,30 @@ from siosa.trader.trade_state import States, TradeState
 
 
 class TradeStateUpdater:
+    OFFER_WAIT_TIME = 2
+    ROWS = 5
+    COLUMNS = 12
+    BORDER = 3
+
     def __init__(self, game_state: GameState, trade_state: TradeState,
-                 trade_info: TradeInfo):
+                 trade_info: TradeInfo, log_listener: ClientLogListener):
         self.logger = logging.getLogger(__name__)
         self.logger.setLevel(logging.DEBUG)
 
+        self.log_listener = log_listener
+        self.trade_status_queue = log_listener.trade_status_event_queue
+
         self.game_state = game_state
+
         self.trade_state = trade_state
         self.trade_info = trade_info
-        self.state_value = States.NOT_STARTED
+        self.trader = trade_info.trade_request.trader
 
-        self.location_factory = LocationFactory()
+        self.state_value = States.NOT_STARTED
+        self.lf = LocationFactory()
+
+        self.other_points = []
+        self.ts_start = 0
 
         self.awaiting_tm = TemplateMatcher(
             Template.from_registry(
@@ -29,23 +45,114 @@ class TradeStateUpdater:
         self.trading_tm = TemplateMatcher(
             Template.from_registry(TemplateRegistry.TRADE_WINDOW_TITLE),
             confirm_if_poe_not_in_foreground=True)
+        self.trading_tm_me = TemplateMatcher(
+            Template.from_registry(TemplateRegistry.TRADE_WINDOW_ME_0_0),
+            confirm_if_poe_not_in_foreground=True)
+        self.trading_tm_other = TemplateMatcher(
+            Template.from_registry(TemplateRegistry.TRADE_WINDOW_OTHER_0_0),
+            confirm_if_poe_not_in_foreground=True)
+        self.trading_other_retracted = TemplateMatcher(
+            Template.from_registry(TemplateRegistry.TRADE_ACCEPT_RETRACTED),
+            confirm_if_poe_not_in_foreground=True)
+        self.trading_other_accepted_green = TemplateMatcher(
+            Template.from_registry(TemplateRegistry.TRADE_ACCEPT_GREEN_AURA),
+            confirm_if_poe_not_in_foreground=True)
+        self.trading_me_accepted_green = TemplateMatcher(
+            Template.from_registry(TemplateRegistry.TRADE_ACCEPT_GREEN_AURA_ME),
+            confirm_if_poe_not_in_foreground=True)
+        self.trading_me_empty_trade = TemplateMatcher(
+            Template.from_registry(TemplateRegistry.TRADE_WINDOW_ME_EMPTY_TEXT),
+            confirm_if_poe_not_in_foreground=True)
+
+        self.grid_me = Grid(
+            Locations.TRADE_WINDOW_ME,
+            Locations.TRADE_WINDOW_ME_0_0,
+            TradeStateUpdater.ROWS,
+            TradeStateUpdater.COLUMNS,
+            TradeStateUpdater.BORDER,
+            TradeStateUpdater.BORDER)
+        self.grid_other = Grid(
+            Locations.TRADE_WINDOW_OTHER,
+            Locations.TRADE_WINDOW_OTHER_0_0,
+            TradeStateUpdater.ROWS,
+            TradeStateUpdater.COLUMNS,
+            TradeStateUpdater.BORDER,
+            TradeStateUpdater.BORDER)
 
     def update(self):
         current_state = None
-        if self.awaiting_tm.match(
-                self.location_factory.get(Locations.AWAITING_TRADE_CANCEL_BUTTON)):
+        trade_status = self._get_trade_status_from_log()
+        game_state = self.game_state.get()
+
+        if self.trader not in game_state['players_in_hideout']:
+            current_state = States.LEFT
+        elif trade_status:
+            current_state = States.ACCEPTED if trade_status.accepted() else \
+                States.CANCELLED
+        elif self.awaiting_tm.match(self.lf.get(
+                Locations.AWAITING_TRADE_CANCEL_BUTTON)):
             current_state = States.AWAITING_TRADE
-        elif self.trading_tm.match(
-                self.location_factory.get(Locations.TRADE_WINDOW_TITLE)):
-            current_state = self._get_trading_state()
+        elif self.trading_tm.match(self.lf.get(Locations.TRADE_WINDOW_TITLE)):
+            # Trading.
+            current_state = \
+                States.create_from_trading_state(*self._get_trading_state())
+            # This should never happen.
+            assert current_state is not None
         else:
             current_state = States.NOT_STARTED
 
         if current_state != self.state_value:
             self.logger.debug(
-                "Setting trade state to {}".format(self.state_value))
+                "Setting trade state to {}".format(current_state))
             self.state_value = current_state
             self.trade_state.set_value(self.state_value)
 
     def _get_trading_state(self):
-        return States.TRADING_NO_NO
+        state_me = 'OFFERED' if self._have_i_offered() else 'NOT_OFFERED'
+        state_other = 'NOT_OFFERED'
+        if self.trading_other_retracted.match(
+                self.lf.get(Locations.TRADE_ACCEPT_RETRACTED)):
+            state_other = 'RETRACTED'
+        elif self.trading_other_accepted_green.match(
+                self.lf.get(Locations.TRADE_ACCEPT_GREEN_AURA)):
+            state_other = 'ACCEPTED'
+        else:
+            state_other = 'OFFERED' if self._has_other_player_offered() \
+                else 'NOT_OFFERED'
+
+        if self.trading_me_accepted_green.match(
+                self.lf.get(Locations.TRADE_ACCEPT_GREEN_AURA_ME)):
+            state_me = 'ACCEPTED'
+
+        return state_me, state_other
+
+    def _have_i_offered(self):
+        if self.trading_me_empty_trade.match(
+                self.lf.get(Locations.TRADE_WINDOW_ME_EMPTY_TEXT)):
+            return False
+        empty_positions = \
+            self.trading_tm_me.match(self.lf.get(Locations.TRADE_WINDOW_ME))
+        return True if self.grid_me.get_cells_not_in_positions(empty_positions) \
+            else False
+
+    def _has_other_player_offered(self):
+        points = self.grid_other.get_cells_not_in_positions(
+            self.trading_tm_other.match(
+                self.lf.get(Locations.TRADE_WINDOW_OTHER)))
+        t2 = time.time()
+        if not points:
+            return False
+        elif not self.other_points or self.other_points != points:
+            self.other_points = points
+            self.ts_start = time.time()
+            return False
+        elif self.other_points == points and \
+                t2 - self.ts_start >= TradeStateUpdater.OFFER_WAIT_TIME:
+            return True
+        return False
+
+    def _get_trade_status_from_log(self):
+        status = None
+        while not self.trade_status_queue.empty():
+            status = self.trade_status_queue.get()
+        return status

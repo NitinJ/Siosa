@@ -1,6 +1,7 @@
 import logging
 import time
 
+from siosa.control.console_controller import ConsoleController
 from siosa.control.game_controller import GameController
 from siosa.data.stash_item import StashItem
 from siosa.trader.trade_task import TradeTask
@@ -21,7 +22,7 @@ class TradeController:
         self.trade_event_queue = self.log_listener.trade_event_queue
 
         # Controlling all game related stuff.
-        self.game_controller = GameController()
+        self.game_controller = game_controller
 
     def start_trading(self):
         self.logger.debug("Starting listening to logs")
@@ -45,7 +46,7 @@ class TradeController:
     def _start_new_trade(self, trade_info):
         self.logger.debug("Starting new trade with {}".format(
             trade_info.trade_request.trader))
-        self.game_controller.submit_task(TradeTask(trade_info))
+        self.game_controller.submit_task(TradeTask(trade_info, self.log_listener))
 
     def _validate_trade_request(self, trade_request):
         """Validates a trade request object and returns a trade_info object if

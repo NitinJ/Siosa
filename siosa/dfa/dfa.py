@@ -26,38 +26,44 @@ class Dfa(threading.Thread):
         self.fn[s1.to_string()] = transition_fn
 
     def run(self):
-        self.event_loop.create_task(self.run_ev())
-        self.event_loop.run_forever()
-        self.event_loop.close()
+        self.event_loop.run_until_complete(self.run_ev())
+        self.event_loop.stop()
 
     async def run_ev(self):
         while True:
             if self.state.equals(self.old_state_str):
                 continue
-            # State change.
-            if self.state.equals(self.end):
-                self.logger.debug("End state({}) reached from {}".format(
-                    self.old_state_str, self.state))
-                break
-            if self.old_state_str:
-                self.logger.debug("State changed from {} to {}".format(
-                                  self.old_state_str,
-                                  self.state.to_string()))
+
+            self.logger.debug("State changed from {} to {}".format(
+                self.old_state_str,
+                self.state.to_string()))
             self.old_state_str = self.state.to_string()
 
             # Stop any running tasks
             if self.running_task and not self.running_task.done():
+                self.logger.debug(
+                    "Cancelling fn: {}".format(self.running_task.get_name()))
                 self.running_task.cancel()
 
+            # Run the fn for the new state if it's available.
             new_state_str = self.state.to_string()
             if new_state_str in self.fn:
-                self.logger.debug("New state: {}".format(new_state_str))
+                self.logger.debug(
+                    "Running fn for new state: {}".format(new_state_str))
                 fn = self.fn[new_state_str]
                 try:
                     self.running_task = \
                         self.event_loop.create_task(fn(), name=new_state_str)
-                    self.logger.debug("{}: {}".format(
-                        self.running_task.get_name(), self.running_task.done()))
-                except:
-                    self.logger.debug("Exception in dfa fuck")
+                except Exception as err:
+                    self.logger.warning("Exception in dfa while executing "
+                                        "fn for {} : {}".format(
+                        new_state_str, err), stack_info=True, exc_info=True)
+
+            if self.state.equals(self.end):
+                self.logger.debug("End state({}) reached from {}".format(
+                    self.state.to_string(), self.old_state_str))
+                if self.running_task:
+                    await self.running_task
+                return
+
             await asyncio.sleep(Dfa.SLEEP_DURATION)
