@@ -4,12 +4,12 @@ import os
 from siosa.client.log_listener import ClientLogListener
 from siosa.config.siosa_config import SiosaConfig
 from siosa.control.game_controller import GameController
-from siosa.control.test_task import TestTask
 from siosa.data.currency_exchange import CurrencyExchange
 from siosa.data.stash import Stash
 from siosa.network.poe_api import PoeApi
+from siosa.trader.trade_controller import TradeController
 
-FORMAT = "[%(filename)s:%(lineno)s - %(funcName)20s() ] %(message)s"
+FORMAT = "%(created)f: [%(filename)s:%(lineno)s - %(funcName)s() ] %(message)s"
 logging.basicConfig(format=FORMAT)
 
 
@@ -41,7 +41,10 @@ def run():
 
     # Submit test task to test out stuff. All testing needs to be done through
     # test task.
-    gc.submit_task(TestTask(15))
+    # gc.submit_task(TestTask(15))
+
+    trader = TradeController(gc, log_listener)
+    trader.start_trading()
 
 
 if __name__ == "__main__":
