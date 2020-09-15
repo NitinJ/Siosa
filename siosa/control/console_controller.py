@@ -1,3 +1,4 @@
+import logging
 import time
 from enum import Enum
 
@@ -12,11 +13,14 @@ class ConsoleController(metaclass=Singleton):
     # done so that command and console messages don't interfare between image
     # parsing done in the app.
     CONSOLE_CLEAR_DELAY = 1.0
-    CONSOLE_SPAWN_DELAY = 0.1
+    CONSOLE_SPAWN_DELAY = 0.25
+
 
     def __init__(self, delay=CONSOLE_SPAWN_DELAY):
         self.keyboard_controller = KeyboardController()
         self.delay = delay
+        self.logger = logging.getLogger(__name__)
+        self.logger.setLevel(logging.DEBUG)
 
     def send_chat(self, to, chat):
         pyautogui.press('enter')
@@ -46,5 +50,4 @@ class ConsoleController(metaclass=Singleton):
 class Commands:
     INVITE_TO_PARTY = (lambda x: "/invite {}".format(x))
     TRADE = (lambda x: "/tradewith {}".format(x))
-    TRADE_THANK = (lambda x, msg: "@{} {}".format(x, msg))
     KICK_FROM_PARTY = (lambda x: "/kick {}".format(x))
