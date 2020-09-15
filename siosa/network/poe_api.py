@@ -6,10 +6,10 @@ import requests
 
 from siosa.common.singleton import Singleton
 
-TRADE_PAGE = "https://www.pathofexile.com/trade/search/Harvest/"
-SEARCH_API = "https://www.pathofexile.com/api/trade/search/Harvest"
+TRADE_PAGE = "https://www.pathofexile.com/trade/search/{}/"
+SEARCH_API = "https://www.pathofexile.com/api/trade/search/{}"
+EXCHANGE_API = "https://www.pathofexile.com/api/trade/exchange/{}"
 FETCH_API = "https://www.pathofexile.com/api/trade/fetch/"
-EXCHANGE_API = "https://www.pathofexile.com/api/trade/exchange/Harvest"
 STATIC_DATA_API = "https://www.pathofexile.com/api/trade/data/static"
 STASH_INFO_API = "https://www.pathofexile.com/character-window/get-stash-items?accountName={}&realm=pc&league={}&tabs=1"
 SCRAPE_STR1 = 'require(["main"], function(){require(["trade"], function(t){    t('
@@ -18,7 +18,7 @@ MAX_ITEMS_FOR_CALCULATING_EXCHANGE = 20
 
 
 class PoeApi(metaclass=Singleton):
-    def __init__(self, account_name, poe_session_id, league="Harvest"):
+    def __init__(self, account_name, poe_session_id, league="Standard"):
         self.logger = logging.getLogger(__name__)
         self.logger.setLevel('DEBUG')
 
@@ -44,8 +44,9 @@ class PoeApi(metaclass=Singleton):
         if not resp.content:
             return
         contents = json.loads(resp.content)
-        self.logger.debug("Got stash contents for index({}): items={}".format(
-            index, len(contents['items'])))
+        self.logger.debug(
+            "Got stash contents for index({}): items={}".format(
+                index, len(contents['items'])))
         return contents['items']
 
     def get_all_trades(self, url):
@@ -57,12 +58,22 @@ class PoeApi(metaclass=Singleton):
         index1 = page_response.content.find(SCRAPE_STR1) + len(SCRAPE_STR1)
         index2 = page_response.content.find(SCRAPE_STR2)
         j = json.loads(page_response.content[index1: index2])['state']
-        search_request = {'query': j, 'sort': {'price': 'asc'}}
-        headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
-        self.logger.debug("Search request to get all trades for account: {}".format(
-            json.dumps(search_request)))
+        search_request = {
+            'query': j,
+            'sort': {
+                'price': 'asc'
+            }
+        }
+        headers = {
+            'Content-type': 'application/json',
+            'Accept': 'text/plain'
+        }
+        self.logger.debug(
+            "Search request to get all trades for account: {}".format(
+                json.dumps(search_request)))
         search_response = requests.post(
-            SEARCH_API, json=search_request, cookies=self.cookies, headers=headers)
+            self._get_league_specific_url(SEARCH_API), json=search_request,
+            cookies=self.cookies, headers=headers)
         search_response = search_response.json()
         items = self._items_search(
             search_response['id'], search_response['result'])
@@ -115,16 +126,23 @@ class PoeApi(metaclass=Singleton):
                 'have': [have]
             }
         }
-        headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
+        headers = {
+            'Content-type': 'application/json',
+            'Accept': 'text/plain'
+        }
         self.logger.debug(
             "Getting exchanges for want({}), have({})".format(want, have))
         response = requests.post(
-            EXCHANGE_API, json=data, cookies=self.cookies, headers=headers).json()
+            self._get_league_specific_url(EXCHANGE_API), json=data,
+            cookies=self.cookies, headers=headers).json()
         items = self._items_search(
-            response['id'], response['result'][3:MAX_ITEMS_FOR_CALCULATING_EXCHANGE], exchange=True)
+            response['id'],
+            response['result'][3:MAX_ITEMS_FOR_CALCULATING_EXCHANGE],
+            exchange=True)
         rate = self._get_exchange_rate_from_exchange_entries(have, want, items)
         self.logger.debug(
-            "Getting exchanges for want({}), have({}): {}".format(want, have, rate))
+            "Getting exchanges for want({}), have({}): {}".format(
+                want, have, rate))
         return rate
 
     def _get_exchange_rate_from_exchange_entries(self, have, want, items):
@@ -146,3 +164,6 @@ class PoeApi(metaclass=Singleton):
         self.logger.debug(
             "Got static data len=({}) ".format(len(resp['result'])))
         return resp['result']
+
+    def _get_league_specific_url(self, url):
+        return url.format(self.league)
