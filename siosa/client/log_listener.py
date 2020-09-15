@@ -6,6 +6,7 @@ import time
 from siosa.client.hideout_event import HideoutEvent
 from siosa.client.location_change_event import ZoneChangeEvent
 from siosa.client.trade_event import TradeEvent
+from siosa.client.trade_status_event import TradeStatusEvent
 
 
 class ClientLogListener(threading.Thread):
@@ -13,12 +14,8 @@ class ClientLogListener(threading.Thread):
     MAX_QUEUE_SIZE = 1000
 
     def __init__(self,
-                 group=None,
                  target=None,
                  name=None,
-                 args=(),
-                 kwargs=None,
-                 verbose=None,
                  client_log_file_path="C:\Program Files (x86)\Steam\steamapps\common\Path of Exile\logs\Client.txt"):
         super(ClientLogListener, self).__init__()
         self.logger = logging.getLogger(__name__)
@@ -32,14 +29,20 @@ class ClientLogListener(threading.Thread):
         self.trade_event_queue = queue.Queue(ClientLogListener.MAX_QUEUE_SIZE)
         self.hideout_event_queue = queue.Queue(ClientLogListener.MAX_QUEUE_SIZE)
         self.location_change_event_queue = queue.Queue(ClientLogListener.MAX_QUEUE_SIZE)
-
-        self.filters = self._get_filters()
+        self.trade_status_event_queue = queue.Queue(
+            ClientLogListener.MAX_QUEUE_SIZE)
+        self.filters = [
+            self.trade_event_filter,
+            self.hideout_event_filter,
+            self.location_change_event_filter,
+            self.trade_status_event_filter
+        ]
 
     def run(self):
         while True:
             for line in self.read_unread_lines():
-                for filter in self.filters:
-                    filter_output = filter(line)
+                for log_filter in self.filters:
+                    filter_output = log_filter(line)
                     if filter_output['pass']:
                         queue = filter_output['queue']
                         self.logger.debug("Adding queue event for line from client log. {}".format(line))
@@ -65,12 +68,13 @@ class ClientLogListener(threading.Thread):
         f.close()
         return lines
 
-    def _get_filters(self):
-        return [
-            self.trade_event_filter,
-            self.hideout_event_filter,
-            self.location_change_event_filter
-        ]
+    def trade_status_event_filter(self, log_line):
+        data = TradeStatusEvent.create(log_line)
+        return {
+            'pass': (data is not None),
+            'data': data,
+            'queue': self.trade_status_event_queue
+        }
 
     def trade_event_filter(self, log_line):
         data = TradeEvent.create(log_line)
