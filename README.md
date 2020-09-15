@@ -56,6 +56,7 @@ This is an example of how to list things you need to use the software and how to
 * Path of exile
 * Git
 * Github Desktop (optional)
+* Tesseract (binary and python packages, set PATH and TESSDATA_PREFIX)
 
 ### Project setup
 
