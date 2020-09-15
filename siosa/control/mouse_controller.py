@@ -47,9 +47,3 @@ class MouseController(metaclass=Singleton):
             self.click()
         else:
             self.right_click()
-
-
-if __name__ == "__main__":
-    location_factory = LocationFactory()
-    mc = MouseController(location_factory)
-    mc.move_mouse(location_factory.create(302, 34, 302, 34))
