@@ -16,7 +16,6 @@ class TemplateMatcher:
     def __init__(self, template, confidence=0.75, debug=False, confirm_if_poe_not_in_foreground=False):
         self.logger = logging.getLogger(__name__)
         self.logger.setLevel(logging.DEBUG)
-        self.sct = mss.mss()
         self.wc =  WindowController()
         self.confirm_if_poe_not_in_foreground = confirm_if_poe_not_in_foreground
 
@@ -46,7 +45,10 @@ class TemplateMatcher:
         # The screen part to capture
         ts1 = time.time()
         screen_location = TemplateMatcher._get_grab_params(location)
-        image = self.sct.grab(screen_location)
+        image = None
+        with mss.mss() as sct:
+            image = sct.grab(screen_location)
+
         image_bytes_rgb = Image.frombytes(
             'RGB',
             (screen_location['width'], screen_location['height']),
