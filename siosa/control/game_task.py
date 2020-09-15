@@ -64,7 +64,7 @@ class Task(threading.Thread):
                     self._execute()
                 except Exception as err:
                     self.logger.warning("Task failed !: {}: {}".format(
-                        self.name, err))
+                        self.name, err), stack_info=True, exc_info=True)
                     self.set_state(TaskState.COMPLETE)
             if state_now == TaskState.STOPPED:
                 self.logger.info("GameTask stopped: {}".format(self.name))
@@ -137,7 +137,7 @@ class Task(threading.Thread):
                 self.steps[self.step_index]))
         except Exception as err:
             self.logger.warning("Task failed !: {}: {}".format(
-                self.name, err))
+                self.name, err), stack_info=True, exc_info=True)
             self.set_state(TaskState.STOPPED)
             self.lock.release()
             return
