@@ -89,6 +89,9 @@ class LocationFactory(LocationFactoryBase):
 
 
 class Locations:
+    FULL_SCREEN = Location(0, 0,
+                             Resolutions.p1080.w, Resolutions.p1080.h,
+                             Resolutions.p1080)
     SCREEN_CENTER = Location(Resolutions.p1080.w / 2, Resolutions.p1080.h / 2,
                              Resolutions.p1080.w / 2, Resolutions.p1080.h / 2,
                              Resolutions.p1080)
