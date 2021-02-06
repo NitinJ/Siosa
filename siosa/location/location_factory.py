@@ -98,6 +98,9 @@ class Locations:
     CURRENCY_CENTER = Location(295, 396, 371, 555, Resolutions.p1080)
     CURRENCY_ALTERATION = Location(98, 275, 131, 311, Resolutions.p1080)
     CURRENCY_AUGMENT = Location(217, 329, 245, 359, Resolutions.p1080)
+    CURRENCY_REGAL = Location(413, 271, 451, 309, Resolutions.p1080)
+    CURRENCY_SCOURING = Location(157, 453, 195, 491, Resolutions.p1080)
+    CURRENCY_TRANSMUTATION = Location(39, 272, 77, 310, Resolutions.p1080)
 
     # Decorations
     EDIT_HIDEOUT_ARROW = Location(1172, 1043, 1185, 1058, Resolutions.p1080)
