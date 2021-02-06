@@ -1,0 +1,12 @@
+{
+  "type": "service_account",
+  "project_id": "path-of-exile-racing",
+  "private_key_id": "e3233f61f9c96bad92f7e32514058c960f4878ab",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQCS86j6YUCD0r9x\n3yJpPIDBLE31L4xjXmtsUwj3SWUrNg7P0htPX4keJ+gAOHt+jI9dF1CxSq7pC3i+\nOP8eY5p1UaT4bbTc5iqC52ZhhKLL+/kWyA3hWfVd4UylgQNZGH3VlfaYq/HDZv39\nqLQUT+dRHXeRd38vZ5R0consMiRj+5hTp+XphhBhn3cDylJFGr3NKmRss+9i7c+h\nSeWqVo/BKe1vFxRZZkPR3CkEktEOXYsXyA2Zfrpm4EFQtKIIn7XUNOSPuxHvfLJN\n4lfTTfltvYcY1FupWO2wndmXzVDlQTAfvQM6GAegQhmo34mdxJTzl8rALGHMnuwi\nGKYjYSufAgMBAAECggEARkHSZyq58ox+1U1uIUw47qJk/zVldFi/GUI1xizD/r3Q\npRF51yAA6XcA16IpgN5o6IPuI2VmbKr8Zk3Pw1KxlSecrN2enAI7DuzdKQCF6Oqm\nM3sgD763rdO6lmIxHJa2Criw9ls2skp6Yp0Ww6NUH5bsBJNSLnLiKi5cvJ1Ygqgc\nrJb5aYzsw9kx+tkKvBjBf3a2jw4VDYCTfE1oZGmWNuo5+ZDM8pMd82PT3htDv5Dy\nw3rFBWo9cPOv7BfbNdlEGsGSdQ8oOxCVz+9/p+TX2+VvUs1tO4+05PVXGVwrgoN3\nNm4ZL/7MOSgydrMY4AuKWsMjjMTci6F6GOOOVwpQUQKBgQDG+hRFlZs76+52DNZ1\nBYXLJPuiYtD8tLOOCLWHZcTm2liGEVlOZeAaXHLJjIwXbFPP+tW3lMQ7yzjcQw4T\nhj2ZHQaHIJU+kD1JR+VF9NbjjJeJyiafmEx+hFzCFuUTkloxU1oxlxRuWcL4gojO\n3x7pPcYs/1Opx30MBppQ93hQ9wKBgQC9EMQNN57s3cPYi7vLfkCPZwGmSTeqOLmw\nQWtwAc0s31SULpWL8n58WbEMghdLsd3J0O0BQAbB315HnhZERsCklmNfRG/Dt0i/\n+cNkDQP1tPxLbge2v3GxeCu3xDQotnc+guASnUlrmpDHysLwvbZcAajgZjGXwGMi\nQmMO8WN4mQKBgC4BiohgRAlBztwKsddS1JGY1nnAYVPcsBtqFhbdR/6cg5VUE5MV\n6RAPShch4Q5VZLeU5q9QvWKZ5WbANlP7WOi7FlROC1Pw48q6zd8z8i+gxTT9wZpr\nC1zBW/UgeAzjbOk0vYjzxqyRIox1Gg7C9hG1z8l9q6l4z4flSu7nmTEXAoGAHWcO\nFkAgJxYV7wdMHUl1INgUGZgpX/+SYSbLXo/pKKFStfjIqQr9QLlyH0/b75mptEkZ\nkqgyZNQoBVtAez3Fl9MLgTVTbEyEs9ZT3KtpgjyzP8fMy07aj47wvZN1yR8XTFFu\nJ3buhB11hpyx1F6sjYJ0kPFTpRX2VM2eOiSwI4ECgYBz4FOuN6M/UzBhNRx6CIUi\nL4Bq14eZzjny3ywt29V+1XuDrShoM7HlC7CdI9ZfnTib8L0wE892Dp/xarstZiVn\n65rCz4ZPkCFHihSDK3nizSThZV8gM9pZAJeXN3MKFll7IFIXn/gtE8Dl079xexK2\nL/Nurh7I7eFWfxU15ZRU+Q==\n-----END PRIVATE KEY-----\n",
+  "client_email": "path-of-exile-racing-service-a@path-of-exile-racing.iam.gserviceaccount.com",
+  "client_id": "108370224198388130978",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/path-of-exile-racing-service-a%40path-of-exile-racing.iam.gserviceaccount.com"
+}
