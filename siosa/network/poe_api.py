@@ -14,11 +14,12 @@ STATIC_DATA_API = "https://www.pathofexile.com/api/trade/data/static"
 STASH_INFO_API = "https://www.pathofexile.com/character-window/get-stash-items?accountName={}&realm=pc&league={}&tabs=1"
 SCRAPE_STR1 = 'require(["main"], function(){require(["trade"], function(t){    t('
 SCRAPE_STR2 = ');});});'
+USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.150 Safari/537.36'
 MAX_ITEMS_FOR_CALCULATING_EXCHANGE = 20
 
 
 class PoeApi(metaclass=Singleton):
-    def __init__(self, account_name, poe_session_id, league="Standard"):
+    def __init__(self, account_name, poe_session_id, league="Ritual"):
         self.logger = logging.getLogger(__name__)
         self.logger.setLevel('DEBUG')
 
@@ -26,10 +27,16 @@ class PoeApi(metaclass=Singleton):
         self.league = league
         self.session_id = poe_session_id
         self.cookies = {'POESESSID': self.session_id}
+        self.headers = {
+            'Content-type': 'application/json',
+            'Accept': 'text/plain',
+            'POESESSID': self.session_id,
+            'user-agent': USER_AGENT
+        }
 
     def get_stash_metadata(self):
         url = STASH_INFO_API.format(self.account_name, self.league)
-        resp = requests.get(url, cookies=self.cookies)
+        resp = requests.get(url, headers=self.headers, cookies=self.cookies)
         if not resp.content:
             return
         data = json.loads(resp.content)
@@ -40,7 +47,7 @@ class PoeApi(metaclass=Singleton):
     def get_stash_contents(self, index):
         url = STASH_INFO_API.format(
             self.account_name, self.league) + "&tabIndex=" + str(index)
-        resp = requests.get(url, cookies=self.cookies)
+        resp = requests.get(url, headers=self.headers, cookies=self.cookies)
         if not resp.content:
             return
         contents = json.loads(resp.content)
@@ -51,7 +58,7 @@ class PoeApi(metaclass=Singleton):
 
     def get_all_trades(self, url):
         # Request
-        page_response = requests.get(url, cookies=self.cookies)
+        page_response = requests.get(url, headers=self.headers, cookies=self.cookies)
         if not page_response.content:
             return
 
@@ -66,14 +73,15 @@ class PoeApi(metaclass=Singleton):
         }
         headers = {
             'Content-type': 'application/json',
-            'Accept': 'text/plain'
+            'Accept': 'text/plain',
+            'user-agent': USER_AGENT
         }
         self.logger.debug(
             "Search request to get all trades for account: {}".format(
                 json.dumps(search_request)))
         search_response = requests.post(
             self._get_league_specific_url(SEARCH_API), json=search_request,
-            cookies=self.cookies, headers=headers)
+            cookies=self.cookies, headers=self.headers)
         search_response = search_response.json()
         items = self._items_search(
             search_response['id'], search_response['result'])
@@ -111,7 +119,7 @@ class PoeApi(metaclass=Singleton):
         return url
 
     def fetch_items_from_url(self, url):
-        items_response = requests.get(url, cookies=self.cookies)
+        items_response = requests.get(url, headers=self.headers, cookies=self.cookies)
         return items_response.json()['result']
 
     def get_exchange_rate(self, have, want):
@@ -126,15 +134,17 @@ class PoeApi(metaclass=Singleton):
                 'have': [have]
             }
         }
-        headers = {
-            'Content-type': 'application/json',
-            'Accept': 'text/plain'
-        }
         self.logger.debug(
             "Getting exchanges for want({}), have({})".format(want, have))
         response = requests.post(
             self._get_league_specific_url(EXCHANGE_API), json=data,
-            cookies=self.cookies, headers=headers).json()
+            cookies=self.cookies, headers=self.headers)
+        if not response.ok:
+            self.logger.error(
+                "Couldn't get exchanges for want({}), have({})".format(
+                    want, have))
+            return None
+        response = response.json()
         items = self._items_search(
             response['id'],
             response['result'][3:MAX_ITEMS_FOR_CALCULATING_EXCHANGE],
@@ -158,7 +168,7 @@ class PoeApi(metaclass=Singleton):
 
     def get_static_data(self):
         url = STATIC_DATA_API
-        resp = requests.get(url, cookies=self.cookies).json()
+        resp = requests.get(url, headers=self.headers, cookies=self.cookies).json()
         if not resp or not resp['result']:
             return
         self.logger.debug(
