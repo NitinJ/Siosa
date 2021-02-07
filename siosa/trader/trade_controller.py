@@ -1,21 +1,22 @@
 import logging
 import time
 
-from siosa.control.console_controller import ConsoleController
+from siosa.config.siosa_config import SiosaConfig
 from siosa.control.game_controller import GameController
-from siosa.data.stash_item import StashItem
-from siosa.trader.trade_task import TradeTask
 from siosa.data.stash import Stash
+from siosa.data.stash_item import StashItem
 from siosa.trader.trade_info import TradeInfo
 from siosa.trader.trade_request import TradeRequest
+from siosa.trader.trade_task import TradeTask
 
 
 class TradeController:
     QUEUE_LISTEN_DELAY = 0.05
 
-    def __init__(self, game_controller, log_listener):
+    def __init__(self, game_controller: GameController, log_listener, config: SiosaConfig):
         self.logger = logging.getLogger(__name__)
         self.logger.setLevel('DEBUG')
+        self.config = config
 
         # Thread 1 for consuming trade log
         self.log_listener = log_listener
@@ -64,6 +65,7 @@ class TradeController:
             followed by the trade_info object.
         """
         stash = Stash()
+
         candidate_stash_tabs = stash.get_stash_tabs_by_name(
             trade_request.stash)
         if not candidate_stash_tabs:
@@ -82,6 +84,14 @@ class TradeController:
             self.logger.debug("TradeRequest invalid: Item isn't valid.")
             return None
 
+        # Hack to ensure that we only sell from a fixed tab defined in config
+        # by sell_index.
+        # TODO: Remove this check when we are able to sell from any stash.
+        if stash_item.stash_tab.index != self.config.get_sell_tab_index():
+            self.logger.debug("TradeRequest invalid: Trade not from "
+                              "allowed stash tab.")
+            return None
+
         return TradeInfo(trade_request, stash_item)
 
     def _is_item_valid(self, stash_item):
@@ -95,4 +105,4 @@ class TradeController:
             item_at_location = stash_tab.get_item_at_location(x, y)
             if item_at_location and item_at_location.get_full_name() == trade_request.item_name:
                 return StashItem(item_at_location, stash_tab, (x, y))
-        return None, None
+        return None
