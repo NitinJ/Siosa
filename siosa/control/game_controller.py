@@ -31,6 +31,7 @@ class GameController(metaclass=Singleton):
             updater.start()
 
     def _initialize(self):
+        # self.submit_task(FakeInitTask())
         self.submit_task(InitTask())
 
     def submit_task(self, task):
