@@ -87,7 +87,7 @@ class TradeController:
         # Hack to ensure that we only sell from a fixed tab defined in config
         # by sell_index.
         # TODO: Remove this check when we are able to sell from any stash.
-        if stash_item.stash_tab.index != self.config.get_sell_tab_index():
+        if stash_item.stash_tab.index not in self.config.get_sell_tab_index():
             self.logger.debug("TradeRequest invalid: Trade not from "
                               "allowed stash tab.")
             return None
