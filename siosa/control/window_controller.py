@@ -1,7 +1,8 @@
 # -*-coding:utf8-*-
+import time
 
 import pywinauto as pwa
-
+from win32gui import GetWindowText, GetForegroundWindow
 from siosa.common.singleton import Singleton
 
 
@@ -21,3 +22,6 @@ class WindowController(metaclass=Singleton):
 
     def is_poe_in_foreground(self):
         return self.app_dialog.is_active()
+
+    def is_poe_in_foreground2(self):
+        return GetWindowText(GetForegroundWindow()) == 'Path of Exile'
