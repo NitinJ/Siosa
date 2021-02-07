@@ -89,55 +89,55 @@ class LocationFactory(LocationFactoryBase):
 
 
 class Locations:
-    FULL_SCREEN = Location(0, 0,
-                             Resolutions.p1080.w, Resolutions.p1080.h,
-                             Resolutions.p1080)
+    SCREEN_FULL = Location(0, 0,
+                           Resolutions.p1080.w, Resolutions.p1080.h,
+                           Resolutions.p1080)
     SCREEN_CENTER = Location(Resolutions.p1080.w / 2, Resolutions.p1080.h / 2,
                              Resolutions.p1080.w / 2, Resolutions.p1080.h / 2,
                              Resolutions.p1080)
-    OPEN_POSITION = Location(1342, 478, 1384, 522, Resolutions.p1080)
+    SCREEN_NOOP_POSITION = Location(1342, 478, 1384, 522, Resolutions.p1080)
 
     # Currency tab
-    CURRENCY_CENTER = Location(295, 396, 371, 555, Resolutions.p1080)
-    CURRENCY_ALTERATION = Location(98, 275, 131, 311, Resolutions.p1080)
-    CURRENCY_AUGMENT = Location(217, 329, 245, 359, Resolutions.p1080)
-    CURRENCY_REGAL = Location(413, 271, 451, 309, Resolutions.p1080)
-    CURRENCY_SCOURING = Location(157, 453, 195, 491, Resolutions.p1080)
-    CURRENCY_TRANSMUTATION = Location(39, 272, 77, 310, Resolutions.p1080)
+    CURRENCY_CENTER = Location(295, 366, 371, 525, Resolutions.p1080)
+    CURRENCY_ALTERATION = Location(98, 245, 131, 281, Resolutions.p1080)
+    CURRENCY_AUGMENT = Location(217, 299, 245, 329, Resolutions.p1080)
+    CURRENCY_REGAL = Location(413, 241, 451, 279, Resolutions.p1080)
+    CURRENCY_SCOURING = Location(157, 423, 195, 461, Resolutions.p1080)
+    CURRENCY_TRANSMUTATION = Location(39, 242, 77, 280, Resolutions.p1080)
 
     # Decorations
-    EDIT_HIDEOUT_ARROW = Location(1172, 1043, 1185, 1058, Resolutions.p1080)
-    EDIT_HIDEOUT_DOWN_ARROW = Location(1172, 924, 1187, 937, Resolutions.p1080)
-    EDIT_HIDEOUT_BUTTON = Location(1008, 963, 1064, 1035, Resolutions.p1080)
-    OPEN_DECORATIONS_BUTTON = Location(1095, 960, 1143, 999, Resolutions.p1080)
-    STASH_DECORATION_AFTER_SEARCHING = Location(1409, 232, 1498, 322, Resolutions.p1080)
-    CLOSE_DECORATIONS_BUTTON = Location(1879, 60, 1892, 74, Resolutions.p1080)
-    CLOSE_STASH_BUTTON = Location(620, 57, 636, 77, Resolutions.p1080)
+    DECORATIONS_BANNER = Location(1503, 56, 1674, 81,
+                                              Resolutions.p1080)
+    DECORATIONS_EDIT_HIDEOUT_ARROW = Location(1172, 1043, 1185, 1058, Resolutions.p1080)
+    DECORATIONS_EDIT_HIDEOUT_DOWN_ARROW = Location(1172, 924, 1187, 937, Resolutions.p1080)
+    DECORATIONS_EDIT_HIDEOUT_BUTTON = Location(1008, 963, 1064, 1035, Resolutions.p1080)
+    DECORATIONS_OPEN_BUTTON = Location(1095, 960, 1143, 999, Resolutions.p1080)
+    DECORATIONS_STASH_AFTER_SEARCHING = Location(1409, 232, 1498, 322, Resolutions.p1080)
+    DECORATIONS_CLOSE_BUTTON = Location(1879, 60, 1892, 74, Resolutions.p1080)
 
     # Stash
-    FIRST_STASH_TAB_RIGHT_LIST = Location(690, 134, 860, 154, Resolutions.p1080)
-    NORMAL_STASH_0_0 = Location(19, 162, 69, 213, Resolutions.p1080)
-    QUAD_STASH_0_0 = Location(17, 163, 42, 187, Resolutions.p1080)
-    STASH_TAB = Location(19, 162, 648, 792, Resolutions.p1080)
+    STASH_CLOSE_BUTTON = Location(620, 57, 636, 77, Resolutions.p1080)
+    STASH_FIRST_TAB_RIGHT_LIST = Location(690, 134, 860, 154, Resolutions.p1080)
+    STASH_NORMAL_0_0 = Location(19, 129, 69, 179, Resolutions.p1080)
+    STASH_QUAD_0_0 = Location(18, 129, 42, 153, Resolutions.p1080)
+    STASH_TAB = Location(19, 129, 648, 758, Resolutions.p1080)
 
     # Inventory
     INVENTORY = Location(1260, 579, 1915, 861, Resolutions.p1080)
-    INVENTORY_0_0 = Location(1274, 590, 1324, 640, Resolutions.p1080)
-    INVENTORY_ROW1 = Location(1273, 589, 1903, 640, Resolutions.p1080)
-    INVENTORY_0_0_WITH_RIGHT_BORDER = Location(1274, 590, 1327, 640, Resolutions.p1080)
-    INVENTORY_0_0_WITH_BOTTOM_BORDER = Location(1274, 590, 1324, 643, Resolutions.p1080)
-    INVENTORY_DIVIDER_HORIZONTAL = Location(1283, 638, 1315, 644, Resolutions.p1080)
-    INVENTORY_DIVIDER_VERTICAL = Location(1321, 599, 1327, 631, Resolutions.p1080)
+    INVENTORY_0_0 = Location(1273, 590, 1323, 640, Resolutions.p1080)
+    INVENTORY_0_0_WITH_RIGHT_BORDER = Location(1273, 590, 1325, 640, Resolutions.p1080)
+    INVENTORY_0_0_WITH_BOTTOM_BORDER = Location(1273, 590, 1323, 642, Resolutions.p1080)
+    INVENTORY_ROW1 = Location(1273, 590, 1903, 640, Resolutions.p1080)
 
     # Player items
-    CHEST_PIECE = Location(1577, 269, 1596, 288, Resolutions.p1080)
+    PLAYER_ITEMS_CHEST_PIECE = Location(1577, 269, 1596, 288, Resolutions.p1080)
 
     # Banners
     STASH_BANNER = Location(288, 56, 375, 81, Resolutions.p1080)
 
     # Trade
-    AWAITING_TRADE_BOX = Location(714, 568, 1203, 601, Resolutions.p1080)
-    AWAITING_TRADE_CANCEL_BUTTON = Location(1054, 544, 1176, 572, Resolutions.p1080)
+    TRADE_AWAITING_TRADE_BOX = Location(714, 568, 1203, 601, Resolutions.p1080)
+    TRADE_AWAITING_TRADE_CANCEL_BUTTON = Location(1054, 544, 1176, 572, Resolutions.p1080)
     TRADE_WINDOW_TITLE = Location(541, 78, 713, 114, Resolutions.p1080)
 
     TRADE_WINDOW_ME = Location(309, 533, 944, 799, Resolutions.p1080)
@@ -153,5 +153,7 @@ class Locations:
     TRADE_ACCEPT_RETRACTED = Location(333, 823, 403, 848, Resolutions.p1080)
     TRADE_ACCEPT_GREEN_AURA = Location(575, 160, 680, 202, Resolutions.p1080)
     TRADE_ACCEPT_GREEN_AURA_ME = Location(466, 509, 702, 534, Resolutions.p1080)
-    CANCEL_TRADE_ACCEPT_BUTTON = Location(307, 821, 448, 849, Resolutions.p1080)
+    TRADE_CANCEL_BUTTON = Location(307, 821, 448, 849, Resolutions.p1080)
     TRADE_ACCEPT_BUTTON = Location(307, 821, 448, 849, Resolutions.p1080)
+
+    STASH = Location(595, 283, 654, 305, Resolutions.p1080)
