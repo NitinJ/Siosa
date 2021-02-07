@@ -26,7 +26,7 @@ class LocationDrawer:
 
         lf = LocationFactory()
         full_screen_grab_params = LocationDrawer._get_grab_params(
-            lf.get(Locations.FULL_SCREEN))
+            lf.get(Locations.SCREEN_FULL))
         with mss.mss() as sct:
             image = sct.grab(full_screen_grab_params)
 
@@ -37,9 +37,9 @@ class LocationDrawer:
 
         image_bytes_bgr = cv2.cvtColor(
             np.array(image_bytes_rgb), cv2.COLOR_RGB2BGR)
-        cv2.rectangle(image_bytes_bgr, (location.x1, location.y1), (location.x2, location.y2), (0, 0, 255), 4)
+        cv2.rectangle(image_bytes_bgr, (location.x1, location.y1), (location.x2, location.y2), (0, 0, 255), 2)
 
-        image_bytes_bgr = cv2.resize(image_bytes_bgr,  (lf.resolution.w//2, lf.resolution.h//2))
+        image_bytes_bgr = cv2.resize(image_bytes_bgr,  (lf.resolution.w//1, lf.resolution.h//1))
 
         cv2.imshow('image', image_bytes_bgr)
         cv2.waitKey(0)
