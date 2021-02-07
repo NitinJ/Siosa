@@ -13,7 +13,7 @@ from siosa.trader.trade_verifier import TradeVerifier
 
 class TradeStep(Step):
     UPDATE_INTERVAL = 0.005
-    MAX_RETRIES = 2
+    MAX_RETRIES = 1
     TRADE_THANK_YOU = "Thanks and have fun !"
     TRADE_OFFER_WAIT_TIMEOUT = 20
     TRADE_ACCEPT_WAIT_TIMEOUT = 10
@@ -135,7 +135,7 @@ class TradeStep(Step):
         self.kc.hold_modifier('Ctrl')
         self.mc.click()
         self.kc.unhold_modifier('Ctrl')
-        self.mc.move_mouse(self.lf.get(Locations.OPEN_POSITION))
+        self.mc.move_mouse(self.lf.get(Locations.SCREEN_NOOP_POSITION))
 
     async def on_accept(self):
         self.logger.debug("Trade accepted.")
