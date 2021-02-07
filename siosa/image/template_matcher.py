@@ -32,22 +32,31 @@ class TemplateMatcher:
         Returns:
             The positions (relative to the location) of matches with template.
         """
-        if not self.wc.is_poe_in_foreground():
-            if self.confirm_if_poe_not_in_foreground:
+        ts1 = time.time()
+        if self.confirm_if_poe_not_in_foreground:
+            if not self.wc.is_poe_in_foreground2():
                 pyautogui.confirm(
                     text='Move to POE and press OK',
                     title='Grab image',
                     buttons=['OK'])
-            if not self.wc.is_poe_in_foreground():
+            if not self.wc.is_poe_in_foreground2():
                 self.logger.error("POE is not in foreground to capture template.")
                 raise (Exception("Path of Exile is not in foreground"))
 
+        self.logger.debug(
+            "POE background check took {} ms".format(
+                (time.time() - ts1) * 1000))
+
         # The screen part to capture
-        ts1 = time.time()
         screen_location = TemplateMatcher._get_grab_params(location)
+        ts1 = time.time()
         image = None
         with mss.mss() as sct:
             image = sct.grab(screen_location)
+            self.logger.debug(
+                "MSS for {} took {} ms".format(
+                    self.template.get_template_name(),
+                    (time.time() - ts1) * 1000))
 
         image_bytes_rgb = Image.frombytes(
             'RGB',
@@ -90,11 +99,15 @@ class TemplateMatcher:
             cv2.waitKey(0)
             cv2.destroyAllWindows()
 
+        self.logger.debug(
+            "Template matcher {} took {} ms".format(
+                self.template.get_template_name(), (time.time() - ts1) * 1000))
         return points
 
     @staticmethod
     def _get_grab_params(location):
         return {
+            "mon": "2",
             "top": location.y1,
             "left": location.x1,
             "width": location.x2 - location.x1,
