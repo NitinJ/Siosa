@@ -14,7 +14,7 @@ STATIC_DATA_API = "https://www.pathofexile.com/api/trade/data/static"
 STASH_INFO_API = "https://www.pathofexile.com/character-window/get-stash-items?accountName={}&realm=pc&league={}&tabs=1"
 SCRAPE_STR1 = 'require(["main"], function(){require(["trade"], function(t){    t('
 SCRAPE_STR2 = ');});});'
-USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.150 Safari/537.36'
+USER_AGENT = 'Mozilla/5.0'
 MAX_ITEMS_FOR_CALCULATING_EXCHANGE = 20
 
 
