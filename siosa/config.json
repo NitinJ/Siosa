@@ -1,10 +1,11 @@
 {
-    "account_name": "",
-    "poe_session_id": "",
+    "account_name": "MopedDriverr",
+    "poe_session_id": "2561bcd7ed51683282115e110e6ea1f3",
     "stashes": {
-        "dump": [""],
-        "sell": [""],
-        "currency": [""]
+        "dump": ["~price 40 chaos"],
+        "sell": ["SELL"],
+        "sell_index": 6,
+        "currency": ["$$$"]
     },
     "shortcuts": {
       "close_all_user_interface": ["Ctrl", "`"]

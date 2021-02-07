@@ -18,13 +18,13 @@ def run():
 
     # Configuration
     config_file_path = os.path.join(os.path.dirname(__file__), "config.json")
-    config = SiosaConfig(config_file_path).config
+    config = SiosaConfig(config_file_path)
 
     # Currency exchange for getting chaos-exalt ratios and creating currency
     # items. Uses PoeApi object. PoeApi is used for fetching stuff using poe
     # web api restful endpoints.
     exchange = CurrencyExchange(
-        PoeApi(config['account_name'], config['poe_session_id']))
+        PoeApi(config.get_account_name(), config.get_poe_session_id()))
 
     # Stash object for managing stash, stash-tabs and getting static stash
     # information for the account such as - number of tabs, their contents etc.
@@ -43,7 +43,7 @@ def run():
     # test task.
     # gc.submit_task(TestTask(15))
 
-    trader = TradeController(gc, log_listener)
+    trader = TradeController(gc, log_listener, config)
     trader.start_trading()
 
 

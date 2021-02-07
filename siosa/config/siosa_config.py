@@ -27,4 +27,16 @@ class SiosaConfig(metaclass=Singleton):
         self._write_updated_config()
 
     def _write_updated_config(self):
-        json.dump(self.config, open(path, 'w'))
+        json.dump(self.config, open(self.path, 'w'))
+
+    def get_sell_tab_index(self):
+        return self.config['stashes']['sell_index']
+
+    def get_sell_tab_names(self):
+        return self.config['stashes']['sell']
+
+    def get_account_name(self):
+        return self.config['account_name']
+
+    def get_poe_session_id(self):
+        return self.config['poe_session_id']
