@@ -80,6 +80,7 @@ class TradeStateUpdater:
             TradeStateUpdater.BORDER)
 
     def update(self):
+        ts = time.time()
         current_state = None
         trade_status = self._get_trade_status_from_log()
         game_state = self.game_state.get()
@@ -90,10 +91,11 @@ class TradeStateUpdater:
             current_state = States.ACCEPTED if trade_status.accepted() else \
                 States.CANCELLED
         elif self.awaiting_tm.match(self.lf.get(
-                Locations.AWAITING_TRADE_CANCEL_BUTTON)):
+                Locations.TRADE_AWAITING_TRADE_CANCEL_BUTTON)):
             current_state = States.AWAITING_TRADE
         elif self.trading_tm.match(self.lf.get(Locations.TRADE_WINDOW_TITLE)):
             # Trading.
+            self.logger.debug("Trade window open.")
             current_state = \
                 States.create_from_trading_state(*self._get_trading_state())
             # This should never happen.
@@ -106,8 +108,10 @@ class TradeStateUpdater:
                 "Setting trade state to {}".format(current_state))
             self.state_value = current_state
             self.trade_state.set_value(self.state_value)
+        self.logger.debug("Update took: {} ms".format((time.time() - ts)*1000))
 
     def _get_trading_state(self):
+        ts = time.time()
         state_me = 'OFFERED' if self._have_i_offered() else 'NOT_OFFERED'
         state_other = 'NOT_OFFERED'
         if self.trading_other_retracted.match(
@@ -117,13 +121,15 @@ class TradeStateUpdater:
                 self.lf.get(Locations.TRADE_ACCEPT_GREEN_AURA)):
             state_other = 'ACCEPTED'
         else:
-            state_other = 'OFFERED' if self._has_other_player_offered() \
-                else 'NOT_OFFERED'
+            if self._has_other_player_offered():
+                state_other = 'OFFERED'
+            else:
+                state_other = 'NOT_OFFERED'
 
         if self.trading_me_accepted_green.match(
                 self.lf.get(Locations.TRADE_ACCEPT_GREEN_AURA_ME)):
             state_me = 'ACCEPTED'
-
+        self.logger.debug("State me: {}, state_other: {}".format(state_me, state_other))
         return state_me, state_other
 
     def _have_i_offered(self):
@@ -132,13 +138,13 @@ class TradeStateUpdater:
             return False
         empty_positions = \
             self.trading_tm_me.match(self.lf.get(Locations.TRADE_WINDOW_ME))
-        return True if self.grid_me.get_cells_not_in_positions(empty_positions) \
-            else False
+        return self.grid_me.get_cells_not_in_positions(empty_positions)
 
     def _has_other_player_offered(self):
         points = self.grid_other.get_cells_not_in_positions(
             self.trading_tm_other.match(
                 self.lf.get(Locations.TRADE_WINDOW_OTHER)))
+        print(points)
         t2 = time.time()
         if not points:
             return False
