@@ -4,6 +4,7 @@ from siosa.image.grid import Grid
 from siosa.image.template import Template
 from siosa.image.template_matcher import TemplateMatcher
 from siosa.image.template_registry import TemplateRegistry
+from siosa.location.location import Location
 from siosa.location.location_factory import LocationFactory, Locations
 
 
@@ -44,4 +45,5 @@ class StashTabScanner:
         return False
 
     def get_cell_location(self, cell):
-        return self.grid.get_cell_location(cell)
+        (cx, cy) = self.grid.get_cell_location(cell).get_center()
+        return self.lf.get(Location(cx, cy, cx, cy, self.lf.resolution))
