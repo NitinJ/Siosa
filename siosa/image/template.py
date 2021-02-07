@@ -24,6 +24,9 @@ class Template:
         self.template_file_name = template_file_name
         self.resolution = resolution
 
+    def get_template_name(self):
+        return self.template_file_name
+
     def get(self):
         """
         Returns the template image resized to the current screen resolution.
