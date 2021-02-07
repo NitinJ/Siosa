@@ -5,11 +5,14 @@ class TemplateRegistry:
     """
     INVENTORY_0_0 = ("sct-tmp-INVENTORY_0_0.png", (1920, 1080))
     INVENTORY = ("sct-tmp-INVENTORY.png", (1920, 1080))
-    NORMAL_STASH_0_0 = ("sct-tmp-NORMAL_STASH_0_0.png", (1920, 1080))
-    QUAD_STASH_0_0 = ("sct-tmp-QUAD_STASH_0_0.png", (1920, 1080))
-    STASH_CLOSE_BUTTON = ("sct-tmp-CLOSE_STASH_BUTTON.png", (1920, 1080))
-    AWAITING_TRADE_BOX = ("sct-tmp-AWAITING_TRADE_BOX.png", (1920, 1080))
-    AWAITING_TRADE_CANCEL_BUTTON = ("sct-tmp-AWAITING_TRADE_CANCEL_BUTTON.png", (1920, 1080))
+    STASH = ("sct-tmp-STASH.png", (1920, 1080))
+    STASH_BANNER = ("sct-tmp-STASH_BANNER.png", (1920, 1080))
+    NORMAL_STASH_0_0 = ("sct-tmp-STASH_NORMAL_0_0.png", (1920, 1080))
+    QUAD_STASH_0_0 = ("sct-tmp-STASH_QUAD_0_0.png", (1920, 1080))
+    STASH_CLOSE_BUTTON = ("sct-tmp-STASH_CLOSE_BUTTON.png", (1920, 1080))
+    DECORATIONS_BANNER = ("sct-tmp-DECORATIONS_BANNER.png", (1920, 1080))
+    AWAITING_TRADE_BOX = ("sct-tmp-TRADE_AWAITING_TRADE_BOX.png", (1920, 1080))
+    AWAITING_TRADE_CANCEL_BUTTON = ("sct-tmp-TRADE_AWAITING_TRADE_CANCEL_BUTTON.png", (1920, 1080))
     TRADE_WINDOW_TITLE = ("sct-tmp-TRADE_WINDOW_TITLE.png", (1920, 1080))
     TRADE_WINDOW_ME = ("sct-tmp-TRADE_WINDOW_ME.png", (1920, 1080))
     TRADE_WINDOW_ME_0_0 = ("sct-tmp-TRADE_WINDOW_ME_0_0.png", (1920, 1080))
@@ -22,6 +25,7 @@ class TemplateRegistry:
     TRADE_ACCEPT_GREEN_AURA_ME = (
     "sct-tmp-TRADE_ACCEPT_GREEN_AURA_ME.png", (1920, 1080))
     CANCEL_TRADE_ACCEPT_BUTTON = (
-    "sct-tmp-CANCEL_TRADE_ACCEPT_BUTTON.png", (1920, 1080))
+    "sct-tmp-TRADE_CANCEL_BUTTON.png", (1920, 1080))
     TRADE_WINDOW_OTHER_0_0_COUNT = (
         "sct-tmp-TRADE_WINDOW_OTHER_0_0_COUNT.png", (1920, 1080))
+
