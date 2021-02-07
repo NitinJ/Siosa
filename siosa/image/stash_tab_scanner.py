@@ -18,8 +18,8 @@ class StashTabScanner:
         self.logger.setLevel(logging.DEBUG)
         self.lf = LocationFactory()
         self.stash_tab = stash_tab
-        self.cell_0_0 = Locations.QUAD_STASH_0_0 if self.stash_tab.is_quad \
-            else Locations.NORMAL_STASH_0_0
+        self.cell_0_0 = Locations.STASH_QUAD_0_0 if self.stash_tab.is_quad \
+            else Locations.STASH_NORMAL_0_0
 
         self.grid = Grid(
             Locations.STASH_TAB,
