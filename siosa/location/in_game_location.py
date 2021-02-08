@@ -21,6 +21,16 @@ class InGameLocation:
     def get_center(self):
         return (self.x1 + self.x2) / 2, (self.y1 + self.y2) / 2
 
+    def get_center_location(self):
+        """
+        Returns an InGameLocation for center of the current location.
+        Returns:
+            InGameLocation
+        """
+        x = (self.x1 + self.x2) / 2
+        y = (self.y1 + self.y2) / 2
+        return InGameLocation(x, y, x, y, self.name)
+
     def equals(self, other):
         return str(other) == str(self)
 
