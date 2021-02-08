@@ -25,7 +25,7 @@ class TemplateRegistry:
     TRADE_ACCEPT_GREEN_AURA_ME = (
     "sct-tmp-TRADE_ACCEPT_GREEN_AURA_ME.png", (1920, 1080))
     CANCEL_TRADE_ACCEPT_BUTTON = (
-    "sct-tmp-TRADE_CANCEL_BUTTON.png", (1920, 1080))
+    "sct-tmp-TRADE_CANCEL_ACCEPT_BUTTON.png", (1920, 1080))
     TRADE_WINDOW_OTHER_0_0_COUNT = (
         "sct-tmp-TRADE_WINDOW_OTHER_0_0_COUNT.png", (1920, 1080))
 
