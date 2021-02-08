@@ -41,7 +41,7 @@ class Stash(metaclass=Singleton):
             self.logger.error("Stash tab with name={} is not present in Stash"
                               .format(name))
             return None
-        # Return first stash tab incase there are multiple by the same name.
+        # Return first stash tab in case there are multiple by the same name.
         return self.name_to_stash_tab[name]
 
     def get_stash_tabs_for_item(self, item):
