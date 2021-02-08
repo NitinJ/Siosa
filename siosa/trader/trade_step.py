@@ -12,7 +12,7 @@ from siosa.trader.trade_verifier import TradeVerifier
 
 
 class TradeStep(Step):
-    UPDATE_INTERVAL = 0.005
+    UPDATE_INTERVAL = 0.01
     MAX_RETRIES = 1
     TRADE_THANK_YOU = "Thanks and have fun !"
     TRADE_OFFER_WAIT_TIMEOUT = 20
@@ -115,11 +115,15 @@ class TradeStep(Step):
         return wrapper
 
     async def verify(self):
+        # Notify the updater that we are verifying the trade.
+        self.state_updater.set_verifying(True)
+
         self.logger.debug("Verifying trade".format(self.trader))
         if self.trade_verifier.verify():
             self.state.set_state_me_str('VERIFIED_SUCCESS')
         else:
             self.state.set_state_me_str('VERIFIED_FAIL')
+        self.state_updater.set_verifying(False)
 
     async def accept(self):
         self.logger.debug("Accepting trade")
