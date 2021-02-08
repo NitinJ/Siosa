@@ -1,5 +1,6 @@
 import pyautogui
 
+from siosa.image.reusable_template_matcher import ReusableTemplateMatcher
 from siosa.image.template import Template
 from siosa.image.template_matcher import TemplateMatcher
 from siosa.image.template_registry import TemplateRegistry
@@ -16,7 +17,10 @@ def verify_template(template_info):
             template_location.name),
         title='Grab template',
         buttons=['OK'])
-    tm = TemplateMatcher(template, debug=True, confirm_if_poe_not_in_foreground=True)
+    # tm = ReusableTemplateMatcher(
+    #     Locations.TRADE_WINDOW_FULL, confirm_foreground=True, debug=True)
+    # print(tm.match_template(template))
+    tm = TemplateMatcher(template, debug=True, confirm_foreground=True)
     print(tm.match(template_location))
 
 
