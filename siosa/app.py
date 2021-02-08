@@ -9,7 +9,7 @@ from siosa.data.stash import Stash
 from siosa.network.poe_api import PoeApi
 from siosa.trader.trade_controller import TradeController
 
-FORMAT = "%(created)f: [%(filename)s:%(lineno)s - %(funcName)s() ] %(message)s"
+FORMAT = "%(created)f - %(thread)d: [%(filename)s:%(lineno)s - %(funcName)s() ] %(message)s"
 logging.basicConfig(format=FORMAT)
 
 
