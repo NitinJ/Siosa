@@ -150,10 +150,11 @@ class Locations:
     TRADE_WINDOW_OTHER_0_0_COUNT = Location(315, 206, 336, 225, Resolutions.p1080)
 
     TRADE_WINDOW_MOUSEOVER_WARNING_TEXT = Location(492, 828, 537, 842, Resolutions.p1080)
-    TRADE_ACCEPT_RETRACTED = Location(333, 823, 403, 848, Resolutions.p1080)
-    TRADE_ACCEPT_GREEN_AURA = Location(575, 160, 680, 202, Resolutions.p1080)
-    TRADE_ACCEPT_GREEN_AURA_ME = Location(466, 509, 702, 534, Resolutions.p1080)
-    TRADE_CANCEL_BUTTON = Location(307, 821, 448, 849, Resolutions.p1080)
+    TRADE_ACCEPT_RETRACTED = Location(383, 821, 404, 850, Resolutions.p1080)
+    TRADE_ACCEPT_GREEN_AURA = Location(349, 470, 397, 524, Resolutions.p1080)
+    TRADE_ACCEPT_GREEN_AURA_ME = Location(299, 509, 347, 541, Resolutions.p1080)
+    TRADE_CANCEL_ACCEPT_BUTTON = Location(307, 821, 448, 849, Resolutions.p1080)
     TRADE_ACCEPT_BUTTON = Location(307, 821, 448, 849, Resolutions.p1080)
+    TRADE_WINDOW_FULL = Location(284, 75, 969, 869, Resolutions.p1080)
 
     STASH = Location(595, 283, 654, 305, Resolutions.p1080)
