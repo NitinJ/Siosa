@@ -23,11 +23,13 @@ class Template:
         """
         self.template_file_name = template_file_name
         self.resolution = resolution
+        self.resized_template = self._get_resized_template()
+        self.template_gray = cv2.cvtColor(self.resized_template, cv2.COLOR_BGR2GRAY)
 
     def get_template_name(self):
         return self.template_file_name
 
-    def get(self):
+    def _get_resized_template(self):
         """
         Returns the template image resized to the current screen resolution.
         Returns:
@@ -41,6 +43,14 @@ class Template:
 
         # Resize template to the current resolution.
         return cv2.resize(template, dim, interpolation=cv2.INTER_AREA)
+
+    def get(self):
+        """
+        Returns the template image resized to the current screen resolution.
+        Returns:
+            The resized template.
+        """
+        return self.resized_template, self.template_gray
 
     @staticmethod
     def create(name, location, overwrite=False, debug=False):

@@ -11,7 +11,6 @@ from PIL import Image
 
 from siosa.control.window_controller import WindowController
 
-
 class TemplateMatcher:
     def __init__(self, template, confidence=0.75, debug=False,
                  confirm_foreground=False):
@@ -38,24 +37,27 @@ class TemplateMatcher:
                     self.template.get_template_name(),
                     (time.time() - ts1) * 1000))
 
-        self.image_cache[key] = image
-        return image
+        image_bytes_rgb = Image.frombytes(
+            'RGB',
+            (screen_location['width'], screen_location['height']),
+            image.rgb)
+        image_bytes_bgr = cv2.cvtColor(
+            np.array(image_bytes_rgb), cv2.COLOR_RGB2BGR)
+        self.image_cache[key] = image_bytes_bgr
+        return image_bytes_bgr
 
     def _check_if_poe_is_in_foreground(self):
         ts1 = time.time()
-        if self.confirm_foreground:
-            if not self.wc.is_poe_in_foreground2():
-                pyautogui.confirm(
-                    text='Move to POE and press OK',
-                    title='Grab image',
-                    buttons=['OK'])
-            if not self.wc.is_poe_in_foreground2():
-                self.logger.error("POE is not in foreground to capture "
-                                  "template.")
-                raise (Exception("Path of Exile is not in foreground"))
-        self.logger.debug(
-            "POE background check took {} ms".format(
-                (time.time() - ts1) * 1000))
+        if not self.wc.is_poe_in_foreground2():
+            pyautogui.confirm(
+                text='Move to POE and press OK',
+                title='Grab image',
+                buttons=['OK'])
+            time.sleep(2)
+        if not self.wc.is_poe_in_foreground2():
+            self.logger.error("POE is not in foreground to capture "
+                              "template.")
+            raise (Exception("Path of Exile is not in foreground"))
 
     def clear_image_cache(self):
         self.image_cache = {}
@@ -71,29 +73,23 @@ class TemplateMatcher:
             The positions (relative to the location) of matches with template.
         """
         ts1 = time.time()
-        self._check_if_poe_is_in_foreground()
+        if self.confirm_foreground:
+            self._check_if_poe_is_in_foreground()
 
         # Params for the part of the screen to capture.
         screen_location = TemplateMatcher._get_grab_params(location)
-        image = self.get_image(screen_location, reuse)
+        image_bytes_bgr = self.get_image(screen_location, reuse)
 
-        image_bytes_rgb = Image.frombytes(
-            'RGB',
-            (screen_location['width'], screen_location['height']),
-            image.rgb)
-        image_bytes_bgr = cv2.cvtColor(
-            np.array(image_bytes_rgb), cv2.COLOR_RGB2BGR)
         image_bytes_bgr_copy = copy.copy(image_bytes_bgr)
         image_bytes_gray = cv2.cvtColor(image_bytes_bgr, cv2.COLOR_BGR2GRAY)
 
-        template = self.template.get()
+        template, template_gray = self.template.get()
         if self.debug:
             cv2.imshow('image', template)
             cv2.waitKey(0)
             cv2.destroyAllWindows()
 
         tmin, tmax = self._get_bgr_min_max(template)
-        template_gray = cv2.cvtColor(template, cv2.COLOR_BGR2GRAY)
         template_width, template_height = template_gray.shape[::-1]
 
         # Match the template
@@ -110,7 +106,8 @@ class TemplateMatcher:
             if dmin[0] <= tmin[0] and dmin[1] <= tmin[1] and dmin[2] <= tmin[2]:
                 pt = (point[0] + template_width // 2,
                       point[1] + template_height // 2)
-                cv2.rectangle(image_bytes_bgr, pt, pt, (0, 0, 255), 4)
+                if self.debug:
+                    cv2.rectangle(image_bytes_bgr, pt, pt, (0, 0, 255), 4)
                 points.append(pt)
 
         if self.debug:
