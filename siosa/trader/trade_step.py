@@ -1,4 +1,5 @@
 import asyncio
+import math
 import time
 
 from siosa.control.console_controller import Commands
@@ -13,10 +14,11 @@ from siosa.trader.trade_verifier import TradeVerifier
 
 class TradeStep(Step):
     UPDATE_INTERVAL = 0.01
-    MAX_RETRIES = 1
+    MAX_RETRIES = 2
     TRADE_THANK_YOU = "Thanks and have fun !"
     TRADE_OFFER_WAIT_TIMEOUT = 10
     TRADE_ACCEPT_WAIT_TIMEOUT = 10
+    CHAOS_MISSING = "{} chaos short.."
 
     def __init__(self, trade_info: TradeInfo, log_listener):
         super().__init__()
@@ -70,35 +72,21 @@ class TradeStep(Step):
         # Not-offered
         self.dfa.add_state_fn(TradeState(States.TRADING_NO_NO), self.offer)
         self.dfa.add_state_fn(TradeState(States.TRADING_NO_O), self.offer)
-        self.dfa.add_state_fn(TradeState(States.TRADING_NO_R), self.offer)
         self.dfa.add_state_fn(TradeState(States.TRADING_NO_A), self.offer)
 
         # Offered
         self.dfa.add_state_fn(TradeState(States.TRADING_O_NO),
                               self.cancel(offer_timeout))
-        self.dfa.add_state_fn(TradeState(States.TRADING_O_O), self.cancel(accept_timeout))
+        self.dfa.add_state_fn(TradeState(States.TRADING_O_O),
+                              self.cancel(accept_timeout))
         self.dfa.add_state_fn(TradeState(States.TRADING_O_A), self.verify)
 
         # Verified success
-        self.dfa.add_state_fn(TradeState(States.TRADING_VS_NO),
-                              self.transition(States.TRADING_O_NO))
-        self.dfa.add_state_fn(TradeState(States.TRADING_VS_O),
-                              self.transition(States.TRADING_O_O))
         self.dfa.add_state_fn(TradeState(States.TRADING_VS_A), self.accept)
 
         # Verified fail
-        self.dfa.add_state_fn(TradeState(States.TRADING_VF_NO),
-                              self.transition(States.TRADING_O_NO))
-        self.dfa.add_state_fn(TradeState(States.TRADING_VF_O),
-                              self.transition(States.TRADING_O_O))
         self.dfa.add_state_fn(TradeState(States.TRADING_VF_A),
                               self.cancel_with_message(""))
-
-        # Accepted
-        self.dfa.add_state_fn(TradeState(States.TRADING_A_NO),
-                              self.cancel(0))
-        self.dfa.add_state_fn(TradeState(States.TRADING_A_O),
-                              self.cancel(0))
 
     def transition(self, state_value):
         async def wrapper():
@@ -121,10 +109,14 @@ class TradeStep(Step):
 
     async def verify(self):
         self.logger.debug("Verifying trade".format(self.trader))
-        if self.trade_verifier.verify():
+        res = self.trade_verifier.verify()
+        if res['verified']:
             self.state.update_me('VERIFIED_SUCCESS')
         else:
             self.state.update_me('VERIFIED_FAIL')
+            self.cc.send_chat(self.trader,
+                              TradeStep.CHAOS_MISSING.format(
+                                  int(math.floor(res['missing_chaos']))))
 
     async def accept(self):
         self.logger.debug("Accepting trade")
