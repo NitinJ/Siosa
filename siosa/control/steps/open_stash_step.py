@@ -1,4 +1,5 @@
 import logging
+import time
 
 from siosa.control.game_state import GameState
 from siosa.control.game_step import Step
@@ -52,6 +53,10 @@ class OpenStash(Step):
 
         self.logger.debug("Stash tab not found!. Placing stash tab.")
         PlaceStash().execute(game_state)
+
+        # Stash takes time to open.
+        time.sleep(2)
+
         if tm.match(self.lf.get(Locations.STASH_BANNER)):
             # Stash open.
             game_state.update({
