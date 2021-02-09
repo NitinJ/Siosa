@@ -96,6 +96,7 @@ class Locations:
                              Resolutions.p1080.w / 2, Resolutions.p1080.h / 2,
                              Resolutions.p1080)
     SCREEN_NOOP_POSITION = Location(1342, 478, 1384, 522, Resolutions.p1080)
+    SCREEN_RIGHT_STRIP = Location(1870, 0, 1920, 1080, Resolutions.p1080)
 
     # Currency tab
     CURRENCY_CENTER = Location(295, 366, 371, 525, Resolutions.p1080)
@@ -114,6 +115,7 @@ class Locations:
     DECORATIONS_OPEN_BUTTON = Location(1095, 960, 1143, 999, Resolutions.p1080)
     DECORATIONS_STASH_AFTER_SEARCHING = Location(1409, 232, 1498, 322, Resolutions.p1080)
     DECORATIONS_CLOSE_BUTTON = Location(1879, 60, 1892, 74, Resolutions.p1080)
+    DECORATIONS_UTILITIES_ARROW = Location(1291, 180, 1318, 212, Resolutions.p1080)
 
     # Stash
     STASH_CLOSE_BUTTON = Location(620, 57, 636, 77, Resolutions.p1080)
@@ -121,6 +123,8 @@ class Locations:
     STASH_NORMAL_0_0 = Location(19, 129, 69, 179, Resolutions.p1080)
     STASH_QUAD_0_0 = Location(18, 129, 42, 153, Resolutions.p1080)
     STASH_TAB = Location(19, 129, 648, 758, Resolutions.p1080)
+    STASH = Location(980, 414, 1025, 424, Resolutions.p1080)
+    STASH_BANNER = Location(288, 56, 375, 81, Resolutions.p1080)
 
     # Inventory
     INVENTORY = Location(1260, 579, 1915, 861, Resolutions.p1080)
@@ -131,9 +135,6 @@ class Locations:
 
     # Player items
     PLAYER_ITEMS_CHEST_PIECE = Location(1577, 269, 1596, 288, Resolutions.p1080)
-
-    # Banners
-    STASH_BANNER = Location(288, 56, 375, 81, Resolutions.p1080)
 
     # Trade
     TRADE_AWAITING_TRADE_BOX = Location(714, 568, 1203, 601, Resolutions.p1080)
@@ -148,6 +149,7 @@ class Locations:
     TRADE_WINDOW_OTHER_0_0 = Location(313, 206, 363, 256, Resolutions.p1080)
     TRADE_WINDOW_OTHER_ROW1 = Location(311, 204, 942, 256, Resolutions.p1080)
     TRADE_WINDOW_OTHER_0_0_COUNT = Location(315, 206, 336, 225, Resolutions.p1080)
+    TRADE_WINDOW_OTHER_SMALL_0_0 = Location(328, 222, 348, 241, Resolutions.p1080)
 
     TRADE_WINDOW_MOUSEOVER_WARNING_TEXT = Location(492, 828, 537, 842, Resolutions.p1080)
     TRADE_ACCEPT_RETRACTED = Location(383, 821, 404, 850, Resolutions.p1080)
@@ -156,5 +158,6 @@ class Locations:
     TRADE_CANCEL_ACCEPT_BUTTON = Location(307, 821, 448, 849, Resolutions.p1080)
     TRADE_ACCEPT_BUTTON = Location(307, 821, 448, 849, Resolutions.p1080)
     TRADE_WINDOW_FULL = Location(284, 75, 969, 869, Resolutions.p1080)
+    TRADE_WINDOW_CLOSE_BUTTON = Location(929, 82, 959, 112, Resolutions.p1080)
 
-    STASH = Location(595, 283, 654, 305, Resolutions.p1080)
+    PARTY_NOTIFICATIONS_CLOSE_BUTTON = Location(1892, 700, 1900, 727, Resolutions.p1080)
