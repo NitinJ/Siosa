@@ -26,6 +26,7 @@ class TradeStateUpdater:
 
         self.log_listener = log_listener
         self.trade_status_queue = log_listener.trade_status_event_queue
+        self._get_trade_status_from_log()
 
         self.game_state = game_state
 
