@@ -37,7 +37,6 @@ class InitTask(Task):
             # ChangeZone(zones.Zones.MENAGERIE),
             # ChangeZone(zones.Zones.HIDEOUT),
             # PlaceStash(),
-            LocateStashStep(),
             OpenStash(),
             Wait(1),
             ScanInventory(),
