@@ -7,12 +7,15 @@ from siosa.control.game_step import Step
 class InvitePlayerToHideoutStep(Step):
     PLAYER_ENTRY_WAIT_TIME = 30
 
-    def __init__(self, player_account_name):
+    def __init__(self, player_account_name, msg=None):
         Step.__init__(self)
         self.player_account_name = player_account_name
+        self.msg = msg
 
     def execute(self, game_state):
         self.game_state = game_state
+        if self.msg:
+            self.cc.send_chat(self.player_account_name, self.msg)
         self.cc.console_command(
             Commands.INVITE_TO_PARTY(self.player_account_name))
         status = self._wait_for_player_to_join_hideout()
