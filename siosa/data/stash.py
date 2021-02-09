@@ -105,6 +105,8 @@ class Stash(metaclass=Singleton):
         return stash_tabs
 
     def _get_stash_type_for_item(self, item):
+        if not item:
+            return StashTabType.UNKNOWN
         if item.type == ItemType.CURRENCY:
             return StashTabType.CURRENCY
         elif item.type == ItemType.DIVINATION_CARD:
