@@ -1,3 +1,5 @@
+import logging
+
 import pyautogui
 
 from siosa.image.reusable_template_matcher import ReusableTemplateMatcher
@@ -5,6 +7,9 @@ from siosa.image.template import Template
 from siosa.image.template_matcher import TemplateMatcher
 from siosa.image.template_registry import TemplateRegistry
 from siosa.location.location_factory import LocationFactory, Locations
+
+FORMAT = "%(created)f - %(thread)d: [%(filename)s:%(lineno)s - %(funcName)s() ] %(message)s"
+logging.basicConfig(format=FORMAT)
 
 lf = LocationFactory()
 
@@ -20,7 +25,7 @@ def verify_template(template_info):
     # tm = ReusableTemplateMatcher(
     #     Locations.TRADE_WINDOW_FULL, confirm_foreground=True, debug=True)
     # print(tm.match_template(template))
-    tm = TemplateMatcher(template, debug=True, confirm_foreground=True)
+    tm = TemplateMatcher(template, debug=True, confidence=0.6, confirm_foreground=False)
     print(tm.match(template_location))
 
 
