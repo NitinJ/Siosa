@@ -27,6 +27,8 @@ class ScanInventory(Step):
         for p in item_positions:
             self.mc.move_mouse(Inventory.get_location(p))
             item = self.clipboard.read_item_at_cursor()
+            if not item:
+                continue
             stash_tabs = self.stash.get_stash_tabs_for_item(item)
 
             if not stash_tabs:
