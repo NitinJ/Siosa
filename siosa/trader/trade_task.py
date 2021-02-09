@@ -2,7 +2,6 @@ import logging
 
 from siosa.control.game_task import Task
 from siosa.control.steps.clean_inventory_step import CleanInventory
-from siosa.control.steps.close_notifications_step import CloseNotificationsStep
 from siosa.control.steps.invite_player_to_hideout_step import \
     InvitePlayerToHideoutStep
 from siosa.control.steps.open_stash_step import OpenStash
