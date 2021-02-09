@@ -33,19 +33,18 @@ class TradeStateUpdater:
         self.trade_info = trade_info
         self.trader = trade_info.trade_request.trader
 
-        self.state_value = States.NOT_STARTED
+        self.current_state = States.NOT_STARTED
         self.lf = LocationFactory()
 
         self.other_points = []
         self.ts_start = 0
-        self.verifying = False
 
         self.awaiting_tm = TemplateMatcher(
             Template.from_registry(
                 TemplateRegistry.AWAITING_TRADE_CANCEL_BUTTON),
             confirm_foreground=True)
         self.trading_tm_other = TemplateMatcher(
-            Template.from_registry(TemplateRegistry.TRADE_WINDOW_OTHER_0_0),
+            Template.from_registry(TemplateRegistry.TRADE_WINDOW_OTHER_SMALL_0_0),
             confirm_foreground=True)
         self.trading_tm_me = TemplateMatcher(
             Template.from_registry(TemplateRegistry.TRADE_WINDOW_ME_0_0),
@@ -54,8 +53,8 @@ class TradeStateUpdater:
             Locations.TRADE_WINDOW_FULL, confirm_foreground=True)
 
         # Templates
-        self.trade_window_title = Template.from_registry(
-            TemplateRegistry.TRADE_WINDOW_TITLE)
+        self.trade_window_close_button = Template.from_registry(
+            TemplateRegistry.TRADE_WINDOW_CLOSE_BUTTON)
         self.trade_accept_retracted = Template.from_registry(
             TemplateRegistry.TRADE_ACCEPT_RETRACTED)
         self.trade_green_aura = Template.from_registry(
@@ -80,47 +79,49 @@ class TradeStateUpdater:
             TradeStateUpdater.BORDER,
             TradeStateUpdater.BORDER)
 
-    def set_verifying(self, v):
-        self.logger.debug("Setting verifying={}".format(v))
-        self.verifying = v
-
     def update(self):
+        self.logger.debug("In update ------------------------------")
         ts = time.time()
-        current_state = None
+
         trade_status = self._get_trade_status_from_log()
         game_state = self.game_state.get()
         self.full_trading_tm.clear_image_cache()
 
-        if self.trader not in game_state['players_in_hideout']:
-            current_state = States.LEFT
+        new_state = None
+        if self.full_trading_tm.match_template(self.trade_window_close_button):
+            self.logger.debug("Trade window is open.")
+            new_state = self._get_trading_state()
+        elif self.trader not in game_state['players_in_hideout']:
+            new_state = States.LEFT
         elif trade_status:
-            current_state = States.ACCEPTED if trade_status.accepted() else \
+            new_state = States.ACCEPTED if trade_status.accepted() else \
                 States.CANCELLED
         elif self.awaiting_tm.match(self.lf.get(
                 Locations.TRADE_AWAITING_TRADE_CANCEL_BUTTON)):
-            current_state = States.AWAITING_TRADE
-        elif self.full_trading_tm.match_template(self.trade_window_title):
-            # Trading.
-            self.logger.debug("Trade window is open")
-            current_state = \
-                States.create_from_trading_state(*self._get_trading_state())
-            # This should never happen.
-            assert current_state is not None
-        else:
-            current_state = States.NOT_STARTED
+            new_state = States.AWAITING_TRADE
 
-        if current_state != self.state_value:
-            self.logger.debug(
-                "Setting trade state to {}".format(current_state))
-            self.state_value = current_state
-            self.trade_state.set_value(self.state_value)
+        state_changed = False
+        if new_state and new_state != self.current_state:
+            self.logger.debug("Trying to set state to {}".format(new_state))
+            self.current_state = new_state
+            state_changed = self.trade_state.update(new_state)
+
+        if state_changed:
+            self.logger.debug("State changed to {}".format(new_state))
 
         self.logger.debug(
             "Update took: {} ms".format((time.time() - ts) * 1000))
 
     def _get_trading_state(self):
         ts = time.time()
-        state_me = 'OFFERED' if self._have_i_offered() else 'NOT_OFFERED'
+
+        # My state.
+        if self.full_trading_tm.match_template(self.trade_cancel_accept_button):
+            state_me = 'ACCEPTED'
+        else:
+            state_me = 'OFFERED' if self._have_i_offered() else 'NOT_OFFERED'
+
+        # Other state.
         state_other = 'NOT_OFFERED'
         if self.full_trading_tm.match_template(self.trade_accept_retracted):
             state_other = 'RETRACTED'
@@ -130,44 +131,22 @@ class TradeStateUpdater:
             state_other = 'OFFERED' if self._has_other_player_offered() else \
                 'NOT_OFFERED'
 
-        if self.full_trading_tm.match_template(self.trade_cancel_accept_button):
-            state_me = 'ACCEPTED'
         self.logger.debug(
             "State me: {}, state_other: {}".format(state_me, state_other))
-        return state_me, state_other
+
+        return States.create_from_trading_state(state_me, state_other)
 
     def _have_i_offered(self):
-        if self.full_trading_tm.match_template(self.trade_me_empty_text):
-            return False
-        empty_positions = \
-            self.trading_tm_me.match(self.lf.get(Locations.TRADE_WINDOW_ME))
-        return self.grid_me.get_cells_not_in_positions(empty_positions)
+        return not self.full_trading_tm.match_template(self.trade_me_empty_text)
 
     def _has_other_player_offered(self):
-        # Hack to make sure that we don't mark the other state as not-offered
-        # when we are verifying items. While verifying, we need to hover over
-        # items. Hover creates an overlay that hides cells in the other's trade
-        # window. That leads to the code below to think that the other player
-        # has retracted or changed the offering, thus marking the state as
-        # NOT_OFFERED.
-        if self.verifying:
-            return True
-
         points = self.grid_other.get_cells_not_in_positions(
             self.trading_tm_other.match(
                 self.lf.get(Locations.TRADE_WINDOW_OTHER)))
-        self.logger.debug(
-            "Other played has offered items at points {}".format(
-                str(points)))
-        t2 = time.time()
-        if not points:
-            return False
-        elif not self.other_points or self.other_points != points:
-            self.other_points = points
-            self.ts_start = time.time()
-            return False
-        elif self.other_points == points and \
-                t2 - self.ts_start >= TradeStateUpdater.OFFER_WAIT_TIME:
+        if points:
+            self.logger.debug(
+                "Other played has offered items at points {}".format(
+                    str(points)))
             return True
         return False
 

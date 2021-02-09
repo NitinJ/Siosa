@@ -2,9 +2,14 @@ import logging
 
 from siosa.control.game_task import Task
 from siosa.control.steps.clean_inventory_step import CleanInventory
+from siosa.control.steps.close_notifications_step import CloseNotificationsStep
 from siosa.control.steps.invite_player_to_hideout_step import \
     InvitePlayerToHideoutStep
+from siosa.control.steps.open_stash_step import OpenStash
 from siosa.control.steps.pickup_item import PickupItem
+from siosa.control.steps.scan_inventory_step import ScanInventory
+from siosa.control.steps.wait_step import Wait
+from siosa.trader.trade_info import TradeInfo
 from siosa.trader.trade_step import TradeStep
 
 
@@ -26,7 +31,19 @@ class TradeTask(Task):
     def steps(trade_info, log_listener):
         return [
             PickupItem(trade_info.stash_item),
-            InvitePlayerToHideoutStep(trade_info.trade_request.trader),
+            InvitePlayerToHideoutStep(
+                trade_info.trade_request.trader,
+                msg=TradeTask.get_trade_msg(trade_info)),
             TradeStep(trade_info, log_listener),
+            Wait(1),
+            OpenStash(),
+            ScanInventory(),
             CleanInventory()
         ]
+
+    @staticmethod
+    def get_trade_msg(trade_info: TradeInfo):
+        return "Ready to be picked up: [{}], for [{} {}]".format(
+            trade_info.trade_request.item_name,
+            trade_info.trade_request.currency['type'],
+            trade_info.trade_request.currency['amount'])

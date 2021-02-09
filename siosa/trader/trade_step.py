@@ -15,7 +15,7 @@ class TradeStep(Step):
     UPDATE_INTERVAL = 0.01
     MAX_RETRIES = 1
     TRADE_THANK_YOU = "Thanks and have fun !"
-    TRADE_OFFER_WAIT_TIMEOUT = 20
+    TRADE_OFFER_WAIT_TIMEOUT = 10
     TRADE_ACCEPT_WAIT_TIMEOUT = 10
 
     def __init__(self, trade_info: TradeInfo, log_listener):
@@ -26,22 +26,20 @@ class TradeStep(Step):
         self.state_updater = None
         self.log_listener = log_listener
 
-        # Current trade state.
+        # Current trade state, end states and dfa initialization.
         self.state = TradeState(States.NOT_STARTED)
         self.updater_end_states = [
-            TradeState(States.ACCEPTED),
-            TradeState(States.LEFT),
-            TradeState(States.ENDED)
+            States.ACCEPTED,
+            States.LEFT,
+            States.ENDED
         ]
         self.dfa = Dfa(self.state, TradeState(States.ENDED))
+        self._initialize_state_transitions()
 
         # Trade state variables.
-        self.retries = 0
+        self.retries = TradeStep.MAX_RETRIES
         self.accepted = False
-
         self.trade_verifier = TradeVerifier(trade_info)
-
-        self._initialize_state_transitions()
 
     def execute(self, game_state):
         self.game_state = game_state
@@ -53,6 +51,7 @@ class TradeStep(Step):
             self.state_updater.update()
             time.sleep(TradeStep.UPDATE_INTERVAL)
         self.dfa.join()
+        self.on_end()
 
     def _update_trade_state(self):
         pass
@@ -77,53 +76,55 @@ class TradeStep(Step):
         # Offered
         self.dfa.add_state_fn(TradeState(States.TRADING_O_NO),
                               self.cancel(offer_timeout))
-        self.dfa.add_state_fn(TradeState(States.TRADING_O_O), self.verify)
+        self.dfa.add_state_fn(TradeState(States.TRADING_O_O), self.cancel(accept_timeout))
         self.dfa.add_state_fn(TradeState(States.TRADING_O_A), self.verify)
 
         # Verified success
         self.dfa.add_state_fn(TradeState(States.TRADING_VS_NO),
                               self.transition(States.TRADING_O_NO))
-        self.dfa.add_state_fn(TradeState(States.TRADING_VS_O), self.accept)
+        self.dfa.add_state_fn(TradeState(States.TRADING_VS_O),
+                              self.transition(States.TRADING_O_O))
         self.dfa.add_state_fn(TradeState(States.TRADING_VS_A), self.accept)
 
         # Verified fail
         self.dfa.add_state_fn(TradeState(States.TRADING_VF_NO),
                               self.transition(States.TRADING_O_NO))
         self.dfa.add_state_fn(TradeState(States.TRADING_VF_O),
-                              self.cancel(offer_timeout))
+                              self.transition(States.TRADING_O_O))
         self.dfa.add_state_fn(TradeState(States.TRADING_VF_A),
-                              self.cancel(0))
+                              self.cancel_with_message(""))
 
         # Accepted
         self.dfa.add_state_fn(TradeState(States.TRADING_A_NO),
-                              self.transition(States.TRADING_O_NO))
+                              self.cancel(0))
         self.dfa.add_state_fn(TradeState(States.TRADING_A_O),
-                              self.cancel(accept_timeout))
-
-        # End
-        self.dfa.add_state_fn(TradeState(States.ENDED), self.on_end)
+                              self.cancel(0))
 
     def transition(self, state_value):
         async def wrapper():
-            self.state.set_value(state_value)
+            self.state.update(state_value)
+        return wrapper
+
+    def cancel_with_message(self, message):
+        async def wrapper():
+            # Message player here that currency is missing.
+            self.kc.keypress('Esc')
+            self.state.update(States.CANCELLED)
         return wrapper
 
     def cancel(self, timeout):
         async def wrapper():
             await asyncio.sleep(timeout)
-            self.state.set_value(States.CANCELLED)
+            self.kc.keypress('Esc')
+            self.state.update(States.CANCELLED)
         return wrapper
 
     async def verify(self):
-        # Notify the updater that we are verifying the trade.
-        self.state_updater.set_verifying(True)
-
         self.logger.debug("Verifying trade".format(self.trader))
         if self.trade_verifier.verify():
-            self.state.set_state_me_str('VERIFIED_SUCCESS')
+            self.state.update_me('VERIFIED_SUCCESS')
         else:
-            self.state.set_state_me_str('VERIFIED_FAIL')
-        self.state_updater.set_verifying(False)
+            self.state.update_me('VERIFIED_FAIL')
 
     async def accept(self):
         self.logger.debug("Accepting trade")
@@ -145,24 +146,25 @@ class TradeStep(Step):
         self.logger.debug("Trade accepted.")
         self.accepted = True
         self.cc.send_chat(self.trader, TradeStep.TRADE_THANK_YOU)
-        self.state.set_value(States.ENDED)
+        self.state.update(States.ENDED)
 
     async def on_cancel(self):
-        self.logger.debug("Trade cancelled. Reties left: {}".format(
-            TradeStep.MAX_RETRIES - self.retries))
-        if self.retries >= TradeStep.MAX_RETRIES:
-            self.state.set_value(States.ENDED)
+        if self.retries <= 0:
+            self.state.update(States.ENDED)
             return
-        self.retries += 1
-        self.state.set_value(States.NOT_STARTED)
+        self.retries -= 1
+        self.logger.debug("Trade cancelled. Reties left: {}".format(
+            self.retries))
+        self.state.update(States.NOT_STARTED)
 
     async def on_left(self):
         self.logger.debug("Trader {} left the hideout.".format(self.trader))
-        self.state.set_value(States.ENDED)
+        self.state.update(States.ENDED)
 
     def _updater_end_state_reached(self):
         for end_state in self.updater_end_states:
             if self.state.equals(end_state):
+                self.logger.debug("End state reached for updater.")
                 return True
         return False
 
@@ -171,7 +173,6 @@ class TradeStep(Step):
         self._kick_from_party()
         if not self.accepted:
             self._cleanup()
-        self.logger.debug("Trade ended. Done.")
 
     def _cleanup(self):
         # Move item back to where it was and price it the same.

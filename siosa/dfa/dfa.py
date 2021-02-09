@@ -20,7 +20,7 @@ class Dfa(threading.Thread):
         self.event_loop = asyncio.new_event_loop()
 
     def add_state_fn(self, s1: DfaState, transition_fn):
-        self.fn[s1.to_string()] = transition_fn
+        self.fn[s1.get()] = transition_fn
 
     def run(self):
         self.event_loop.run_until_complete(self.run_ev())
@@ -34,21 +34,22 @@ class Dfa(threading.Thread):
             # State changed.
             self.logger.debug("State changed from {} to {}".format(
                 self.old_state_str,
-                self.state.to_string()))
-            self.old_state_str = self.state.to_string()
+                self.state.get()))
+            self.old_state_str = self.state.get()
+
+            if self.state.equals(self.end):
+                self.logger.debug("End state({}) reached from {}".format(
+                    self.state.get(), self.old_state_str))
+                if self.running_task:
+                    await self.running_task
+                self.logger.debug("DFA run event loop ending.")
+                return
 
             # Stop any running task
             self._stop_running_task()
 
             # Run the fn for the new state if it's available.
             self._run_fn_for_current_state()
-
-            if self.state.equals(self.end):
-                self.logger.debug("End state({}) reached from {}".format(
-                    self.state.to_string(), self.old_state_str))
-                if self.running_task:
-                    await self.running_task
-                return
 
             await asyncio.sleep(Dfa.SLEEP_DURATION)
 
@@ -59,7 +60,7 @@ class Dfa(threading.Thread):
             self.running_task.cancel()
 
     def _run_fn_for_current_state(self):
-        new_state_str = self.state.to_string()
+        new_state_str = self.state.get()
 
         if new_state_str in self.fn:
             self.logger.debug(

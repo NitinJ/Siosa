@@ -6,39 +6,39 @@ from siosa.common.decorations import abstractmethod, synchronized
 
 
 class DfaState:
-    def __init__(self, value):
+    def __init__(self, state_obj):
+        """
+        Args:
+            state_obj: A serializable object to represent internal state.
+        """
         self.lock = threading.RLock()
         self.logger = logging.getLogger(__name__)
         self.logger.setLevel(logging.DEBUG)
-        self.value = value
+        self.state_obj = state_obj
 
     @synchronized
-    def get_value(self):
-        return deepcopy(self.value)
-
-    @synchronized
-    def set_value(self, other):
-        if self._is_transition_valid(other):
-            self.value = other
-        else:
-            self.logger.warning("Invalid state transition from {} -> {}"
-                                .format(self.to_string(), str(self.value)))
+    def update(self, new_state_obj):
+        if not self._is_transition_valid(new_state_obj):
+            self.logger.error("Invalid state transition from {} -> {}"
+                              .format(self.get(), new_state_obj))
+            return False
+        self.state_obj = new_state_obj
+        return True
 
     @synchronized
     def equals(self, other):
-        if other is None:
-            return False
         if isinstance(other, str):
-            return self.to_string() == other
-        if not isinstance(other, DfaState):
-            return False
-        return self.to_string() == other.to_string()
-
-    @abstractmethod
-    @synchronized
-    def to_string(self):
-        pass
+            return self.get() == other
+        if type(other) == type(self.state_obj):
+            return str(self.state_obj) == str(other)
+        if isinstance(other, DfaState):
+            return self.get() == other.get()
+        return False
 
     @synchronized
-    def _is_transition_valid(self, to):
+    def get(self):
+        return str(self.state_obj)
+
+    @synchronized
+    def _is_transition_valid(self, other):
         return True
