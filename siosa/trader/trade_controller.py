@@ -46,7 +46,7 @@ class TradeController:
 
     def _start_new_trade(self, trade_info):
         self.logger.debug("Starting new trade with {}".format(
-            trade_info.trade_request.trader))
+            trade_info.trade_request))
         self.game_controller.submit_task(TradeTask(trade_info, self.log_listener))
 
     def _validate_trade_request(self, trade_request):

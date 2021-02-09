@@ -1,6 +1,9 @@
 import logging
 from enum import Enum
 
+from siosa.data.stash_item import StashItem
+from siosa.trader.trade_request import TradeRequest
+
 
 class TradeInfo:
     """All the information about a trade including state."""
@@ -22,7 +25,7 @@ class TradeInfo:
         # Trade is over.
         TERMINATED = 'terminated'
 
-    def __init__(self, trade_request, stash_item):
+    def __init__(self, trade_request: TradeRequest, stash_item: StashItem):
         self.logger = logging.getLogger(__name__)
         self.trade_request = trade_request
         self.stash_item = stash_item

@@ -1,3 +1,4 @@
+import logging
 from enum import Enum
 
 from siosa.common.decorations import synchronized
@@ -41,46 +42,76 @@ class States(Enum):
 
     @staticmethod
     def create_from_trading_state(state_me: str, state_other: str):
-        state = ('TRADING', state_me, state_other)
+        return States.create('TRADING', state_me, state_other)
+
+    @staticmethod
+    def create(state_main: str, state_me: str, state_other: str):
+        logger = logging.getLogger(__name__)
+        logger.setLevel(logging.DEBUG)
+
+        state_tuple = (state_main, state_me, state_other)
+        valid_state = States.is_valid_state(state_tuple)
+        if valid_state:
+            return valid_state
+
+        logger.debug("State is invalid. Cannot create: {}".format(state_tuple))
+        return None
+
+    @staticmethod
+    def is_valid_state(state):
+        """
+        Args:
+            state: A tuple of (main_state, me_state, other_state)
+        Returns:
+            Whether the tuple is a valid state or not.
+        """
         for s in list(States):
             if s.value == state:
                 return s
-        return None
+        return False
 
 
 class TradeState(DfaState):
-    STR_FORMAT = "({}_{}_{})"
-
-    def __init__(self, state_value: States):
-        super().__init__(state_value)
+    FORMAT = "({}_{}_{})"
 
     @synchronized
-    def to_string(self):
-        return TradeState.STR_FORMAT.format(self.value.value[0],
-                                            self.value.value[1],
-                                            self.value.value[2])
+    def update_me(self, me: str):
+        main = self.state_obj.value[0]
+        other = self.state_obj.value[2]
+        return self.update(States.create(main, me, other))
 
     @synchronized
-    def equals(self, other):
-        if isinstance(other, States):
-            return self.to_string() == TradeState.STR_FORMAT.format(
-                *other.value)
-        return super().equals(other)
+    def update_other(self, other: str):
+        main = self.state_obj.value[0]
+        me = self.state_obj.value[1]
+        return self.update(States.create(main, me, other))
 
     @synchronized
-    def set_state_me_str(self, state_me: str):
-        self.value = States.create_from_trading_state(
-            state_me, self.value.value[2])
+    def update_main(self, main: str):
+        return self.update(States.create(main, '', ''))
 
     @synchronized
-    def _is_transition_valid(self, to: States):
-        if not self.value.value[0] == 'TRADING' or \
-                not to.value[0] == 'TRADING':
-            return True
+    def _is_transition_valid(self, to):
+        if not isinstance(to, States):
+            return False
+
+        from_me = self.state_obj.value[1]
+        to_me = to.value[1]
         # Both are trading.
-        if self.value.value[1] in ['VERIFIED_SUCCESS', 'VERIFIED_FAIL'] \
-                and to.value[1] == 'OFFERED':
+        if from_me in ['VERIFIED_SUCCESS', 'VERIFIED_FAIL'] \
+                and to_me == 'OFFERED':
             # Cannot go from verified success/fail to offered. Can only go to
             # not-offered.
+            return False
+
+        from_main = self.state_obj.value[0]
+        to_main = to.value[0]
+        if from_main == ['ACCEPTED'] and to_main in ['NOT_STARTED',
+                                                     'AWAITING_TRADE',
+                                                     'TRADING', 'CANCELLED']:
+            # Cannot go from trade accepted to any previous states.
+            return False
+        if from_main == ['ENDED']:
+            # Cannot go from trade ended to anywhere.
             return False
         return True
