@@ -1,10 +1,11 @@
 import logging
+import math
 import re
 
 
 class TradeEvent:
     REGX = re.compile(
-        '([-+]?\d+) (?s)(.*) in (?s)(.*) \(stash tab "(?s)(.*)"; position: left ([-+]?\d+), top ([-+]?\d+)\)')
+        '(\d*\.?\d*) (?s)(.*) in (?s)(.*) \(stash tab "(?s)(.*)"; position: left ([-+]?\d+), top ([-+]?\d+)\)')
 
     def __init__(self, raw_event, trader, item_name, currency, league, stash, position):
         self.logger = logging.getLogger(__name__)
@@ -15,6 +16,16 @@ class TradeEvent:
         self.league = league
         self.stash = stash
         self.position = position
+
+    def __str__(self):
+        return str({
+            'trader': self.trader,
+            'item_name': self.item_name,
+            'currency': self.currency,
+            'league': self.league,
+            'stash': self.stash,
+            'position': self.position,
+        })
 
     @staticmethod
     def create(log_line):
@@ -49,3 +60,14 @@ class TradeEvent:
         except Exception:
             # self.logger.error("Error parsing log_line for trade request", exc_info=True)
             return None
+
+
+if __name__ == "__main__":
+    te = TradeEvent.create('@From <[KREK]> Corpz: Hi, I would like to buy your Rapture Ruin Medium Cluster Jewel listed for 3.5 exalted in Ritual (stash tab "SELL"; position: left 4, top 9)')
+    assert te.trader == "<[KREK]> Corpz"
+    assert te.item_name == "Rapture Ruin Medium Cluster Jewel"
+    assert te.currency['type'] == "exalted"
+    assert math.isclose(te.currency['amount'], 3.5)
+    assert te.league == "Ritual"
+    assert te.stash == "SELL"
+    assert te.position == (3, 8)
