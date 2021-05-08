@@ -1,0 +1,33 @@
+{
+    "base_name": "hubris circlet",
+    "required_state": {
+        "rarity": "magic",
+        "magic_mods": [
+            {
+                "prefix": "synthesized dragon's",
+                "suffix": null,
+                "prefix_exact": null,
+                "suffix_exact": null
+            },
+            {
+                "prefix": null,
+                "suffix": "of excavation",
+                "prefix_exact": null,
+                "suffix_exact": null
+            },
+            {
+                "prefix": "synthesized pirate's",
+                "suffix": null,
+                "prefix_exact": null,
+                "suffix_exact": null
+            },
+            {
+                "prefix": null,
+                "suffix": "of archaeology",
+                "prefix_exact": null,
+                "suffix_exact": null
+            }
+        ],
+        "rare_mods": []
+    }
+}

@@ -1,0 +1,15 @@
+{
+    "base_name": "two-toned boots",
+    "required_state": {
+        "rarity": "magic",
+        "magic_mods": [
+            {
+                "prefix": null,
+                "suffix": "of shaping",
+                "prefix_exact": null,
+                "suffix_exact": null
+            }
+        ],
+        "rare_mods": []
+    }
+}

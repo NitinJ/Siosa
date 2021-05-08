@@ -1,0 +1,15 @@
+{
+    "base_name": "titanium valdo's rest watchstone",
+    "required_state": {
+        "rarity": "magic",
+        "magic_mods": [
+            {
+                "prefix": "syndicate's",
+                "suffix": null,
+                "prefix_exact": null,
+                "suffix_exact": null
+            }
+        ],
+        "rare_mods": []
+    }
+}

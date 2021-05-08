@@ -1,0 +1,15 @@
+{
+    "base_name": " citrine amulet",
+    "required_state": {
+        "rarity": "magic",
+        "magic_mods": [
+            {
+                "prefix": "hunter's",
+                "suffix": null,
+                "prefix_exact": "+1 to level of all intelligence skill gems",
+                "suffix_exact": null
+            }
+        ],
+        "rare_mods": []
+    }
+}

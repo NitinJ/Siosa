@@ -18,14 +18,15 @@ from overlay import Window
 ################################################################################
 # Config
 # AFFIX_FILE = "medium_cluster_jewel.json"
-AFFIX_FILE = "watchstone_hamlet_harvest.json"
+AFFIX_FILE = "boots.json"
 
 LOG_FILE = "log.txt"
-MOUSE_MOVE_DELAY = 0.015
-MOUSE_MOVE_DURATION = 0.07
-ROLL_DELAY = 0.015
+MOUSE_MOVE_DELAY = 0.01
+MOUSE_MOVE_DURATION = 0.05
+ROLL_DELAY = 0.05
 KEY_PRESS_DELAY = 0.01
 MAX_ROLLS = 600
+CLIPBOARD_READ_SLEEP_TIME = 0.2
 
 # Won't use currency if debug mode is set.
 DEBUG_MODE = False
@@ -65,7 +66,7 @@ def set_clipboard_data(data):
     try:
         win32clipboard.OpenClipboard()
     except:
-        time.sleep(0.2)
+        time.sleep(CLIPBOARD_READ_SLEEP_TIME)
         win32clipboard.OpenClipboard()
     win32clipboard.EmptyClipboard()
     win32clipboard.SetClipboardText(data)
@@ -77,7 +78,7 @@ def get_clipboard_data():
     try:
         win32clipboard.OpenClipboard()
     except:
-        time.sleep(0.2)
+        time.sleep(CLIPBOARD_READ_SLEEP_TIME)
         win32clipboard.OpenClipboard()
     data = win32clipboard.GetClipboardData()
     win32clipboard.CloseClipboard()
@@ -90,7 +91,7 @@ def parse_currency_from_clipboard():
     if data == '':
         return {'count': 0}
     split_data = data.split("--------\r\n")
-    type = split_data[0].split(LINE_FEED)[1]
+    type = split_data[0].split(LINE_FEED)[2]
     count = int(split_data[1].split("Stack Size: ")
                 [1].split("/")[0].replace(',', ''))
     currency_state[type] = count
@@ -121,8 +122,16 @@ def get_prefix_suffix_names(data):
 
 
 def get_rarity(data):
-    name_section = data.split("--------\r\n")[0]
-    rarity = name_section.split(LINE_FEED)[0].split(": ")[1].strip().lower()
+    name_section_lines = data.split("--------\r\n")[0].split(LINE_FEED)
+    rarity_str = "Rarity: "
+    rarity = None
+    for line in name_section_lines:
+        r = line.find(rarity_str)
+        if r == -1:
+            continue
+        rarity = line[r + len(rarity_str):].strip().lower()
+        break
+    print("[Debug] Item rarity: ", rarity)
     return rarity
 
 
@@ -131,9 +140,10 @@ def get_name(data):
     name = ''
     name_section = data.split("--------\r\n")[0]
     if rarity == 'magic':
-        name = name_section.split(LINE_FEED)[1].strip().lower()
+        name = name_section.split(LINE_FEED)[2].strip().lower()
     elif rarity == 'rare':
-        name = " ".join(name_section.split(LINE_FEED)[1:]).lower()
+        name = " ".join(name_section.split(LINE_FEED)[2:]).lower()
+    print("[Debug] Item name: ", name)
     return name
 
 
@@ -148,6 +158,11 @@ def get_mod_section(data):
         return ''
     if name.find("cluster jewel") > -1:
         return get_mod_section_for_cluster_jewel(data)
+    elif name.find("watchstone") > -1:
+        mods_section = data.split("--------\r\n")[2]
+        if mods_section.find("enchant") > -1:
+            mods_section = data.split("--------\r\n")[3]
+        return mods_section
     else:
         mods_section = data.split("--------\r\n")[4]
         if mods_section.find("Item Level") != -1:
@@ -190,6 +205,34 @@ def exact_affix_matches(current_affixes, mod_option_affix):
             if affix == mod_option_affix:
                 # One affix matches so just return true
                 return True
+    return False
+
+
+def prefix_match(current, required_mod_option):
+    if required_mod_option['prefix'] and current['mods']['prefix']:
+        # Prefix present
+        if required_mod_option['prefix'] != current['mods']['prefix']:
+            return False
+        elif not exact_affix_matches(current['mods']['all_mods'],
+                                     required_mod_option['prefix_exact']):
+            # Prefix is equal to the required one but exact prefix isn't in exact required list.
+            print("Exact prefix didn't match !")
+            return False
+        return True
+    return False
+
+
+def suffix_match(current, required_mod_option):
+    if required_mod_option['suffix'] and current['mods']['suffix']:
+        # suffix present
+        if required_mod_option['suffix'] != current['mods']['suffix']:
+            return False
+        elif not exact_affix_matches(current['mods']['all_mods'],
+                                     required_mod_option['suffix_exact']):
+            # suffix is equal to the required one but exact suffix isn't in exact required list.
+            print("Exact suffix didn't match !")
+            return False
+        return True
     return False
 
 
@@ -305,6 +348,8 @@ def use_currency_on_item(currency):
 
 
 def should_use_augment():
+    # Remove
+    # return False
     if magic_mod_check(item_state, required_state):
         return False
 
@@ -334,7 +379,11 @@ def should_use_augment_single_mod(item_state, required_mod):
         required_nmods = required_nmods + 1
 
     if required_nmods > 1:
+        # Item has both prefix and suffix required. Check if both match.
+        if not prefix_match(item_state, required_mod) or not suffix_match(item_state, required_mod):
+            return False
         return True
+
     elif required_nmods == 1:
         m = 'prefix'
         if not required_mod[m]:
@@ -393,19 +442,19 @@ def start_rolling(flog):
             if magic_mod_check(item_state, required_state):
                 print("[Success] Magic item rolled successfully !")
 
-                if len(item_state['mods']['all_mods']) < 2:
-                    use_currency_on_item('Orb of Augmentation')
-
-                convert_to_rare()
-                read_item_rolls()
-                if rare_mod_check(item_state, required_state):
-                    print("[Success] Item rolled successfully !")
-                    move_item_to_stash()
-                    break
-                else:
-                    print("Regal failed !")
-                    use_currency_on_item('Orb of Scouring')
+                if item_state['rarity'] == 'rare':
+                    convert_to_rare()
                     read_item_rolls()
+                    if rare_mod_check(item_state, required_state):
+                        print("[Success] Item rolled successfully !")
+                        move_item_to_stash()
+                        break
+                    else:
+                        print("Regal failed !")
+                        use_currency_on_item('Orb of Scouring')
+                        read_item_rolls()
+                else:
+                    break
 
             # Roll otherwise
             roll()
