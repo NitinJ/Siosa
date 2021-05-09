@@ -1,13 +1,15 @@
 {
-    "base_name": "titanium valdo's rest watchstone",
+    "base_name": "titanium tirn's end watchstone",
     "required_state": {
         "rarity": "magic",
         "magic_mods": [
             {
-                "prefix": "syndicate's",
+                "prefix": "farric",
                 "suffix": null,
-                "prefix_exact": null,
-                "suffix_exact": null
+                "prefix_exact": "red beasts in areas have %d% increased chance to be from the wilds",
+                "prefix_values": [[25, 50]],
+                "suffix_exact": null,
+                "suffix_values": []
             }
         ],
         "rare_mods": []

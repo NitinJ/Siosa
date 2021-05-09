@@ -7,7 +7,9 @@
                 "prefix": null,
                 "suffix": "of shaping",
                 "prefix_exact": null,
-                "suffix_exact": null
+                "prefix_values": [],
+                "suffix_exact": "%d% chance to avoid elemental ailments",
+                "suffix_values": [[33, 35]]
             }
         ],
         "rare_mods": []
