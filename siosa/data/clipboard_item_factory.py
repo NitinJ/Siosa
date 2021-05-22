@@ -254,7 +254,7 @@ class ClipboardItemFactory:
         return sections
 
     def _get_rarity(self, sections):
-        return sections[0][0].split("Rarity: ")[1].strip()
+        return sections[0][1].split("Rarity: ")[1].strip()
 
     def _get(self, obj, key, fallback):
         return obj[key] if key in obj.keys() else fallback
