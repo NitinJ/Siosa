@@ -19,7 +19,7 @@ MAX_ITEMS_FOR_CALCULATING_EXCHANGE = 20
 
 
 class PoeApi(metaclass=Singleton):
-    def __init__(self, account_name, poe_session_id, league="Ritual"):
+    def __init__(self, account_name, poe_session_id, league="Ultimatum"):
         self.logger = logging.getLogger(__name__)
         self.logger.setLevel('DEBUG')
 
