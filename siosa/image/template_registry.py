@@ -1,6 +1,6 @@
 class TemplateRegistry:
     """
-    Stores templates as enums. Values are a tuple containing the template file
+    Stores item_templates as enums. Values are a tuple containing the template file
     name and the resolution at which template was created.
     """
     INVENTORY_0_0 = ("sct-tmp-INVENTORY_0_0.png", (1920, 1080))
@@ -36,3 +36,18 @@ class TemplateRegistry:
         "sct-tmp-PARTY_NOTIFICATIONS_CLOSE_BUTTON.png", (1920, 1080))
     DECORATIONS_UTILITIES_ARROW = (
         "sct-tmp-DECORATIONS_UTILITIES_ARROW.png", (1920, 1080))
+    ALCHEMY_DROP = ("sct-tmp-ALCHEMY_DROP.png", (1920, 1080))
+    ANCIENT_SHARD_DROP = ("sct-tmp-ANCIENT_SHARD_DROP.png", (1920, 1080))
+    AWAKENED_SEXTANT_DROP = ("sct-tmp-AWAKENED_SEXTANT_DROP.png", (1920, 1080))
+    CHAOS_DROP = ("sct-tmp-CHAOS_DROP.png", (1920, 1080))
+    CHAOS_SHARD_DROP = ("sct-tmp-CHAOS_SHARD_DROP.png", (1920, 1080))
+    EXALTED_DROP = ("sct-tmp-EXALTED_DROP.png", (1920, 1080))
+    GEMCUTTER_DROP = ("sct-tmp-GEMCUTTER_DROP.png", (1920, 1080))
+    HARBINGER_SHARD_DROP = ("sct-tmp-HARBINGER_SHARD_DROP.png", (1920, 1080))
+    PRIME_SEXTANT_DROP = ("sct-tmp-PRIME_SEXTANT_DROP.png", (1920, 1080))
+    REGAL_DROP = ("sct-tmp-REGAL_DROP.png", (1920, 1080))
+    REGRET_DROP = ("sct-tmp-REGRET_DROP.png", (1920, 1080))
+    SCOURING_DROP = ("sct-tmp-SCOURING_DROP.png", (1920, 1080))
+    SIMPLE_SEXTANT_DROP = ("sct-tmp-SIMPLE_SEXTANT_DROP.png", (1920, 1080))
+    VAAL_DROP = ("sct-tmp-VAAL_DROP.png", (1920, 1080))
+    DROP = ("sct-tmp-DROP.png", (1920, 1080))
