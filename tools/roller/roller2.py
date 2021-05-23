@@ -18,16 +18,15 @@ from scanf import scanf
 
 ################################################################################
 # Config
-# AFFIX_FILE = "medium_cluster_jewel.json"
-AFFIX_FILE = "watchstone.json"
+AFFIX_FILE = "config.json"
 
 LOG_FILE = "log.txt"
 MOUSE_MOVE_DELAY = 0.01
-MOUSE_MOVE_DURATION = 0.02
-ROLL_DELAY = 0.02
+MOUSE_MOVE_DURATION = 0.01
+ROLL_DELAY = 0.01
 KEY_PRESS_DELAY = 0.01
-MAX_ROLLS = 600
-CLIPBOARD_READ_SLEEP_TIME = 0.2
+MAX_ROLLS = 1500
+CLIPBOARD_READ_SLEEP_TIME = 0.15
 
 # Won't use currency if debug mode is set.
 DEBUG_MODE = False
@@ -35,19 +34,24 @@ DEBUG_MODE = False
 ################################################################################
 # Globals as per 1920x1080px
 CURRENCY_LOCATION = {
-    'Orb of Alteration': (114, 263, 114, 263),
-    'Orb of Augmentation': (233, 318, 233, 318),
-    'Regal Orb': (431, 263, 431, 263),
-    'Orb of Scouring': (176, 445, 176, 445),
-    'Orb of Transmutation': (56, 268, 56, 268)
-
+    'orb of alteration': (114, 263, 114, 263),
+    'orb of augmentation': (233, 318, 233, 318),
+    'regal orb': (431, 263, 431, 263),
+    'orb of scouring': (176, 445, 176, 445),
+    'orb of transmutation': (56, 268, 56, 268)
 }
 ITEM_LOCATION = (336, 419, 336, 419)
+INVENTORY_00 = (1295, 615, 1295, 615)
+INVENTORY_SLOT_SIZE = 53
 SUPPORTED_RARITIES = ['magic', 'rare']
 LINE_FEED = "\r\n"
 
 ################################################################################
 # State
+# Once
+required_state = {}
+down_keys = {}
+# Per item.
 item_state = {
     "rarity": "normal",
     "mods": {
@@ -55,12 +59,8 @@ item_state = {
         "suffix": None
     }
 }
-required_state = {}
 currency_state = {'picked_up_currency': None}
-required_prefix = ''
-required_suffix = ''
 location_state = ITEM_LOCATION
-flog = None
 
 
 ################################################################################
@@ -85,7 +85,7 @@ def get_clipboard_data():
     data = win32clipboard.GetClipboardData()
     win32clipboard.CloseClipboard()
     set_clipboard_data('')
-    return data
+    return data.lower()
 
 
 def parse_currency_from_clipboard():
@@ -94,7 +94,7 @@ def parse_currency_from_clipboard():
         return {'count': 0}
     split_data = data.split("--------\r\n")
     type = split_data[0].split(LINE_FEED)[2]
-    count = int(split_data[1].split("Stack Size: ")
+    count = int(split_data[1].split("stack size: ")
                 [1].split("/")[0].replace(',', ''))
     currency_state[type] = count
 
@@ -125,7 +125,7 @@ def get_prefix_suffix_names(data):
 
 def get_rarity(data):
     name_section_lines = data.split("--------\r\n")[0].split(LINE_FEED)
-    rarity_str = "Rarity: "
+    rarity_str = "rarity: "
     rarity = None
     for line in name_section_lines:
         r = line.find(rarity_str)
@@ -167,7 +167,7 @@ def get_mod_section(data):
         return mods_section
     else:
         mods_section = data.split("--------\r\n")[4]
-        if mods_section.find("Item Level") != -1:
+        if mods_section.find("item level") != -1:
             mods_section = data.split("--------\r\n")[5]
         if mods_section.find("implicit") != -1:
             mods_section = data.split("--------\r\n")[6]
@@ -215,14 +215,15 @@ def single_affix_match(current, required, required_values):
     return False
 
 
-def exact_affix_matches(current_affixes, mod_option_affix, mod_option_affix_values):
-    print("[Debug] exact_affix_matches", current_affixes, mod_option_affix)
+def exact_affix_matches(current_affixes, mod_option_affix,
+                        mod_option_affix_values):
     if not mod_option_affix:
         # Required mod option affixes are empty so no need to match.
         return True
     if current_affixes:
         for affix in current_affixes:
-            if single_affix_match(affix, mod_option_affix, mod_option_affix_values):
+            if single_affix_match(affix, mod_option_affix,
+                                  mod_option_affix_values):
                 return True
     return False
 
@@ -259,8 +260,8 @@ def suffix_match(current, required_mod_option):
 
 
 def magic_mod_check(current, required):
-    print("Current : {}".format(pformat(current)))
-    print("Required : {}".format(pformat(required)))
+    print("Magic mod check: current_key_set : {}".format(
+        pformat(current['mods'])))
 
     for mod_option in required['magic_mods']:
         print("Checking required mod_option: ", mod_option)
@@ -306,13 +307,8 @@ def rare_mod_check(current, required):
 def move_mouse(location):
     global location_state
     if location_state == location:
-        # ALready in the same location
+        # Already in the same location
         return
-
-    # Debug draw a rectange on location
-    # draw_location(location)
-    # time.sleep(4)
-
     sleep(MOUSE_MOVE_DELAY)
     x1, y1, x2, y2 = location
     x = random.randint(x1, x2)
@@ -321,18 +317,38 @@ def move_mouse(location):
     location_state = location
 
 
+def key_down(x):
+    if x in down_keys.keys():
+        return
+    down_keys[x] = True
+    pyautogui.keyDown(x)
+
+
+def key_up(x):
+    if x not in down_keys.keys():
+        return
+    del down_keys[x]
+    pyautogui.keyUp(x)
+
+
+def all_keys_up():
+    for k in down_keys.keys():
+        pyautogui.keyUp(k)
+    down_keys.clear()
+
+
 def copy_item_at_cursor():
-    pyautogui.keyDown('ctrl')
+    key_down('ctrl')
     sleep(KEY_PRESS_DELAY)
     pyautogui.press('c')
     sleep(KEY_PRESS_DELAY)
-    pyautogui.keyUp('ctrl')
+    key_up('ctrl')
 
 
 def use_picked_up_currency_on_stash_item(currency):
     print('[Debug] Using', currency, ' on item')
     move_mouse(ITEM_LOCATION)
-    pyautogui.keyDown('shift')
+    key_down('shift')
     if not DEBUG_MODE:
         pyautogui.click(button='left')
     sleep(KEY_PRESS_DELAY)
@@ -347,8 +363,8 @@ def pickup_currency(currency):
         return
     elif currency_state['picked_up_currency'] != currency or currency_state[
         'picked_up_currency'] is None:
-        # Remove pickedup state by unholding shift
-        pyautogui.keyUp('shift')
+        # Remove picked up state by un holding shift
+        key_up('shift')
         currency_state['picked_up_currency'] = None
 
     move_mouse(CURRENCY_LOCATION[currency])
@@ -405,7 +421,8 @@ def should_use_augment_single_mod(item_state, required_mod):
 
     if required_nmods > 1:
         # Item has both prefix and suffix required. Check if both match.
-        if not prefix_match(item_state, required_mod) or not suffix_match(item_state, required_mod):
+        if not prefix_match(item_state, required_mod) or not suffix_match(
+                item_state, required_mod):
             return False
         return True
 
@@ -423,32 +440,46 @@ def convert_to_rare():
     use_currency_on_item('Regal Orb')
 
 
-def move_item_to_stash():
-    pyautogui.keyDown('ctrl')
+def move_item_to_inventory():
+    all_keys_up()
+    key_down('ctrl')
     sleep(KEY_PRESS_DELAY)
     pyautogui.click(button='left')
-    pyautogui.keyUp('ctrl')
+    key_up('ctrl')
+
+
+def move_item_to_stash(n):
+    all_keys_up()
+    print("[Debug] Moving item {} to stash".format(n))
+    r, c = required_state['inventory_positions'][n]
+    location = get_location_for_inventory_position(r, c)
+    move_mouse(location)
+    key_down('ctrl')
+    sleep(KEY_PRESS_DELAY)
+    pyautogui.click(button='left')
+    key_up('ctrl')
 
 
 def roll():
-    print("\n\nRoll.............................................")
     if item_state['rarity'] == 'normal':
-        use_currency_on_item('Orb of Transmutation')
+        use_currency_on_item('orb of transmutation')
         item_state['rarity'] = 'magic'
         read_item_rolls()
 
     if magic_mod_check(item_state, required_state):
         return
 
-    use_currency_on_item('Orb of Alteration')
+    use_currency_on_item('orb of alteration')
     read_item_rolls()
     if should_use_augment():
-        use_currency_on_item('Orb of Augmentation')
+        use_currency_on_item('orb of augmentation')
         read_item_rolls()
 
 
-def start_rolling(flog):
-    print("Rolling ...")
+def start_rolling():
+    global flog
+    print("Starting rolling ...")
+    move_mouse(ITEM_LOCATION)
     n_rolls = 0
 
     # Read initial item rolls
@@ -456,30 +487,31 @@ def start_rolling(flog):
     if item_state['rarity'] == 'rare':
         if rare_mod_check(item_state, required_state):
             print("[Success] Item rolled successfully !")
-            move_item_to_stash()
+            move_item_to_inventory()
             return
         else:
-            use_currency_on_item('Orb of Scouring')
+            use_currency_on_item('orb of scouring')
             read_item_rolls()
 
     while n_rolls < MAX_ROLLS:
+        print("\n\nRoll ({})............................".format(n_rolls))
         try:
             if magic_mod_check(item_state, required_state):
-                print("[Success] Magic item rolled successfully !")
-
                 if item_state['rarity'] == 'rare':
                     convert_to_rare()
                     read_item_rolls()
                     if rare_mod_check(item_state, required_state):
                         print("[Success] Item rolled successfully !")
-                        move_item_to_stash()
+                        move_item_to_inventory()
                         break
                     else:
                         print("Regal failed !")
-                        use_currency_on_item('Orb of Scouring')
+                        use_currency_on_item('orb of scouring')
                         read_item_rolls()
                 else:
-                    break
+                    print("[Success] Item rolled successfully !")
+                    move_item_to_inventory()
+                    return
 
             # Roll otherwise
             roll()
@@ -490,13 +522,17 @@ def start_rolling(flog):
             log("[Error] Exception in roll ")
             print("[Error] Exception in roll", e)
             flog.close()
-            pyautogui.keyUp('shift')
-            pyautogui.keyUp('ctrl')
+            all_keys_up()
             raise e
-
-    pyautogui.keyUp('shift')
-    pyautogui.keyUp('ctrl')
+    all_keys_up()
     flog.close()
+
+
+def get_location_for_inventory_position(row, col):
+    location = INVENTORY_00
+    x = location[0] + col * INVENTORY_SLOT_SIZE
+    y = location[1] + row * INVENTORY_SLOT_SIZE
+    return x, y, x, y
 
 
 def draw_location(location):
@@ -507,6 +543,7 @@ def draw_location(location):
     label.pack()
     Window.launch()
     # win.show()
+
 
 def parse_magic_mods(magic_mods):
     required_mods = []
@@ -525,12 +562,14 @@ def parse_magic_mods(magic_mods):
             required_mod['suffix'] = mod_option['suffix'].strip().lower()
 
         if mod_option['prefix_exact']:
-            required_mod['prefix_exact'] = mod_option['prefix_exact'].strip().lower()
+            required_mod['prefix_exact'] = mod_option[
+                'prefix_exact'].strip().lower()
         if mod_option['prefix_values']:
             required_mod['prefix_values'] = mod_option['prefix_values']
 
         if mod_option['suffix_exact']:
-            required_mod['suffix_exact'] = mod_option['suffix_exact'].strip().lower()
+            required_mod['suffix_exact'] = mod_option[
+                'suffix_exact'].strip().lower()
         if mod_option['suffix_values']:
             required_mod['suffix_values'] = mod_option['suffix_values']
 
@@ -543,7 +582,7 @@ def parse_magic_mods(magic_mods):
 def parse_rare_mods(rare_mods):
     required_mods = []
     for mod_option in rare_mods:
-        mod_option = convert_exact_affixes_to_hashes(mod_option.strip().lower())
+        mod_option = mod_option.strip().lower()
         required_mods.append(mod_option)
     return required_mods
 
@@ -557,6 +596,12 @@ def sanitize_config_and_read():
 
     required_state['base_name'] = data['base_name'].strip().lower()
     print("[Debug] Item base_name =", required_state['base_name'])
+
+    required_state['num_items'] = int(data['num_items'])
+    required_state['inventory_positions'] = data['inventory_positions']
+    if len(required_state['inventory_positions']) < required_state[
+        'num_items']:
+        raise Exception("Inventory locations not provided for all items !")
 
     data = data['required_state']
     if data['rarity'] not in SUPPORTED_RARITIES:
@@ -573,12 +618,9 @@ def sanitize_config_and_read():
     return required_state
 
 
-def preprocess():
-    for k in CURRENCY_LOCATION.keys():
-        currency_state[k] = None
+def preprocess_config():
+    global required_state
     required_state = sanitize_config_and_read()
-    flog = open(LOG_FILE, "a+")
-    return flog, required_state
 
 
 def run_timer():
@@ -589,13 +631,34 @@ def run_timer():
         print("Move to POE..({})".format(t - i))
 
 
+def reset():
+    global item_state
+    global currency_state
+    global location_state
+    item_state = {
+        "rarity": "normal",
+        "mods": {
+            "prefix": None,
+            "suffix": None
+        }
+    }
+    currency_state = {'picked_up_currency': None}
+    for k in CURRENCY_LOCATION.keys():
+        currency_state[k] = None
+    location_state = None
+
+
 ################################################################################
 # Start rolling the item.
 print("Rolling with ", AFFIX_FILE)
-# Preprocessing
-flog, required_state = preprocess()
+flog = open(LOG_FILE, "a+")
 
+# Preprocessing
+preprocess_config()
 run_timer()
 
-# Roll
-start_rolling(flog)
+for i in range(0, required_state['num_items']):
+    print("[Debug] Rolling item number: ", pformat(i))
+    reset()
+    move_item_to_stash(i)
+    start_rolling()
