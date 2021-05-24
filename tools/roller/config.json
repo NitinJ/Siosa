@@ -2,26 +2,22 @@
     "base_name": "platinum valdo's rest watchstone",
     "num_items": 4,
     "inventory_positions": [
-        [0, 0], [1, 0], [2, 0], [3, 0], [4, 0]
+        [0, 0], [1, 0], [2, 0], [3, 0]
     ],
     "required_state": {
         "rarity": "magic",
         "magic_mods": [
             {
-                "prefix": "auspicious",
+                "prefix": "doubting",
                 "suffix": null,
-                "prefix_exact": null,
-                "prefix_values": [],
-                "suffix_exact": null,
-                "suffix_values": []
+                "prefix_tier": "3",
+                "suffix_tier": null
             },
             {
-                "prefix": "laden",
-                "suffix": null,
-                "prefix_exact": "harbingers in areas have %d% chance to drop an additional stack of currency shards",
-                "prefix_values": [[11, 15]],
-                "suffix_exact": null,
-                "suffix_values": []
+                "prefix": "",
+                "suffix": "of the forbidden",
+                "prefix_tier": null,
+                "suffix_tier": "3"
             }
         ],
         "rare_mods": []

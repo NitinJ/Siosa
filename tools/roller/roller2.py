@@ -29,7 +29,7 @@ MAX_ROLLS = 1500
 CLIPBOARD_READ_SLEEP_TIME = 0.15
 
 # Won't use currency if debug mode is set.
-DEBUG_MODE = False
+DEBUG_MODE = True
 
 ################################################################################
 # Globals as per 1920x1080px
@@ -186,6 +186,7 @@ def get_all_mods(data):
 
 
 def read_affixes(data):
+    print("[Debug] data before reading affixes", data)
     ret = get_prefix_suffix_names(data)
     ret['all_mods'] = get_all_mods(data)
     item_state['mods'] = ret
@@ -197,33 +198,23 @@ def log(s):
         flog.write(strftime("%a, %d %b %I:%M:%S %p : ") + s + "\n")
 
 
-def single_affix_match(current, required, required_values):
-    matches = scanf(required, current)
-    if not matches:
-        log("No matches found !")
+def single_affix_match(affix, required_tier):
+    affix_tier = affix.split("tier: ")[1].split(")")[0]
+    if affix_tier <= required_tier:
+        log("found")
+        return True
+    else:
+        log("tier didn't match")
         return False
-    if len(required_values) != len(matches):
-        log("Exact number of matches not found")
-        return False
-    for i in range(0, len(matches)):
-        match = matches[i]
-        required_value = required_values[i]
-        if required_value[0] <= match <= required_value[1]:
-            return True
-        else:
-            log("Affix not in range.")
-    return False
 
 
-def exact_affix_matches(current_affixes, mod_option_affix,
-                        mod_option_affix_values):
-    if not mod_option_affix:
+def exact_affix_matches(current_affixes, required_affix_tier):
+    if not required_affix_tier:
         # Required mod option affixes are empty so no need to match.
         return True
     if current_affixes:
         for affix in current_affixes:
-            if single_affix_match(affix, mod_option_affix,
-                                  mod_option_affix_values):
+            if single_affix_match(affix, required_affix_tier):
                 return True
     return False
 
@@ -234,8 +225,7 @@ def prefix_match(current, required_mod_option):
         if required_mod_option['prefix'] != current['mods']['prefix']:
             return False
         elif not exact_affix_matches(current['mods']['all_mods'],
-                                     required_mod_option['prefix_exact'],
-                                     required_mod_option['prefix_values']):
+                                     required_mod_option['prefix_tier']):
             # Prefix is equal to the required one but exact prefix isn't in
             # exact required list.
             print("Exact prefix didn't match !")
@@ -273,8 +263,7 @@ def magic_mod_check(current, required):
                 print("Prefix didn't match !")
                 continue
             elif not exact_affix_matches(current['mods']['all_mods'],
-                                         mod_option['prefix_exact'],
-                                         mod_option['prefix_values']):
+                                         mod_option['prefix_tier']):
                 # Prefix is equal to the required one but exact prefix isn't in
                 # exact required list.
                 print("Exact affix didn't match !")
@@ -284,8 +273,7 @@ def magic_mod_check(current, required):
                 print("Suffix didn't match !")
                 continue
             elif not exact_affix_matches(current['mods']['all_mods'],
-                                         mod_option['suffix_exact'],
-                                         mod_option['suffix_values']):
+                                         mod_option['suffix_tier']):
                 print("Suffix didn't match !")
                 continue
         log("[Debug] Mod match" + json.dumps(mod_option))
@@ -340,7 +328,11 @@ def all_keys_up():
 def copy_item_at_cursor():
     key_down('ctrl')
     sleep(KEY_PRESS_DELAY)
+    key_down('altleft')
+    sleep(KEY_PRESS_DELAY)
     pyautogui.press('c')
+    sleep(KEY_PRESS_DELAY)
+    key_up('altleft')
     sleep(KEY_PRESS_DELAY)
     key_up('ctrl')
 
@@ -551,28 +543,17 @@ def parse_magic_mods(magic_mods):
         required_mod = {
             "prefix": "",
             "suffix": "",
-            "prefix_exact": "",
-            "prefix_values": [],
-            "suffix_exact": "",
-            "suffix_values": [],
+            "prefix_tier": "",
+            "suffix_tier": ""
         }
         if mod_option['prefix']:
             required_mod['prefix'] = mod_option['prefix'].strip().lower()
         if mod_option['suffix']:
             required_mod['suffix'] = mod_option['suffix'].strip().lower()
-
-        if mod_option['prefix_exact']:
-            required_mod['prefix_exact'] = mod_option[
-                'prefix_exact'].strip().lower()
-        if mod_option['prefix_values']:
-            required_mod['prefix_values'] = mod_option['prefix_values']
-
-        if mod_option['suffix_exact']:
-            required_mod['suffix_exact'] = mod_option[
-                'suffix_exact'].strip().lower()
-        if mod_option['suffix_values']:
-            required_mod['suffix_values'] = mod_option['suffix_values']
-
+        if mod_option['prefix_tier']:
+            required_mod['prefix_tier'] = mod_option['prefix_tier']
+        if mod_option['suffix_tier']:
+            required_mod['suffix_tier'] = mod_option['suffix_tier']
         if not required_mod['prefix'] and not required_mod['suffix']:
             raise Exception("Invalid mod config !")
         required_mods.append(required_mod)
