@@ -240,8 +240,7 @@ def suffix_match(current, required_mod_option):
         if required_mod_option['suffix'] != current['mods']['suffix']:
             return False
         elif not exact_affix_matches(current['mods']['all_mods'],
-                                     required_mod_option['suffix_exact'],
-                                     required_mod_option['suffix_values']):
+                                     required_mod_option['suffix_tier']):
             # suffix is equal to the required one but exact suffix isn't in exact required list.
             print("Exact suffix didn't match !")
             return False
