@@ -1,23 +1,17 @@
 {
-    "base_name": "platinum valdo's rest watchstone",
-    "num_items": 4,
+    "base_name": "titanium valdo's rest watchstone",
+    "num_items": 3,
     "inventory_positions": [
-        [0, 0], [1, 0], [2, 0], [3, 0]
+        [0, 0], [1, 0], [2, 0]
     ],
     "required_state": {
         "rarity": "magic",
         "magic_mods": [
             {
-                "prefix": "doubting",
+                "prefix": "investigator's",
                 "suffix": null,
-                "prefix_tier": "3",
+                "prefix_tier": 3,
                 "suffix_tier": null
-            },
-            {
-                "prefix": "",
-                "suffix": "of the forbidden",
-                "prefix_tier": null,
-                "suffix_tier": "3"
             }
         ],
         "rare_mods": []
