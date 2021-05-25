@@ -198,7 +198,7 @@ def log(s):
         flog.write(strftime("%a, %d %b %I:%M:%S %p : ") + s + "\n")
 
 
-def single_affix_match(affix, required_tier):
+def affix_tier_matches(affix, required_tier):
     affix_tier = affix.split("tier: ")[1].split(")")[0]
     if affix_tier <= required_tier:
         log("found")
@@ -214,7 +214,7 @@ def exact_affix_matches(current_affixes, required_affix_tier):
         return True
     if current_affixes:
         for affix in current_affixes:
-            if single_affix_match(affix, required_affix_tier):
+            if affix_tier_matches(affix, required_affix_tier):
                 return True
     return False
 
