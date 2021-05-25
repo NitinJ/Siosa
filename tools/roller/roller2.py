@@ -21,11 +21,11 @@ from scanf import scanf
 AFFIX_FILE = "config.json"
 
 LOG_FILE = "log.txt"
-MOUSE_MOVE_DELAY = 0.01
-MOUSE_MOVE_DURATION = 0.01
-ROLL_DELAY = 0.01
-KEY_PRESS_DELAY = 0.01
-MAX_ROLLS = 1500
+MOUSE_MOVE_DELAY = 0.02
+MOUSE_MOVE_DURATION = 0.02
+ROLL_DELAY = 0.02
+KEY_PRESS_DELAY = 0.02
+MAX_ROLLS = 1200
 CLIPBOARD_READ_SLEEP_TIME = 0.15
 
 # Won't use currency if debug mode is set.
@@ -198,8 +198,8 @@ def log(s):
         flog.write(strftime("%a, %d %b %I:%M:%S %p : ") + s + "\n")
 
 
-def affix_tier_matches(affix, required_tier):
-    affix_tier = affix.split("tier: ")[1].split(")")[0]
+def affix_tier_matches(current_affix, required_affix, required_tier):
+    affix_tier = current_affix.split("tier: ")[1].split(")")[0]
     if affix_tier <= required_tier:
         log("found")
         return True
@@ -208,13 +208,13 @@ def affix_tier_matches(affix, required_tier):
         return False
 
 
-def exact_affix_matches(current_affixes, required_affix_tier):
+def exact_affix_matches(current_affixes, required_affix, required_affix_tier):
     if not required_affix_tier:
         # Required mod option affixes are empty so no need to match.
         return True
     if current_affixes:
-        for affix in current_affixes:
-            if affix_tier_matches(affix, required_affix_tier):
+        for current_affix in current_affixes:
+            if required_affix in current_affix and affix_tier_matches(current_affix, required_affix, required_affix_tier):
                 return True
     return False
 
@@ -224,7 +224,7 @@ def prefix_match(current, required_mod_option):
         # Prefix present
         if required_mod_option['prefix'] != current['mods']['prefix']:
             return False
-        elif not exact_affix_matches(current['mods']['all_mods'],
+        elif not exact_affix_matches(current['mods']['all_mods'], required_mod_option['prefix'],
                                      required_mod_option['prefix_tier']):
             # Prefix is equal to the required one but exact prefix isn't in
             # exact required list.
@@ -239,7 +239,7 @@ def suffix_match(current, required_mod_option):
         # suffix present
         if required_mod_option['suffix'] != current['mods']['suffix']:
             return False
-        elif not exact_affix_matches(current['mods']['all_mods'],
+        elif not exact_affix_matches(current['mods']['all_mods'],required_mod_option['suffix'],
                                      required_mod_option['suffix_tier']):
             # suffix is equal to the required one but exact suffix isn't in exact required list.
             print("Exact suffix didn't match !")
@@ -261,7 +261,7 @@ def magic_mod_check(current, required):
                 # Prefix is not equal to the required one.
                 print("Prefix didn't match !")
                 continue
-            elif not exact_affix_matches(current['mods']['all_mods'],
+            elif not exact_affix_matches(current['mods']['all_mods'], mod_option['prefix'],
                                          mod_option['prefix_tier']):
                 # Prefix is equal to the required one but exact prefix isn't in
                 # exact required list.
@@ -271,7 +271,7 @@ def magic_mod_check(current, required):
             if mod_option['suffix'] != current['mods']['suffix']:
                 print("Suffix didn't match !")
                 continue
-            elif not exact_affix_matches(current['mods']['all_mods'],
+            elif not exact_affix_matches(current['mods']['all_mods'], mod_option['suffix'],
                                          mod_option['suffix_tier']):
                 print("Suffix didn't match !")
                 continue
