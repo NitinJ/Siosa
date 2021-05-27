@@ -21,15 +21,15 @@ from scanf import scanf
 AFFIX_FILE = "config.json"
 
 LOG_FILE = "log.txt"
-MOUSE_MOVE_DELAY = 0.02
-MOUSE_MOVE_DURATION = 0.02
-ROLL_DELAY = 0.02
-KEY_PRESS_DELAY = 0.02
+MOUSE_MOVE_DELAY = 0.01
+MOUSE_MOVE_DURATION = 0.01
+ROLL_DELAY = 0.01
+KEY_PRESS_DELAY = 0.01
 MAX_ROLLS = 1200
 CLIPBOARD_READ_SLEEP_TIME = 0.15
 
 # Won't use currency if debug mode is set.
-DEBUG_MODE = True
+DEBUG_MODE = False
 
 ################################################################################
 # Globals as per 1920x1080px
@@ -40,8 +40,7 @@ CURRENCY_LOCATION = {
     'orb of scouring': (176, 445, 176, 445),
     'orb of transmutation': (56, 268, 56, 268)
 }
-ITEM_LOCATION = (336, 419, 336, 419)
-INVENTORY_00 = (1295, 615, 1295, 615)
+
 INVENTORY_SLOT_SIZE = 53
 SUPPORTED_RARITIES = ['magic', 'rare']
 LINE_FEED = "\r\n"
