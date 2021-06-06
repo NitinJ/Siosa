@@ -4,7 +4,7 @@ import win32clipboard
 
 
 class Clipboard:
-    def __init__(self, clipboard_read_sleep_time=0.15):
+    def __init__(self, clipboard_read_sleep_time=0.05):
         self.clipboard_read_sleep_time = clipboard_read_sleep_time
 
     def set_clipboard_data(self, data):
