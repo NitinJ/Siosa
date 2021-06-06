@@ -23,7 +23,7 @@ class Matcher:
 
     def matches(self, in_game_item):
         if not self.base_match(in_game_item):
-            return False, None
+            raise WrongBaseItemException("Wrong base item!")
 
         # If any item option matches, it's a match.
         for item_option in self.item_options:
@@ -40,10 +40,5 @@ class Matcher:
         return in_game_item.name.find(self.base_name) > -1
 
 
-
-
-
-
-
-
-
+class WrongBaseItemException(Exception):
+    pass

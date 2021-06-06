@@ -1,6 +1,6 @@
 from tools.roller.crafting_type import CraftingType
 from tools.roller.currency import Currency
-from tools.roller.matcher import MatcherFactory
+from tools.roller.matcher import MatcherFactory, WrongBaseItemException
 from tools.roller.utils import affix_match_all
 
 
@@ -27,7 +27,19 @@ class Crafter:
         raise NotImplementedError
 
     def done(self, in_game_item):
-        matches, item_option = self.matcher.matches(in_game_item)
+        """
+        Returns whether the crafter is done crafting.
+        Args:
+            in_game_item: The in game item.
+        Returns: A tuple of whether crafter succeeded in crafting & the next
+        currency to use in case it didn't. If next currency to use is None,
+        means item cannot be further crafted.
+        """
+        try:
+            matches, item_option = self.matcher.matches(in_game_item)
+        except WrongBaseItemException as err:
+            # Wrong item base. Return with failure.
+            return False, None
         next_currency_to_use = self._get_next_currency_to_use(
             in_game_item, item_option)
         if matches and not next_currency_to_use:

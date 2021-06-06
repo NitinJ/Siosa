@@ -76,7 +76,7 @@ class Roller:
 
 def run_timer():
     input("Press enter to confirm ...")
-    t = 5
+    t = 3
     for i in range(0, 5):
         time.sleep(1)
         print("Move to POE..({})".format(t - i))
