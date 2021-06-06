@@ -1,11 +1,13 @@
 import logging
 import re
-from pprint import pformat
+
+from tools.roller.clipboard import Clipboard
 
 
 class Affix:
     PREFIX = "prefix modifier"
     SUFFIX = "suffix modifier"
+    UNIQUE = "unique modifier"
     AFFIX_DETAILS_REGEX = re.compile('{ (.*) modifier "(.*)" \(tier: (\d*)\)')
     AFFIX_VALUE_RANGE_REGEX = re.compile("\((.*)\)")
 
@@ -57,8 +59,11 @@ class Item:
         item_class = Item.get_item_class(clipboard_data)
         rarity = Item.get_rarity(clipboard_data)
         name = Item.get_name(rarity, clipboard_data)
-        mods = Item.get_all_mods(rarity, clipboard_data)
-        affixes = Item.parse_affixes(mods)
+        affixes = []
+        if rarity != 'unique':
+            # No support for unique mods as of now. Not required.
+            affixes = Item.parse_affixes(
+                Item.get_all_mods(rarity, clipboard_data))
         return Item(item_class, rarity, name, affixes)
 
     def __init__(self, item_class, rarity, name, affixes):
@@ -71,12 +76,12 @@ class Item:
         return self._str()
 
     def _str(self):
-        return "Name: {}, Rarity: {}, Class: {}, Affixes({}):{}".format(
+        return "Name: {},\nRarity: {},\nClass: {},\nAffixes({}): {}".format(
             self.name,
             self.rarity,
             self.item_class,
             len(self.affixes),
-            "\n".join([str(affix) for affix in self.affixes]))
+            ", ".join([str(affix) for affix in self.affixes]))
 
     def __str__(self):
         return self._str()
@@ -109,7 +114,8 @@ class Item:
 
     @staticmethod
     def get_rarity(clipboard_data):
-        name_section_lines = clipboard_data.split(Item.SECTION_SEPARATOR)[0].split(
+        name_section_lines = clipboard_data.split(Item.SECTION_SEPARATOR)[
+            0].split(
             Item.LINE_FEED)
         rarity = None
         for line in name_section_lines:
@@ -122,13 +128,8 @@ class Item:
 
     @staticmethod
     def get_name(rarity, clipboard_data):
-        name = ''
         name_section = clipboard_data.split("--------\r\n")[0]
-        if rarity == 'magic':
-            name = name_section.split(Item.LINE_FEED)[2].strip().lower()
-        elif rarity == 'rare':
-            name = " ".join(name_section.split(Item.LINE_FEED)[2:]).lower()
-        return name
+        return " ".join(name_section.split(Item.LINE_FEED)[2:]).lower().strip()
 
     @staticmethod
     def get_all_mods(rarity, clipboard_data):
@@ -150,6 +151,11 @@ class Item:
             return ''
         sections = clipboard_data.split(Item.SECTION_SEPARATOR)
         for section in sections:
-            if section.find(Affix.PREFIX) > -1 or \
-                    section.find(Affix.SUFFIX) > -1:
+            if any([x in section
+                    for x in [Affix.PREFIX, Affix.SUFFIX, Affix.UNIQUE]]):
                 return section
+
+
+if __name__ == "__main__":
+    item = Item.create_from_clipboard_data(Clipboard().get_clipboard_data())
+    print(item)
