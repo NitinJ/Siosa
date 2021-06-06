@@ -14,6 +14,8 @@ class CrafterFactory:
             return AlterationCrafter(item)
         elif crafting_type == CraftingType.ALTERATION_REGAL:
             return AlterationRegalCrafter(item)
+        elif crafting_type == CraftingType.CHANCING:
+            return ChancingCrafter(item)
         return None
 
 
@@ -138,3 +140,19 @@ class AlterationRegalCrafter(AlterationCrafter):
                 # Crafting complete.
                 return None
             return Currency.SCOURING
+
+
+class ChancingCrafter(Crafter):
+    def __init__(self, item):
+        Crafter.__init__(self, item)
+
+    def get_crafting_type(self):
+        return CraftingType.CHANCING
+
+    def _get_next_currency_to_use(self, in_game_item, item_option):
+        if in_game_item.rarity == 'normal':
+            return Currency.CHANCE
+        if in_game_item.rarity == 'unique':
+            # Crafting complete.
+            return None
+        return Currency.SCOURING

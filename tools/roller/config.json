@@ -1,6 +1,47 @@
 {
     "items": [
         {
+            "base_name": "ruby ring",
+            "inventory_position": [4, 0],
+            "crafting_type": "chancing",
+            "item_options": [
+                {
+                    "rarity": "unique",
+                    "prefixes": [],
+                    "suffixes": []
+                }
+            ]
+        },
+        {
+            "base_name": "two-toned boots",
+            "inventory_position": [1, 0],
+            "crafting_type": "alteration",
+            "item_options": [
+                {
+                    "rarity": "magic",
+                    "prefixes": [],
+                    "suffixes": [
+                        {
+                            "name": "of shaping",
+                            "tier": 1,
+                            "hint": "avoid elemental"
+                        }
+                    ]
+                },
+                {
+                    "rarity": "magic",
+                    "prefixes": [
+                        {
+                            "name": "cheetah's",
+                            "tier": 1,
+                            "hint": null
+                        }
+                    ],
+                    "suffixes": []
+                }
+            ]
+        },
+        {
             "base_name": "medium cluster jewel",
             "inventory_position": [0, 0],
             "crafting_type": "alteration_regal",
@@ -39,35 +80,6 @@
                             "name": "notable",
                             "tier": 1,
                             "hint": "student of decay"
-                        }
-                    ],
-                    "suffixes": []
-                }
-            ]
-        },
-        {
-            "base_name": "two-toned boots",
-            "inventory_position": [1, 0],
-            "crafting_type": "alteration",
-            "item_options": [
-                {
-                    "rarity": "magic",
-                    "prefixes": [],
-                    "suffixes": [
-                        {
-                            "name": "of shaping",
-                            "tier": 1,
-                            "hint": "avoid elemental"
-                        }
-                    ]
-                },
-                {
-                    "rarity": "magic",
-                    "prefixes": [
-                        {
-                            "name": "cheetah's",
-                            "tier": 1,
-                            "hint": null
                         }
                     ],
                     "suffixes": []

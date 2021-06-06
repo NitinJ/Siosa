@@ -15,6 +15,8 @@ class ValidatorFactory:
             return AlterationCraftingValidator()
         elif crafting_type == CraftingType.ALTERATION_REGAL:
             return AlterationRegalCraftingValidator()
+        elif crafting_type == CraftingType.CHANCING:
+            return ChancingCraftingValidator()
         return None
 
 
@@ -99,3 +101,18 @@ class AlterationRegalCraftingValidator(AlterationCraftingValidator):
             if item_option['rarity'] == 'rare':
                 num_rare_item_options += 1
         assert num_rare_item_options > 0
+
+
+class ChancingCraftingValidator(Validator):
+    def __init__(self):
+        Validator.__init__(self)
+
+    def _validate_internal(self, item):
+        for item_option in item['item_options']:
+            self._validate_item_option(item_option)
+
+    def _validate_item_option(self, item_option):
+        prefixes = item_option['prefixes']
+        suffixes = item_option['suffixes']
+        assert (len(prefixes) == 0 and len(suffixes) == 0)
+        assert item_option['rarity'] == 'unique'
