@@ -20,7 +20,7 @@ def affix_match_all(affixes, required_affix):
 def affix_match(affix, required_affix):
     if affix.type != required_affix.type:
         return False
-    if affix.name != required_affix.name:
+    if required_affix.name and affix.name != required_affix.name:
         return False
     if required_affix.tier and affix.tier > required_affix.tier:
         return False

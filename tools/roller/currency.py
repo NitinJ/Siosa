@@ -8,6 +8,8 @@ class Currency(Enum):
     SCOURING = 'Orb of Scouring'
     TRANSMUTATION = 'Orb of Transmutation'
     CHANCE = 'Orb of Chance'
+    ALCHEMY = 'Orb of Alchemy'
+    CHAOS = 'Chaos Orb'
 
 
 class CurrencyStack:

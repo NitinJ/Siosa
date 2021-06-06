@@ -16,12 +16,15 @@ class CrafterFactory:
             return AlterationRegalCrafter(item)
         elif crafting_type == CraftingType.CHANCING:
             return ChancingCrafter(item)
+        elif crafting_type == CraftingType.CHAOS:
+            return ChaosCrafter(item)
         return None
 
 
 class Crafter:
     def __init__(self, item):
-        self.matcher = MatcherFactory.get_matcher(item, self.get_crafting_type())
+        self.matcher = MatcherFactory.get_matcher(item,
+                                                  self.get_crafting_type())
         self.item = item
         self.item_options = item['item_options']
 
@@ -156,3 +159,23 @@ class ChancingCrafter(Crafter):
             # Crafting complete.
             return None
         return Currency.SCOURING
+
+
+class ChaosCrafter(Crafter):
+    def __init__(self, item):
+        Crafter.__init__(self, item)
+
+    def get_crafting_type(self):
+        return CraftingType.CHAOS
+
+    def _get_next_currency_to_use(self, in_game_item, matched_item_option):
+        if in_game_item.rarity == 'normal':
+            return Currency.ALCHEMY
+        if in_game_item.rarity == 'magic':
+            return Currency.REGAL
+        if in_game_item.rarity == 'unique':
+            return None
+        if matched_item_option:
+            # Crafting complete.
+            return None
+        return Currency.CHAOS

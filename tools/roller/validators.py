@@ -17,6 +17,8 @@ class ValidatorFactory:
             return AlterationRegalCraftingValidator()
         elif crafting_type == CraftingType.CHANCING:
             return ChancingCraftingValidator()
+        elif crafting_type == CraftingType.CHAOS:
+            return ChaosCraftingValidator()
         return None
 
 
@@ -116,3 +118,21 @@ class ChancingCraftingValidator(Validator):
         suffixes = item_option['suffixes']
         assert (len(prefixes) == 0 and len(suffixes) == 0)
         assert item_option['rarity'] == 'unique'
+
+
+class ChaosCraftingValidator(Validator):
+    def __init__(self):
+        Validator.__init__(self)
+
+    def _validate_internal(self, item):
+        for item_option in item['item_options']:
+            self._validate_item_option(item_option)
+
+    def _validate_item_option(self, item_option):
+        prefixes = item_option['prefixes']
+        suffixes = item_option['suffixes']
+        assert item_option['rarity'] == 'rare'
+        assert (len(prefixes) or len(suffixes))
+        for affix in itertools.chain(prefixes, suffixes):
+            if affix['name'] and affix['tier']:
+                assert affix['tier'] > 0

@@ -15,7 +15,7 @@ logging.basicConfig(format=FORMAT)
 
 class Roller:
     LOG_FILE = "log.txt"
-    COMBINATIONS = '<ctrl>+q'
+    COMBINATIONS = 'r+q'
 
     def __init__(self, roller_config, max_rolls=800):
         self.logger = logging.getLogger(__name__)
@@ -86,7 +86,7 @@ class Roller:
 def run_timer():
     input("Press enter to confirm ...")
     t = 3
-    for i in range(0, 5):
+    for i in range(0, 3):
         time.sleep(1)
         print("Move to POE..({})".format(t - i))
 

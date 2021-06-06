@@ -1,6 +1,24 @@
 {
     "items": [
         {
+            "base_name": "onyx amulet",
+            "inventory_position": [2, 1],
+            "crafting_type": "chaos",
+            "item_options": [
+                {
+                    "rarity": "rare",
+                    "prefixes": [
+                        {
+                            "name": null,
+                            "tier": 10,
+                            "hint": "to maximum life"
+                        }
+                    ],
+                    "suffixes": []
+                }
+            ]
+        },
+        {
             "base_name": "ruby ring",
             "inventory_position": [4, 0],
             "crafting_type": "chancing",
