@@ -2,9 +2,11 @@ import time
 
 import pyautogui
 
+from tools.roller.singleton import Singleton
 
-class KMController:
-    def __init__(self, key_press_delay=0, mouse_move_delay=0.01):
+
+class KMController(metaclass=Singleton):
+    def __init__(self, key_press_delay=0.002, mouse_move_delay=0.01):
         self.down_keys = {}
         self.key_press_delay = key_press_delay
         self.mouse_move_delay = mouse_move_delay
