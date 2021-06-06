@@ -1,80 +1,76 @@
 {
     "items": [
         {
-            "base_name": "two-toned boots",
+            "base_name": "medium cluster jewel",
             "inventory_position": [0, 0],
-            "crafting_type": "alteration",
+            "crafting_type": "alteration_regal",
             "item_options": [
                 {
-                    "prefix": null,
-                    "prefix_tier": null,
-                    "prefix_hint": null,
-                    "suffix": "of shaping",
-                    "suffix_tier": 1,
-                    "suffix_hint": "avoid elemental"
+                    "rarity": "magic",
+                    "prefixes": [
+                        {
+                            "name": "notable",
+                            "tier": 1,
+                            "hint": "circling oblivion"
+                        }
+                    ],
+                    "suffixes": []
                 },
                 {
-                    "prefix": "cheetah's",
-                    "prefix_tier": null,
-                    "prefix_hint": null,
-                    "suffix": null,
-                    "suffix_tier": null,
-                    "suffix_hint": null
+                    "rarity": "magic",
+                    "prefixes": [
+                        {
+                            "name": "notable",
+                            "tier": 1,
+                            "hint": "student of decay"
+                        }
+                    ],
+                    "suffixes": []
                 },
                 {
-                    "prefix": null,
-                    "prefix_tier": null,
-                    "prefix_hint": null,
-                    "suffix": "of shaping",
-                    "suffix_tier": 3,
-                    "suffix_hint": "dodge attack"
+                    "rarity": "rare",
+                    "prefixes": [
+                        {
+                            "name": "notable",
+                            "tier": 1,
+                            "hint": "circling oblivion"
+                        },
+                        {
+                            "name": "notable",
+                            "tier": 1,
+                            "hint": "student of decay"
+                        }
+                    ],
+                    "suffixes": []
                 }
             ]
         },
         {
-            "base_name": "platinum tirn's end watchstone",
-            "inventory_position": [2, 0],
+            "base_name": "two-toned boots",
+            "inventory_position": [1, 0],
             "crafting_type": "alteration",
             "item_options": [
                 {
-                    "prefix": "hyrri's",
-                    "prefix_tier": 4,
-                    "prefix_hint": null,
-                    "suffix": null,
-                    "suffix_tier": null,
-                    "suffix_hint": null
+                    "rarity": "magic",
+                    "prefixes": [],
+                    "suffixes": [
+                        {
+                            "name": "of shaping",
+                            "tier": 1,
+                            "hint": "avoid elemental"
+                        }
+                    ]
                 },
                 {
-                    "prefix": "marceus'",
-                    "prefix_tier": 4,
-                    "prefix_hint": null,
-                    "suffix": null,
-                    "suffix_tier": null,
-                    "suffix_hint": null
-                },
-                {
-                    "prefix": "napuatzi's",
-                    "prefix_tier": 4,
-                    "prefix_hint": null,
-                    "suffix": null,
-                    "suffix_tier": null,
-                    "suffix_hint": null
-                },
-                {
-                    "prefix": "sanctus'",
-                    "prefix_tier": 4,
-                    "prefix_hint": null,
-                    "suffix": null,
-                    "suffix_tier": null,
-                    "suffix_hint": null
-                },
-                {
-                    "prefix": "aukuna's",
-                    "prefix_tier": 4,
-                    "prefix_hint": null,
-                    "suffix": null,
-                    "suffix_tier": null,
-                    "suffix_hint": null
+                    "rarity": "magic",
+                    "prefixes": [
+                        {
+                            "name": "cheetah's",
+                            "tier": 1,
+                            "hint": null
+                        }
+                    ],
+                    "suffixes": []
                 }
             ]
         }

@@ -4,7 +4,7 @@ import pyautogui
 
 
 class KMController:
-    def __init__(self, key_press_delay=0.01, mouse_move_delay=0.01):
+    def __init__(self, key_press_delay=0, mouse_move_delay=0.01):
         self.down_keys = {}
         self.key_press_delay = key_press_delay
         self.mouse_move_delay = mouse_move_delay
@@ -20,7 +20,6 @@ class KMController:
     def move_mouse(self, location):
         if self.current_location == location:
             return
-        time.sleep(self.mouse_move_delay)
         x1, y1, x2, y2 = location
         x = (x1 + x2) // 2
         y = (y1 + y2) // 2

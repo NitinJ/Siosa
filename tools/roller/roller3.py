@@ -1,10 +1,10 @@
 import logging
 import time
 
+from tools.roller.crafter import CrafterFactory
 from tools.roller.crafting_type import get_crafting_type
 from tools.roller.game_controller import GameController
 from tools.roller.kmcontroller import KMController
-from tools.roller.matcher import Matcher, MatcherFactory
 from tools.roller.roller_config import RollerConfig
 
 FORMAT = "%(created)f - %(thread)d: [%(filename)s:%(lineno)s \
@@ -19,14 +19,14 @@ class Roller:
     def __init__(self, roller_config, max_rolls=800):
         self.logger = logging.getLogger(__name__)
         self.logger.setLevel('DEBUG')
-        self.roller_config = roller_config.data
+        self.roller_config = roller_config
         self.max_rolls = max_rolls
         self.currency_state = {}
         self.gc = GameController(debug=False)
 
     def start_rolling(self):
         flog = open(Roller.LOG_FILE, "a+")
-        for item in self.roller_config['items']:
+        for item in self.roller_config.get_items():
             crafting_type = get_crafting_type(item['crafting_type'])
             if crafting_type:
                 self._roll_item(item, crafting_type, flog)
@@ -34,15 +34,16 @@ class Roller:
     def _roll_item(self, item, crafting_type, flog):
         self.gc.reset()
         self.gc.move_item_to_stash(item)
-        matcher = MatcherFactory.get_matcher(item, crafting_type)
+
+        crafter = CrafterFactory.get_crafter(item, crafting_type)
         for i in range(0, self.max_rolls):
             in_game_item = self.gc.read_item()
-            matches, next_currency = matcher.matches(in_game_item)
-            self.log(flog, in_game_item, item, matches, next_currency)
-            if matches:
+            done, next_currency = crafter.done(in_game_item)
+            self.log(flog, in_game_item, item, done, next_currency)
+            if done:
                 self._on_success()
                 break
-            if not matches and not next_currency:
+            if not done and not next_currency:
                 self._on_failure()
                 break
 
@@ -87,5 +88,6 @@ if __name__ == "__main__":
     try:
         roller.start_rolling()
         print("All items successfully rolled !")
-    except:
+    except Exception() as e:
         KMController().all_keys_up()
+        raise e

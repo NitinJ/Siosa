@@ -9,7 +9,4 @@ class CraftingType(Enum):
 
 
 def get_crafting_type(type_str):
-    try:
-        return CraftingType(type_str)
-    except:
-        return None
+    return CraftingType(type_str)

@@ -2,6 +2,7 @@ import logging
 import re
 from pprint import pformat
 
+
 class Affix:
     PREFIX = "prefix modifier"
     SUFFIX = "suffix modifier"
@@ -15,7 +16,7 @@ class Affix:
         self.type = type
 
     def _str(self):
-        return "{}({}):T-{}".format(self.type, self.name, self.tier)
+        return "{}-{}-T{}".format(self.type, self.name, self.tier)
 
     def __str__(self):
         return self._str()
@@ -38,7 +39,8 @@ class Affix:
             affix_line = affix_line.replace(" — unscalable value", "")
             affix_line = re.sub(Affix.AFFIX_VALUE_RANGE_REGEX, '', affix_line)
             affix_str_lines.append(affix_line)
-        return Affix(",".join(affix_str_lines), groups[1], int(groups[2]), groups[0])
+        return Affix(",".join(affix_str_lines), groups[1], int(groups[2]),
+                     groups[0])
 
 
 class Item:
@@ -47,25 +49,37 @@ class Item:
     NEWLINE = "\n"
     RARITY_STR = "rarity: "
     ITEM_CLASS_STR = "item class: "
+    logger = logging.getLogger(__name__)
+    logger.setLevel('DEBUG')
 
-    def __init__(self, clipboard_data):
-        self.logger = logging.getLogger(__name__)
-        self.logger.setLevel('DEBUG')
-        self.clipboard_data = clipboard_data
-        self.item_class = 'unknown'
-        self.rarity = 'unknown'
-        self.name = 'unknown'
-        self.mods = []
-        self.affixes = []
-        self._parse_clipboard_data()
-        self._parse_affixes()
+    @staticmethod
+    def create_from_clipboard_data(clipboard_data):
+        item_class = Item.get_item_class(clipboard_data)
+        rarity = Item.get_rarity(clipboard_data)
+        name = Item.get_name(rarity, clipboard_data)
+        mods = Item.get_all_mods(rarity, clipboard_data)
+        affixes = Item.parse_affixes(mods)
+        return Item(item_class, rarity, name, affixes)
 
-    def __str__(self):
-        return "Name: {}, Rarity: {}, class: {}, affixes({})".format(
+    def __init__(self, item_class, rarity, name, affixes):
+        self.item_class = item_class
+        self.rarity = rarity
+        self.name = name
+        self.affixes = affixes
+
+    def __repr__(self):
+        return self._str()
+
+    def _str(self):
+        return "Name: {}, Rarity: {}, Class: {}, Affixes({}):{}".format(
             self.name,
             self.rarity,
             self.item_class,
+            len(self.affixes),
             "\n".join([str(affix) for affix in self.affixes]))
+
+    def __str__(self):
+        return self._str()
 
     def get_prefixes(self):
         return [x for x in self.affixes if x.is_prefix()]
@@ -82,26 +96,20 @@ class Item:
     def get_num_suffixes(self):
         return self.get_num_affixes() - self.get_num_prefixes()
 
-    def _parse_affixes(self):
-        for mod in self.mods:
-            self.affixes.append(Affix.create_from_clipboard_affix(mod))
-
-    def _parse_clipboard_data(self):
-        self.item_class = Item.get_item_class(self.clipboard_data)
-        self.rarity = Item.get_rarity(self.clipboard_data)
-        self.name = self.get_name(self.clipboard_data)
-        self.mods = self.get_all_mods(self.clipboard_data)
+    @staticmethod
+    def parse_affixes(mods):
+        return [Affix.create_from_clipboard_affix(mod) for mod in mods]
 
     @staticmethod
-    def get_item_class(data):
-        first_line = data.split(Item.LINE_FEED)[0]
+    def get_item_class(clipboard_data):
+        first_line = clipboard_data.split(Item.LINE_FEED)[0]
         r = first_line.find(Item.ITEM_CLASS_STR)
         item_class = first_line[r + len(Item.ITEM_CLASS_STR):].strip().lower()
         return item_class
 
     @staticmethod
-    def get_rarity(data):
-        name_section_lines = data.split(Item.SECTION_SEPARATOR)[0].split(
+    def get_rarity(clipboard_data):
+        name_section_lines = clipboard_data.split(Item.SECTION_SEPARATOR)[0].split(
             Item.LINE_FEED)
         rarity = None
         for line in name_section_lines:
@@ -112,17 +120,19 @@ class Item:
             break
         return rarity
 
-    def get_name(self, data):
+    @staticmethod
+    def get_name(rarity, clipboard_data):
         name = ''
-        name_section = data.split("--------\r\n")[0]
-        if self.rarity == 'magic':
+        name_section = clipboard_data.split("--------\r\n")[0]
+        if rarity == 'magic':
             name = name_section.split(Item.LINE_FEED)[2].strip().lower()
-        elif self.rarity == 'rare':
+        elif rarity == 'rare':
             name = " ".join(name_section.split(Item.LINE_FEED)[2:]).lower()
         return name
 
-    def get_all_mods(self, data):
-        mods_section = self.get_mod_section(data)
+    @staticmethod
+    def get_all_mods(rarity, clipboard_data):
+        mods_section = Item.get_mod_section(rarity, clipboard_data)
         mods = []
         # Each affix in the mod section has 1 line for the affix details like
         # tier, name etc. and following multiple lines for the actual affix
@@ -131,13 +141,14 @@ class Item:
         for affix in mods_section.strip().split(Item.LINE_FEED):
             affix_lines = affix.split("\n")
             mods.extend([affix_lines])
-        self.logger.debug("All item mods: {}".format(mods))
+        Item.logger.debug("All item mods: {}".format(mods))
         return mods
 
-    def get_mod_section(self, data):
-        if self.rarity == 'normal':
+    @staticmethod
+    def get_mod_section(rarity, clipboard_data):
+        if rarity == 'normal':
             return ''
-        sections = data.split(Item.SECTION_SEPARATOR)
+        sections = clipboard_data.split(Item.SECTION_SEPARATOR)
         for section in sections:
             if section.find(Affix.PREFIX) > -1 or \
                     section.find(Affix.SUFFIX) > -1:

@@ -30,7 +30,7 @@ class GameController:
         self.km.move_mouse(Locations.ITEM_LOCATION)
         self.km.copy_item_at_cursor()
         clipboard_data = self.clipboard.get_clipboard_data()
-        item = Item(clipboard_data)
+        item = Item.create_from_clipboard_data(clipboard_data)
         self.logger.debug("Item: {}".format(item))
         return item
 
