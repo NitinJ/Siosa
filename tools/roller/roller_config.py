@@ -1,5 +1,6 @@
 import json
 import logging
+from pprint import pformat
 
 from tools.roller.crafting_type import get_crafting_type
 from tools.roller.validators import ValidatorFactory
@@ -43,5 +44,6 @@ class RollerConfig:
             # representation of item from the raw_item obtained from config.
             item_positions[tuple(position)] = True
             raw_item['item_options'] = validator.create_item_options(raw_item)
-        self.logger.debug("Final parsed config data: {}".format(self.data))
+        self.logger.debug("Final parsed config data: {}".format(
+            pformat(self.data)))
 
