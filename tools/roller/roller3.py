@@ -21,15 +21,15 @@ class Roller:
         self.logger = logging.getLogger(__name__)
         self.logger.setLevel('DEBUG')
         self.keyboard_listener = KeyboardShortcut(Roller.COMBINATIONS,
-                                                  self.flip_rolling)
+                                                  self.stop_rolling)
         self.roller_config = roller_config
         self.max_rolls = max_rolls
         self.currency_state = {}
         self.gc = GameController(debug=False)
         self.should_roll = True
 
-    def flip_rolling(self):
-        self.should_roll = not self.should_roll
+    def stop_rolling(self):
+        self.should_roll = False
 
     def start_rolling(self):
         self.keyboard_listener.start_listening()
