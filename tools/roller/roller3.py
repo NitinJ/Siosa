@@ -47,23 +47,22 @@ class Roller:
         for i in range(0, self.max_rolls):
             if not self.should_roll:
                 raise Exception("Interrupted")
+
             in_game_item = self.gc.read_item()
             done, next_currency = crafter.done(in_game_item)
+
             self.log(flog, in_game_item, item, done, next_currency)
             if done:
-                self._on_success()
-                break
+                return self._on_success()
             if not done and not next_currency:
-                self._on_failure()
-                break
+                return self._on_failure()
 
             try:
                 self.gc.use_currency_on_item(next_currency)
             except:
                 self.logger.info("Not enough currency: {}".format(
                     next_currency))
-                self._on_failure()
-                break
+                return self._on_failure()
 
     def log(self, flog, in_game_item, item, matches, next_currency):
         log_str = "in_game_item: {}\nitem: {}\nmatches: {}\n" \

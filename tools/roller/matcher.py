@@ -3,16 +3,6 @@ import logging
 from tools.roller.utils import *
 
 
-class MatcherFactory:
-    def __init__(self):
-        pass
-
-    @staticmethod
-    def get_matcher(item, crafting_type):
-        # TODO: Add more matcher types if required and generate them here.
-        return Matcher(item)
-
-
 class Matcher:
     def __init__(self, item):
         self.logger = logging.getLogger(__name__)

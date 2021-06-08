@@ -40,8 +40,9 @@ class RollerConfig:
                 get_crafting_type(raw_item['crafting_type']))
             validator.validate(raw_item)
 
-            # Validated. Mark the position as True and get internal
-            # representation of item from the raw_item obtained from config.
+            # Validated.
+            # Mark the position as True and get internal representation of item
+            # from the raw_item obtained from config.
             item_positions[tuple(position)] = True
             raw_item['item_options'] = validator.create_item_options(raw_item)
         self.logger.debug("Final parsed config data: {}".format(

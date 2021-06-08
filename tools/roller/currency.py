@@ -30,8 +30,8 @@ class CurrencyStack:
             name_section.split(CurrencyStack.LINE_FEED)[1].split("rarity: ")[1]
         if not rarity == "currency":
             return None
-        type = name_section.split(CurrencyStack.LINE_FEED)[2].strip()
+        currency_type = name_section.split(CurrencyStack.LINE_FEED)[2].strip()
         stack_data = stack_section.split("stack size: ")[1]
         stack = int(stack_data.split("/")[0].replace(",", ""))
         stack_size = int(stack_data.split("/")[1].strip())
-        return CurrencyStack(type, stack, stack_size)
+        return CurrencyStack(currency_type, stack, stack_size)
