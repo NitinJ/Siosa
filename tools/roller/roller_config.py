@@ -7,8 +7,6 @@ from tools.roller.validators import ValidatorFactory
 
 
 class RollerConfig:
-    SUPPORTED_RARITIES = ['magic']
-
     def __init__(self, config_file_path):
         self.logger = logging.getLogger(__name__)
         self.logger.setLevel('DEBUG')

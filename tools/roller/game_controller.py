@@ -10,7 +10,6 @@ from tools.roller.locations import Locations
 
 
 class GameController:
-    LINE_FEED = "\r\n"
     INVENTORY_SLOT_SIZE = 53
 
     def __init__(self, debug=False):

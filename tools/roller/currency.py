@@ -15,7 +15,6 @@ class Currency(Enum):
 class CurrencyStack:
     LINE_FEED = "\r\n"
     SEPARATOR = "--------\r\n"
-    NEWLINE = "\n"
 
     def __init__(self, type, stack, stack_size):
         self.type = type
