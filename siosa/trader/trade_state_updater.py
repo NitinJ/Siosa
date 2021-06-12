@@ -43,27 +43,27 @@ class TradeStateUpdater:
         self.awaiting_tm = TemplateMatcher(
             Template.from_registry(
                 TemplateRegistry.AWAITING_TRADE_CANCEL_BUTTON),
-            confirm_foreground=True)
+            confirm_foreground=True, scale=0.5)
         self.trading_tm_other = TemplateMatcher(
             Template.from_registry(TemplateRegistry.TRADE_WINDOW_OTHER_SMALL_0_0),
-            confirm_foreground=True)
+            confirm_foreground=True, scale=0.5)
         self.trading_tm_me = TemplateMatcher(
             Template.from_registry(TemplateRegistry.TRADE_WINDOW_ME_0_0),
-            confirm_foreground=True)
+            confirm_foreground=True, scale=0.5)
         self.full_trading_tm = ReusableTemplateMatcher(
-            Locations.TRADE_WINDOW_FULL, confirm_foreground=True)
+            Locations.TRADE_WINDOW_FULL, confirm_foreground=True, scale=0.5)
 
         # Templates
         self.trade_window_close_button = Template.from_registry(
-            TemplateRegistry.TRADE_WINDOW_CLOSE_BUTTON)
+            TemplateRegistry.TRADE_WINDOW_CLOSE_BUTTON, scale=0.5)
         self.trade_accept_retracted = Template.from_registry(
-            TemplateRegistry.TRADE_ACCEPT_RETRACTED)
+            TemplateRegistry.TRADE_ACCEPT_RETRACTED, scale=0.5)
         self.trade_green_aura = Template.from_registry(
-            TemplateRegistry.TRADE_ACCEPT_GREEN_AURA)
+            TemplateRegistry.TRADE_ACCEPT_GREEN_AURA, scale=0.5)
         self.trade_cancel_accept_button = Template.from_registry(
-            TemplateRegistry.CANCEL_TRADE_ACCEPT_BUTTON)
+            TemplateRegistry.CANCEL_TRADE_ACCEPT_BUTTON, scale=0.5)
         self.trade_me_empty_text = Template.from_registry(
-            TemplateRegistry.TRADE_WINDOW_ME_EMPTY_TEXT)
+            TemplateRegistry.TRADE_WINDOW_ME_EMPTY_TEXT, scale=0.5)
 
         self.grid_me = Grid(
             Locations.TRADE_WINDOW_ME,
@@ -81,7 +81,9 @@ class TradeStateUpdater:
             TradeStateUpdater.BORDER)
 
     def update(self):
-        self.logger.debug("In update ------------------------------")
+        self.current_state = self.trade_state.get()
+        self.logger.debug("In update ----------------------State: {}".format(
+            self.current_state))
         ts = time.time()
 
         trade_status = self._get_trade_status_from_log()
@@ -103,9 +105,14 @@ class TradeStateUpdater:
 
         state_changed = False
         if new_state and new_state != self.current_state:
-            self.logger.debug("Trying to set state to {}".format(new_state))
-            self.current_state = new_state
-            state_changed = self.trade_state.update(new_state)
+            if str(self.current_state) == self.trade_state.get():
+                self.logger.debug("Trying to set state to {}".format(new_state))
+                self.current_state = new_state
+                state_changed = self.trade_state.update(new_state)
+            else:
+                self.logger.debug("Internal state changed but trade_state has "
+                                  "already changed. Discarding current run of "
+                                  "the updater")
 
         if state_changed:
             self.logger.debug("State changed to {}".format(new_state))

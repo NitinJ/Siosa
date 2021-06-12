@@ -1,5 +1,4 @@
 import asyncio
-import math
 import time
 
 from siosa.control.console_controller import Commands
@@ -18,7 +17,7 @@ class TradeStep(Step):
     TRADE_THANK_YOU = "Thanks and have fun !"
     TRADE_OFFER_WAIT_TIMEOUT = 10
     TRADE_ACCEPT_WAIT_TIMEOUT = 10
-    CHAOS_MISSING = "{} chaos short.."
+    RETRY_TIMEOUT = 3
 
     def __init__(self, trade_info: TradeInfo, log_listener):
         super().__init__()
@@ -41,7 +40,7 @@ class TradeStep(Step):
         # Trade state variables.
         self.retries = TradeStep.MAX_RETRIES
         self.accepted = False
-        self.trade_verifier = TradeVerifier(trade_info)
+        self.trade_verifier = TradeVerifier(trade_info.trade_request)
 
     def execute(self, game_state):
         self.game_state = game_state
@@ -110,13 +109,11 @@ class TradeStep(Step):
     async def verify(self):
         self.logger.debug("Verifying trade".format(self.trader))
         res = self.trade_verifier.verify()
-        if res['verified']:
+        if res.is_verified():
             self.state.update_me('VERIFIED_SUCCESS')
         else:
             self.state.update_me('VERIFIED_FAIL')
-            self.cc.send_chat(self.trader,
-                              TradeStep.CHAOS_MISSING.format(
-                                  int(math.floor(res['missing_chaos']))))
+            self.cc.send_chat(self.trader, res.get_msg())
 
     async def accept(self):
         self.logger.debug("Accepting trade")
@@ -145,8 +142,9 @@ class TradeStep(Step):
             self.state.update(States.ENDED)
             return
         self.retries -= 1
-        self.logger.debug("Trade cancelled. Reties left: {}".format(
+        self.logger.debug("Trade cancelled. Retries left: {}".format(
             self.retries))
+        await asyncio.sleep(TradeStep.RETRY_TIMEOUT)
         self.state.update(States.NOT_STARTED)
 
     async def on_left(self):
