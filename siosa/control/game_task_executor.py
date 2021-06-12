@@ -26,6 +26,11 @@ class GameTaskExecutor(threading.Thread):
         self.task_store.add(task)
         self.lock.release()
 
+    def stop_all_tasks(self):
+        if self.running_task:
+            self.running_task.stop()
+        self.task_store.remove_all()
+
     def run(self):
         while True:
             self.lock.acquire()
