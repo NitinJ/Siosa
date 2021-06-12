@@ -19,7 +19,7 @@ class InGameLocation:
         return x, y
 
     def get_center(self):
-        return (self.x1 + self.x2) / 2, (self.y1 + self.y2) / 2
+        return (self.x1 + self.x2) // 2, (self.y1 + self.y2) // 2
 
     def get_center_location(self):
         """
@@ -27,8 +27,8 @@ class InGameLocation:
         Returns:
             InGameLocation
         """
-        x = (self.x1 + self.x2) / 2
-        y = (self.y1 + self.y2) / 2
+        x = (self.x1 + self.x2) // 2
+        y = (self.y1 + self.y2) // 2
         return InGameLocation(x, y, x, y, self.name)
 
     def equals(self, other):
@@ -39,6 +39,14 @@ class InGameLocation:
 
     def get_height(self):
         return self.y2 - self.y1
+
+    def get_scaled_location(self, factor):
+        return InGameLocation(
+            int(self.x1 * factor),
+            int(self.y1 * factor),
+            int(self.x2 * factor),
+            int(self.y2 * factor),
+            self.name)
 
     def __str__(self):
         return "({}, {}, {}, {})".format(self.x1, self.y1, self.x2, self.y2)
