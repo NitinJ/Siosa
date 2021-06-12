@@ -10,6 +10,9 @@ from siosa.control.window_controller import WindowController
 class TaskState(Enum):
     NOT_STARTED = 0
     RUNNING = 1
+    # TODO: Remove this shit because its too complex to handle and implement
+    # correctly. Instead just add support for task cleanup in case it's
+    # stopped in it's execution.
     PAUSED = 2
     STOPPED = 3
     COMPLETE = 4
@@ -30,7 +33,7 @@ class Task(threading.Thread):
         self.steps = steps
         self.step_index = 0
 
-        # TODO: Move priorities to a different file and encorporate
+        # TODO: Move priorities to a different file and incorporate
         #  comparison logic there.
         self.priority = priority
 
