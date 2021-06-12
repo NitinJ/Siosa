@@ -1,6 +1,4 @@
-from siosa.image.template import Template
 from siosa.image.template_matcher import TemplateMatcher
-from siosa.image.template_registry import TemplateRegistry
 
 
 class ReusableTemplateMatcher(TemplateMatcher):
@@ -17,10 +15,3 @@ class ReusableTemplateMatcher(TemplateMatcher):
     def match_template(self, template):
         self.template = template
         return self.match(self.location, reuse=True)
-
-    def reset(self):
-        """
-        Clears the stored location image.
-        Returns: None
-        """
-        self.image_cache = {}
