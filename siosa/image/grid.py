@@ -63,15 +63,17 @@ class Grid:
         return self.lf.create(x1, y1, x2, y2)
 
     def _get_cells_for_positions(self, positions):
-        center00_x, center00_y = self.cell00.get_center()
-        offset_x, offset_y = (
-            center00_x - self.grid.x1,
-            center00_y - self.grid.y1)
-        width = self.cell00.get_width()
-        height = self.cell00.get_height()
-        return [
+        offset_x, offset_y = \
+            (self.cell00.x1 - self.grid.x1, self.cell00.y1 - self.grid.y1)
+        width = self.cell00.get_width() + self.border_x
+        height = self.cell00.get_height() + self.border_y
+        ret = [
             (abs(p[1] - offset_y) // height, abs(p[0] - offset_x) // width)
             for p in positions]
+        # positions might contain close positions that map to the same cell.
+        # This can cause ret to contain duplicate values, so remove duplicates
+        # by converting to a set and back.
+        return list(set(ret))
 
     def _is_in_bounds(self, cell):
         return (cell[0] >= 0 and cell[1] >= 0) and (
