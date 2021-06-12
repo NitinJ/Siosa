@@ -22,6 +22,10 @@ class GameTaskStore:
         self.logger.setLevel(logging.DEBUG)
         self.tasks = []
 
+    def remove_all(self):
+        self.logger.debug("Removing all tasks from task store.")
+        self.tasks = []
+
     def add(self, t):
         self.logger.debug(
             "Adding new task to task store: {}".format(t.name))
