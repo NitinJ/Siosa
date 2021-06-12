@@ -161,3 +161,4 @@ class Locations:
     TRADE_WINDOW_CLOSE_BUTTON = Location(929, 82, 959, 112, Resolutions.p1080)
 
     PARTY_NOTIFICATIONS_CLOSE_BUTTON = Location(1892, 700, 1900, 727, Resolutions.p1080)
+    PARTY_NOTIFICATIONS_AREA = Location(1875, 585, 1920, 860, Resolutions.p1080)

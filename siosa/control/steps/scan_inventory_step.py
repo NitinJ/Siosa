@@ -5,7 +5,10 @@ from siosa.control.game_step import Step
 from siosa.data.inventory import Inventory
 from siosa.data.stash import Stash
 from siosa.image.inventory_scanner import InventoryScanner
-from siosa.location.location_factory import LocationFactory, Locations
+from siosa.image.template import Template
+from siosa.image.template_matcher import TemplateMatcher
+from siosa.image.template_registry import TemplateRegistry
+from siosa.location.location_factory import Locations
 
 
 class ScanInventory(Step):
@@ -16,6 +19,8 @@ class ScanInventory(Step):
         self.clipboard = PoeClipboard()
         self.inventory_scanner = InventoryScanner()
         self.inventory_0_0 = self.lf.get(Locations.INVENTORY_0_0)
+        self.party_notification_tm = TemplateMatcher(Template.from_registry(
+            TemplateRegistry.PARTY_NOTIFICATIONS_CLOSE_BUTTON))
         self.stash = Stash()
         self.items = []
 
@@ -23,6 +28,7 @@ class ScanInventory(Step):
         self.game_state = game_state
 
         self.logger.info("Executing step: {}".format(self.__class__.__name__))
+        self.close_all_party_notifications()
         item_positions = self.inventory_scanner.scan()
         for p in item_positions:
             self.mc.move_mouse(Inventory.get_location(p))
@@ -45,3 +51,15 @@ class ScanInventory(Step):
                 'stash_tab': stash_tab,
             })
         self.game_state.update({'inventory': self.items})
+
+    def get_party_notification_close_button_locations(self):
+        party_notification_area = self.lf.get(Locations.PARTY_NOTIFICATIONS_AREA)
+        points = self.party_notification_tm.match(party_notification_area)
+        x, y = party_notification_area.x1, party_notification_area.y1
+        # Create actual in game screen co-ordinates.
+        return [self.lf.create(p[0] + x, p[1] + y, p[0] + x, p[1] + y)
+                for p in points]
+
+    def close_all_party_notifications(self):
+        for pos in self.get_party_notification_close_button_locations():
+            self.mc.click_at_location(pos)
