@@ -6,7 +6,9 @@ from siosa.data.stash_item import StashItem
 
 
 class PickupItem(Step):
-    STASH_LOAD_WAIT_TIME = 0.1
+    # TODO: Remove this wait time and have a better mechanism to detect if stash
+    # has loaded on screen.
+    STASH_LOAD_WAIT_TIME = 1
 
     def __init__(self, stash_item: StashItem):
         Step.__init__(self)
