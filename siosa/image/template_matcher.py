@@ -118,8 +118,8 @@ class TemplateMatcher:
 
         self.logger.debug(
             "TemplateMatcher:{}, time:{} ms, npoints: {}".format(
-                self.template.get_template_name(), (time.time() - ts1) * 1000),
-            len(points))
+                self.template.get_template_name(), (time.time() - ts1) * 1000,
+                len(points)))
         return points
 
     @staticmethod

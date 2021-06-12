@@ -18,17 +18,13 @@ class States(Enum):
     TRADING_NO_NO = ('TRADING', 'NOT_OFFERED', 'NOT_OFFERED')
     TRADING_NO_O = ('TRADING', 'NOT_OFFERED', 'OFFERED')
     TRADING_NO_A = ('TRADING', 'NOT_OFFERED', 'ACCEPTED')
-
     TRADING_O_NO = ('TRADING', 'OFFERED', 'NOT_OFFERED')
     TRADING_O_O = ('TRADING', 'OFFERED', 'OFFERED')
     TRADING_O_A = ('TRADING', 'OFFERED', 'ACCEPTED')
-
     TRADING_VS_A = ('TRADING', 'VERIFIED_SUCCESS', 'ACCEPTED')
     TRADING_VS_R = ('TRADING', 'VERIFIED_SUCCESS', 'RETRACTED')
-
     TRADING_VF_R = ('TRADING', 'VERIFIED_FAIL', 'RETRACTED')
     TRADING_VF_A = ('TRADING', 'VERIFIED_FAIL', 'ACCEPTED')
-
     TRADING_A_R = ('TRADING', 'ACCEPTED', 'RETRACTED')
     TRADING_A_A = ('TRADING', 'ACCEPTED', 'ACCEPTED')
 
@@ -71,16 +67,6 @@ class TradeState(DfaState):
         main = self.state_obj.value[0]
         other = self.state_obj.value[2]
         return self.update(States.create(main, me, other))
-
-    @synchronized
-    def update_other(self, other: str):
-        main = self.state_obj.value[0]
-        me = self.state_obj.value[1]
-        return self.update(States.create(main, me, other))
-
-    @synchronized
-    def update_main(self, main: str):
-        return self.update(States.create(main, '', ''))
 
     @synchronized
     def _is_transition_valid(self, to):

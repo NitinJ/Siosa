@@ -14,64 +14,56 @@ from siosa.trader.trade_state import States, TradeState
 
 
 class TradeStateUpdater:
-    OFFER_WAIT_TIME = 2
     ROWS = 5
     COLUMNS = 12
     BORDER = 3
+    SCALE = 0.5
 
     def __init__(self, game_state: GameState, trade_state: TradeState,
                  trade_info: TradeInfo, log_listener: ClientLogListener):
         self.logger = logging.getLogger(__name__)
         self.logger.setLevel(logging.DEBUG)
+        self.lf = LocationFactory()
+        self.game_state = game_state
+
+        # Actual state of trade. This can be updated from outside of this class.
+        self.trade_state = trade_state
+        self.trader = trade_info.trade_request.trader
 
         self.log_listener = log_listener
         self.trade_status_queue = log_listener.trade_status_event_queue
         self._get_trade_status_from_log()
 
-        self.game_state = game_state
-
-        self.trade_state = trade_state
-        self.trade_info = trade_info
-        self.trader = trade_info.trade_request.trader
-
-        self.current_state = States.NOT_STARTED
-        self.lf = LocationFactory()
-
-        self.other_points = []
-        self.ts_start = 0
-
+        # Matchers
         self.awaiting_tm = TemplateMatcher(
             Template.from_registry(
                 TemplateRegistry.AWAITING_TRADE_CANCEL_BUTTON),
-            confirm_foreground=True, scale=0.5)
+            confirm_foreground=True, scale=TradeStateUpdater.SCALE)
         self.trading_tm_other = TemplateMatcher(
-            Template.from_registry(TemplateRegistry.TRADE_WINDOW_OTHER_SMALL_0_0),
-            confirm_foreground=True, scale=0.5)
-        self.trading_tm_me = TemplateMatcher(
-            Template.from_registry(TemplateRegistry.TRADE_WINDOW_ME_0_0),
-            confirm_foreground=True, scale=0.5)
+            Template.from_registry(
+                TemplateRegistry.TRADE_WINDOW_OTHER_SMALL_0_0),
+            confirm_foreground=True, scale=TradeStateUpdater.SCALE)
         self.full_trading_tm = ReusableTemplateMatcher(
-            Locations.TRADE_WINDOW_FULL, confirm_foreground=True, scale=0.5)
+            Locations.TRADE_WINDOW_FULL, confirm_foreground=True,
+            scale=TradeStateUpdater.SCALE)
 
         # Templates
         self.trade_window_close_button = Template.from_registry(
-            TemplateRegistry.TRADE_WINDOW_CLOSE_BUTTON, scale=0.5)
+            TemplateRegistry.TRADE_WINDOW_CLOSE_BUTTON,
+            scale=TradeStateUpdater.SCALE)
         self.trade_accept_retracted = Template.from_registry(
-            TemplateRegistry.TRADE_ACCEPT_RETRACTED, scale=0.5)
+            TemplateRegistry.TRADE_ACCEPT_RETRACTED,
+            scale=TradeStateUpdater.SCALE)
         self.trade_green_aura = Template.from_registry(
-            TemplateRegistry.TRADE_ACCEPT_GREEN_AURA, scale=0.5)
+            TemplateRegistry.TRADE_ACCEPT_GREEN_AURA,
+            scale=TradeStateUpdater.SCALE)
         self.trade_cancel_accept_button = Template.from_registry(
-            TemplateRegistry.CANCEL_TRADE_ACCEPT_BUTTON, scale=0.5)
+            TemplateRegistry.CANCEL_TRADE_ACCEPT_BUTTON,
+            scale=TradeStateUpdater.SCALE)
         self.trade_me_empty_text = Template.from_registry(
-            TemplateRegistry.TRADE_WINDOW_ME_EMPTY_TEXT, scale=0.5)
+            TemplateRegistry.TRADE_WINDOW_ME_EMPTY_TEXT,
+            scale=TradeStateUpdater.SCALE)
 
-        self.grid_me = Grid(
-            Locations.TRADE_WINDOW_ME,
-            Locations.TRADE_WINDOW_ME_0_0,
-            TradeStateUpdater.ROWS,
-            TradeStateUpdater.COLUMNS,
-            TradeStateUpdater.BORDER,
-            TradeStateUpdater.BORDER)
         self.grid_other = Grid(
             Locations.TRADE_WINDOW_OTHER,
             Locations.TRADE_WINDOW_OTHER_0_0,
@@ -81,48 +73,52 @@ class TradeStateUpdater:
             TradeStateUpdater.BORDER)
 
     def update(self):
-        self.current_state = self.trade_state.get()
-        self.logger.debug("In update ----------------------State: {}".format(
-            self.current_state))
+        trade_state_at_start = self.trade_state.get()
+        self.logger.debug("In update with state:{} --------------------".format(
+            trade_state_at_start))
         ts = time.time()
 
-        trade_status = self._get_trade_status_from_log()
-        game_state = self.game_state.get()
-        self.full_trading_tm.clear_image_cache()
+        state = self._get_state()
+        self.logger.debug("Updater calculated state: {}".format(state))
 
-        new_state = None
-        if self.full_trading_tm.match_template(self.trade_window_close_button):
-            self.logger.debug("Trade window is open.")
-            new_state = self._get_trading_state()
-        elif self.trader not in game_state['players_in_hideout']:
-            new_state = States.LEFT
-        elif trade_status:
-            new_state = States.ACCEPTED if trade_status.accepted() else \
-                States.CANCELLED
-        elif self.awaiting_tm.match(self.lf.get(
-                Locations.TRADE_AWAITING_TRADE_CANCEL_BUTTON)):
-            new_state = States.AWAITING_TRADE
-
-        state_changed = False
-        if new_state and new_state != self.current_state:
-            if str(self.current_state) == self.trade_state.get():
-                self.logger.debug("Trying to set state to {}".format(new_state))
-                self.current_state = new_state
-                state_changed = self.trade_state.update(new_state)
-            else:
+        if state and state != trade_state_at_start:
+            # State changed
+            if trade_state_at_start != self.trade_state.get():
                 self.logger.debug("Internal state changed but trade_state has "
                                   "already changed. Discarding current run of "
-                                  "the updater")
-
-        if state_changed:
-            self.logger.debug("State changed to {}".format(new_state))
-
+                                  "the updater.")
+            elif self.trade_state.update(state):
+                self.logger.debug("State changed to {}".format(state))
         self.logger.debug(
             "Update took: {} ms".format((time.time() - ts) * 1000))
 
-    def _get_trading_state(self):
-        ts = time.time()
+    def _get_state(self) -> States:
+        """
+        Calculates the current state of trade by using template matching, based
+        on a number of factors like- trade window, player presence in hideout
+        etc.
+        Returns: The calculated state
 
+        """
+        game_state = self.game_state.get()
+        trade_status = self._get_trade_status_from_log()
+        self.full_trading_tm.clear_image_cache()
+        if self.full_trading_tm.match_template(self.trade_window_close_button):
+            self.logger.debug("Trade window is open.")
+            return self._get_trading_state()
+
+        if self.trader not in game_state['players_in_hideout']:
+            return States.LEFT
+
+        if trade_status:
+            return States.ACCEPTED if trade_status.accepted() else \
+                States.CANCELLED
+
+        if self.awaiting_tm.match(self.lf.get(
+                Locations.TRADE_AWAITING_TRADE_CANCEL_BUTTON)):
+            return States.AWAITING_TRADE
+
+    def _get_trading_state(self) -> States:
         # My state.
         if self.full_trading_tm.match_template(self.trade_cancel_accept_button):
             state_me = 'ACCEPTED'
@@ -144,10 +140,10 @@ class TradeStateUpdater:
 
         return States.create_from_trading_state(state_me, state_other)
 
-    def _have_i_offered(self):
+    def _have_i_offered(self) -> bool:
         return not self.full_trading_tm.match_template(self.trade_me_empty_text)
 
-    def _has_other_player_offered(self):
+    def _has_other_player_offered(self) -> bool:
         points = self.grid_other.get_cells_not_in_positions(
             self.trading_tm_other.match(
                 self.lf.get(Locations.TRADE_WINDOW_OTHER)))

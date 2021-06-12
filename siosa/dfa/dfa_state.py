@@ -1,8 +1,7 @@
 import logging
 import threading
-from copy import deepcopy
 
-from siosa.common.decorations import abstractmethod, synchronized
+from siosa.common.decorations import synchronized
 
 
 class DfaState:
