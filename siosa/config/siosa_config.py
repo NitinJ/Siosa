@@ -32,9 +32,6 @@ class SiosaConfig(metaclass=Singleton):
     def get_sell_tab_index(self):
         return self.config['stashes']['sell_index']
 
-    def get_sell_tab_names(self):
-        return self.config['stashes']['sell']
-
     def get_account_name(self):
         return self.config['account_name']
 
