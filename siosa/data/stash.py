@@ -46,7 +46,7 @@ class Stash(metaclass=Singleton):
 
     def get_stash_tabs_for_item(self, item):
         """
-        Returns the stash tab to which the given item belongs.
+        Returns the stash tabs to which the given item belongs.
         Args:
             item: Item
         """
