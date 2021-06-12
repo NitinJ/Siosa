@@ -41,6 +41,8 @@ class TradeEvent:
             log_line = log_line.split("@From ")[1]
             raw_event = "@From " + log_line
             trader = log_line.split(": Hi, I would like to buy your ")[0]
+            if not trader:
+                return None
 
             # Item name
             item_name = log_line.split(" Hi, I would like to buy your ")[1].split(" listed for ")[0]
@@ -56,9 +58,16 @@ class TradeEvent:
             league = x[2]
             stash = x[3]
             position = (int(x[4]) - 1, int(x[5]) - 1)
+
+            if position[0] < 0 or position[1] < 0:
+                return None
+            if currency['amount'] <= 0:
+                return None
+            if not league or not stash:
+                return None
+
             return TradeEvent(raw_event, trader, item_name, currency, league, stash, position)
         except Exception:
-            # self.logger.error("Error parsing log_line for trade request", exc_info=True)
             return None
 
 
@@ -71,3 +80,6 @@ if __name__ == "__main__":
     assert te.league == "Ritual"
     assert te.stash == "SELL"
     assert te.position == (3, 8)
+
+    te = TradeEvent.create('@From PiercerCC: Hi, I would like to buy your level 19 0% Physical to Lightning Support listed for 2 chaos in Ritual (stash tab "~price 2 chaos"; position: left 1, top 11)')
+    print(te)
