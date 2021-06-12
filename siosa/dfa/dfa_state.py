@@ -22,6 +22,8 @@ class DfaState:
             self.logger.error("Invalid state transition from {} -> {}"
                               .format(self.get(), new_state_obj))
             return False
+        self.logger.error("State transition from {} -> {}"
+                          .format(self.get(), new_state_obj))
         self.state_obj = new_state_obj
         return True
 
