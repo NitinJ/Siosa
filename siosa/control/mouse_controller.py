@@ -3,11 +3,13 @@ import time
 import pyautogui
 
 from siosa.common.singleton import Singleton
+
+from siosa.common.singleton import Singleton
 from siosa.location.location_factory import LocationFactory
 
 
 class MouseController(metaclass=Singleton):
-    TIME_BETWEEN_CLICKS = 0.03
+    TIME_BETWEEN_CLICKS = 0.01
 
     def __init__(self, location_factory, mouse_move_duration=0.2, mouse_movement_curve=pyautogui.easeInOutQuad):
         self.location_factory = location_factory
@@ -16,7 +18,7 @@ class MouseController(metaclass=Singleton):
         self.mouse_movement_curve = mouse_movement_curve
         self.last_click_ts = None
 
-    def move_mouse(self, location):
+    def move_mouse(self, location, mouse_move_duration=None):
         if location.equals(self.current_location):
             return
         point = location.get_random_point()
