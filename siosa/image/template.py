@@ -2,9 +2,9 @@ import logging
 import os
 
 import cv2.cv2 as cv2
-import numpy as np
 import mss
 import mss.tools
+import numpy as np
 from PIL import Image
 
 from siosa.location.location_factory import LocationFactory
@@ -20,11 +20,13 @@ class Template:
         Args:
             template_file_name: Name of the template image file.
             resolution: Resolution in which the template file has been created.
+            scale: Scale factor to scale the template image (> 0)
         """
         self.template_file_name = template_file_name
         self.resolution = resolution
         self.resized_template = self._get_resized_template()
-        self.template_gray = cv2.cvtColor(self.resized_template, cv2.COLOR_BGR2GRAY)
+        self.template_gray = cv2.cvtColor(self.resized_template,
+                                          cv2.COLOR_BGR2GRAY)
 
     def get_template_name(self):
         return self.template_file_name
@@ -119,6 +121,7 @@ class Template:
         Returns:
             Full file path of the template file.
         """
+
         def parent(f): return os.path.dirname(os.path.abspath(f))
 
         resources = os.path.join(parent(parent(__file__)), "resources")
