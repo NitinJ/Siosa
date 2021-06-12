@@ -6,9 +6,9 @@ from siosa.control.steps.test_step import TestStep
 
 
 class TestTask(Task):
-    def __init__(self, priority):
+    def __init__(self, priority, steps=()):
         self.logger = logging.getLogger(__name__)
-        self.steps = TestTask.get_steps()
+        self.steps = [TestStep()] if not steps else list(steps)
         Task.__init__(self, priority, self.steps, name=__name__)
 
     def _resume_internal(self):
@@ -17,6 +17,5 @@ class TestTask(Task):
     def _cleanup_internal(self):
         pass
 
-    @staticmethod
-    def get_steps():
-        return [TestStep()]
+    def get_steps(self):
+        return self.steps
