@@ -5,7 +5,7 @@ import pyautogui
 
 
 class KeyboardController:
-    def __init__(self, key_press_delay=0.02):
+    def __init__(self, key_press_delay=0.01):
         self.key_press_delay = key_press_delay
         self.held_modifier_keys = {}
         self.logger = logging.getLogger(__name__)
