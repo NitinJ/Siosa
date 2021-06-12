@@ -4,14 +4,12 @@ import pyautogui
 
 from siosa.common.singleton import Singleton
 
-from siosa.common.singleton import Singleton
-from siosa.location.location_factory import LocationFactory
-
 
 class MouseController(metaclass=Singleton):
     TIME_BETWEEN_CLICKS = 0.01
 
-    def __init__(self, location_factory, mouse_move_duration=0.2, mouse_movement_curve=pyautogui.easeInOutQuad):
+    def __init__(self, location_factory, mouse_move_duration=0.2,
+                 mouse_movement_curve=pyautogui.easeInOutQuad):
         self.location_factory = location_factory
         self.current_location = self.location_factory.create(0, 0, 0, 0)
         self.mouse_move_duration = mouse_move_duration
@@ -22,18 +20,24 @@ class MouseController(metaclass=Singleton):
         if location.equals(self.current_location):
             return
         point = location.get_random_point()
-        pyautogui.moveTo(point[0], point[1], self.mouse_move_duration, self.mouse_movement_curve)
+        duration = self.mouse_move_duration if not mouse_move_duration \
+            else mouse_move_duration
+        pyautogui.moveTo(point[0], point[1],
+                         duration,
+                         self.mouse_movement_curve)
         self.current_location = location
 
     def right_click(self):
         if self.last_click_ts:
-            time.sleep(max(0, MouseController.TIME_BETWEEN_CLICKS - time.time() - self.last_click_ts))
+            time.sleep(max(0,
+                           MouseController.TIME_BETWEEN_CLICKS - time.time() - self.last_click_ts))
         pyautogui.click(button='right')
         self.last_click_ts = time.time()
 
     def click(self):
         if self.last_click_ts:
-            time.sleep(max(0, MouseController.TIME_BETWEEN_CLICKS - time.time() - self.last_click_ts))
+            time.sleep(max(0,
+                           MouseController.TIME_BETWEEN_CLICKS - time.time() - self.last_click_ts))
         pyautogui.click(button='left')
         self.last_click_ts = time.time()
 
