@@ -15,7 +15,7 @@ logger.setLevel(logging.DEBUG)
 
 
 class Template:
-    def __init__(self, template_file_name, resolution):
+    def __init__(self, template_file_name, resolution, scale=1.0):
         """
         Args:
             template_file_name: Name of the template image file.
@@ -24,24 +24,38 @@ class Template:
         """
         self.template_file_name = template_file_name
         self.resolution = resolution
+        self.scale = scale
+        assert self.scale > 0
         self.resized_template = self._get_resized_template()
         self.template_gray = cv2.cvtColor(self.resized_template,
                                           cv2.COLOR_BGR2GRAY)
+
+    def get_dimensions(self):
+        """
+        Returns: Returns the dimensions of the template in 1080p resolution and
+        not in the current resolution.
+        """
+        template = cv2.imread(
+            Template._get_template_file_path(self.template_file_name))
+        return [int(template.shape[1] * self.scale),
+                int(template.shape[0] * self.scale)]
 
     def get_template_name(self):
         return self.template_file_name
 
     def _get_resized_template(self):
         """
-        Returns the template image resized to the current screen resolution.
+        Returns the template image resized to the current_key_set screen resolution.
         Returns:
             The resized template.
         """
         template = cv2.imread(
             Template._get_template_file_path(self.template_file_name))
         lf = LocationFactory()
-        dim = (int(template.shape[1] * (lf.resolution.w / self.resolution.w)),
-               int(template.shape[0] * (lf.resolution.h / self.resolution.h)))
+        dim = (int(template.shape[1] * (
+                    lf.resolution.w / self.resolution.w) * self.scale),
+               int(template.shape[0] * (
+                           lf.resolution.h / self.resolution.h) * self.scale))
 
         # Resize template to the current resolution.
         return cv2.resize(template, dim, interpolation=cv2.INTER_AREA)
@@ -97,10 +111,53 @@ class Template:
         return output_file_path
 
     @staticmethod
-    def from_registry(template_registry):
+    def create_from_file(name, input_file_path, overwrite=False, debug=False):
+        """
+        Creates a template with a given name from the image present at the given
+        file system location.
+        Args:
+            name: Name of the file, in which template image will be stored.
+            input_file_path: File system path of the image to create template
+            from.
+            overwrite: Whether to overwrite the template file if it already
+                exists.
+
+        Returns:
+            The full template file path
+        """
+        if not os.path.isfile(input_file_path):
+            logger.info(
+                'No input file exists at {}'.format(input_file_path))
+            return None
+
+        output_file_path = Template._get_template_file_path(
+            "sct-tmp-{}.png".format(name))
+
+        if os.path.isfile(output_file_path):
+            logger.info(
+                'Template already exists at {}'.format(output_file_path))
+            if not overwrite:
+                return output_file_path
+
+        image = cv2.imread(input_file_path)
+        image_bytes_bgr = cv2.cvtColor(
+            np.array(image), cv2.COLOR_RGB2BGR)
+        cv2.imwrite(output_file_path, image_bytes_bgr)
+
+        if debug:
+            cv2.imshow('Template', np.array(image_bytes_bgr))
+            cv2.waitKey(0)
+            cv2.destroyAllWindows()
+
+        logger.debug('Created template at: {}'.format(output_file_path))
+        return output_file_path
+
+    @staticmethod
+    def from_registry(template_registry, scale=1.0):
         return Template(
             template_registry[0],
-            Resolution(template_registry[1][0], template_registry[1][1]))
+            Resolution(template_registry[1][0], template_registry[1][1]),
+            scale=scale)
 
     @staticmethod
     def _get_grab_params(location):

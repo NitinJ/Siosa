@@ -10,9 +10,10 @@ from PIL import Image
 
 from siosa.control.window_controller import WindowController
 
+
 class TemplateMatcher:
     def __init__(self, template, confidence=0.75, debug=False,
-                 confirm_foreground=False):
+                 confirm_foreground=False, scale=1.0):
         self.logger = logging.getLogger(__name__)
         self.logger.setLevel(logging.DEBUG)
         self.wc = WindowController()
@@ -21,29 +22,31 @@ class TemplateMatcher:
         self.confidence = confidence
         self.template = template
         self.image_cache = {}
+        self.scale = scale
 
     def get_image(self, screen_location, reuse):
         key = str(screen_location)
         if reuse and key in self.image_cache.keys():
+            self.logger.info("Screen location image found in cache. Reusing.")
             return self.image_cache[key]
 
         image = None
-        ts1 = time.time()
         with mss.mss() as sct:
             image = sct.grab(screen_location)
-            self.logger.debug(
-                "MSS for {} took {} ms".format(
-                    self.template.get_template_name(),
-                    (time.time() - ts1) * 1000))
 
-        image_bytes_rgb = Image.frombytes(
-            'RGB',
-            (screen_location['width'], screen_location['height']),
-            image.rgb)
+        width = screen_location['width']
+        height = screen_location['height']
+        image_bytes_rgb = Image.frombytes('RGB', (width, height), image.rgb)
+        image_bytes_rgb = image_bytes_rgb.resize(
+            (int(width * self.scale), int(height * self.scale)))
+
         image_bytes_bgr = cv2.cvtColor(
             np.array(image_bytes_rgb), cv2.COLOR_RGB2BGR)
-        self.image_cache[key] = image_bytes_bgr
-        return image_bytes_bgr
+        image_bytes_gray = cv2.cvtColor(
+            np.array(image_bytes_bgr), cv2.COLOR_RGB2GRAY)
+
+        self.image_cache[key] = [image_bytes_bgr, image_bytes_gray]
+        return self.image_cache[key]
 
     def _check_if_poe_is_in_foreground(self):
         ts1 = time.time()
@@ -77,14 +80,13 @@ class TemplateMatcher:
 
         # Params for the part of the screen to capture.
         screen_location = TemplateMatcher._get_grab_params(location)
-        image_bytes_bgr = self.get_image(screen_location, reuse)
-
-        image_bytes_bgr_copy = copy.copy(image_bytes_bgr)
-        image_bytes_gray = cv2.cvtColor(image_bytes_bgr, cv2.COLOR_BGR2GRAY)
+        image_bytes_bgr, image_bytes_gray = \
+            self.get_image(screen_location, reuse)
 
         template, template_gray = self.template.get()
         if self.debug:
-            cv2.imshow('image', template)
+            cv2.imshow('template_gray', template_gray)
+            cv2.imshow('image_bytes_gray', image_bytes_gray)
             cv2.waitKey(0)
             cv2.destroyAllWindows()
 
@@ -98,8 +100,8 @@ class TemplateMatcher:
 
         points = []
         for point in zip(*match_locations[::-1]):
-            cropped_img = image_bytes_bgr_copy[point[1]:point[1] +
-                                                        template_height,
+            cropped_img = image_bytes_bgr[point[1]:point[1] +
+                                                   template_height,
                           point[0]:point[0] + template_width]
             dmin, dmax = self._get_bgr_min_max(cropped_img)
             if dmin[0] <= tmin[0] and dmin[1] <= tmin[1] and dmin[2] <= tmin[2]:
@@ -109,7 +111,7 @@ class TemplateMatcher:
                     cv2.rectangle(image_bytes_bgr, pt, pt, (0, 0, 255), 4)
                 points.append(pt)
 
-        if self.debug:
+        if self.debug and points:
             cv2.imshow('image', image_bytes_bgr)
             cv2.waitKey(0)
             cv2.destroyAllWindows()
