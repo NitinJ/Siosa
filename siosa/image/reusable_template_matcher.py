@@ -5,7 +5,7 @@ from siosa.image.template_registry import TemplateRegistry
 
 class ReusableTemplateMatcher(TemplateMatcher):
     def __init__(self, location, confidence=0.75, debug=False,
-                 confirm_foreground=False):
+                 confirm_foreground=False, scale=1.0):
         TemplateMatcher.__init__(self,
                                  Template.from_registry(TemplateRegistry.STASH),
                                  confidence=confidence, debug=debug,
