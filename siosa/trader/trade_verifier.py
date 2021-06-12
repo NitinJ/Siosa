@@ -129,7 +129,7 @@ class TradeVerifier:
         # We reset the matcher here so as to take screenshot again for multiple
         # calls to verifier. Otherwise it uses the old screenshot which can be
         # stale.
-        self.trade_window_currency_matcher.reset()
+        self.trade_window_currency_matcher.clear_image_cache()
 
         for key in currency_stacks:
             currency_name = key[0]
