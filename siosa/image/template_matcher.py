@@ -1,4 +1,3 @@
-import copy
 import logging
 import time
 
@@ -116,8 +115,9 @@ class TemplateMatcher:
             cv2.destroyAllWindows()
 
         self.logger.debug(
-            "Template matcher {} took {} ms".format(
-                self.template.get_template_name(), (time.time() - ts1) * 1000))
+            "TemplateMatcher:{}, time:{} ms, npoints: {}".format(
+                self.template.get_template_name(), (time.time() - ts1) * 1000),
+            len(points))
         return points
 
     @staticmethod
