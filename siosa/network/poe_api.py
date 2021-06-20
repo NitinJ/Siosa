@@ -71,11 +71,6 @@ class PoeApi(metaclass=Singleton):
                 'price': 'asc'
             }
         }
-        headers = {
-            'Content-type': 'application/json',
-            'Accept': 'text/plain',
-            'user-agent': USER_AGENT
-        }
         self.logger.debug(
             "Search request to get all trades for account: {}".format(
                 json.dumps(search_request)))
@@ -155,7 +150,7 @@ class PoeApi(metaclass=Singleton):
                 want, have, rate))
         return rate
 
-    def _get_exchange_rate_from_exchange_entries(self, have, want, items):
+    def _get_exchange_rate_from_exchange_entries(self, items):
         if not items:
             return None
         exchanges = items[3:MAX_ITEMS_FOR_CALCULATING_EXCHANGE]
