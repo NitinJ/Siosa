@@ -1,7 +1,6 @@
 import logging
 
 from siosa.control.game_task import Task
-from siosa.control.steps.clean_inventory_step import CleanInventory
 from siosa.control.steps.test_step import TestStep
 
 

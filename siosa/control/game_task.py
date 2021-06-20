@@ -21,7 +21,7 @@ class TaskState(Enum):
 class Task(threading.Thread):
     STEP_EXECUTION_DELAY = 0.1
 
-    def __init__(self, priority, steps, name='GameTask'):
+    def __init__(self, priority, name='GameTask'):
         threading.Thread.__init__(self, name=name)
         self.logger = logging.getLogger(name)
         self.logger.setLevel(logging.DEBUG)
@@ -29,8 +29,6 @@ class Task(threading.Thread):
 
         # Game state is provided at task runtime.
         self.game_state = None
-
-        self.steps = steps
         self.step_index = 0
 
         # TODO: Move priorities to a different file and incorporate
@@ -41,7 +39,7 @@ class Task(threading.Thread):
         self.wc = WindowController()
 
     def get_steps(self):
-        return self.steps
+        raise NotImplementedError()
 
     def run_task(self, game_state):
         self.game_state = game_state
@@ -126,18 +124,19 @@ class Task(threading.Thread):
 
     # Executes 1 step.
     def _execute(self):
+        steps = self.get_steps()
         self.lock.acquire()
 
-        if self.step_index >= len(self.steps):
+        if self.step_index >= len(steps):
             self.state = TaskState.COMPLETE
             self.lock.release()
             return
 
         time.sleep(Task.STEP_EXECUTION_DELAY)
         try:
-            self.steps[self.step_index].execute(self.game_state)
+            steps[self.step_index].execute(self.game_state)
             self.logger.warning("Executed step: {}".format(
-                self.steps[self.step_index]))
+                steps[self.step_index]))
         except Exception as err:
             self.logger.warning("Task failed !: {}: {}".format(
                 self.name, err), stack_info=True, exc_info=True)

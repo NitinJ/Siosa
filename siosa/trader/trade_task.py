@@ -20,20 +20,19 @@ class TradeTask(Task):
         pass
 
     def __init__(self, trade_info, log_listener):
-        Task.__init__(self, 10, self.steps, name='TradeTask')
+        Task.__init__(self, 10, name='TradeTask')
         self.logger = logging.getLogger(__name__)
         self.info = trade_info
         self.log_listener = log_listener
-        self.steps = TradeTask.steps(self.info, log_listener)
+        self.trade_info = trade_info
 
-    @staticmethod
-    def steps(trade_info, log_listener):
+    def get_steps(self):
         return [
-            PickupItem(trade_info.stash_item),
+            PickupItem(self.trade_info.stash_item),
             InvitePlayerToHideoutStep(
-                trade_info.trade_request.trader,
-                msg=TradeTask.get_trade_msg(trade_info)),
-            TradeStep(trade_info, log_listener),
+                self.trade_info.trade_request.trader,
+                msg=TradeTask.get_trade_msg(self.trade_info)),
+            TradeStep(self.trade_info, self.log_listener),
             Wait(1),
             OpenStash(),
             ScanInventory(),
