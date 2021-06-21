@@ -144,7 +144,7 @@ class PoeApi(metaclass=Singleton):
             response['id'],
             response['result'][3:MAX_ITEMS_FOR_CALCULATING_EXCHANGE],
             exchange=True)
-        rate = self._get_exchange_rate_from_exchange_entries(have, want, items)
+        rate = self._get_exchange_rate_from_exchange_entries(items)
         self.logger.debug(
             "Getting exchanges for want({}), have({}): {}".format(
                 want, have, rate))
