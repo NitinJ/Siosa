@@ -16,21 +16,23 @@ class OpenStash(Step):
 
     def __init__(self):
         Step.__init__(self)
-        self.tm = \
+        self.stash_banner_tm = \
             TemplateMatcher(
                 Template.from_registry(TemplateRegistry.STASH_BANNER))
+        self.stash_text_tm = \
+            TemplateMatcher(Template.from_registry(TemplateRegistry.STASH))
 
     def execute(self, game_state):
         gs = game_state.get()
 
-        # Check if stash already open
-        if self.tm.match(self.lf.get(Locations.STASH_BANNER)):
+        # Check if stash already open.
+        if self.stash_banner_tm.match(self.lf.get(Locations.STASH_BANNER)):
             self.logger.info("Stash already open")
             if not gs['stash_open']:
                 game_state.update({'stash_open': True})
             return StepStatus(True)
 
-        points = self.tm.match(self.lf.get(Locations.SCREEN_FULL))
+        points = self.stash_text_tm.match(self.lf.get(Locations.SCREEN_FULL))
         if points:
             points = points[0]
             self.logger.debug("Stash tab found@ {}".format(points))
@@ -70,7 +72,8 @@ class OpenStash(Step):
 
     def _wait_for_stash_to_open(self):
         ts1 = time.time()
-        while not self.tm.match(self.lf.get(Locations.STASH_BANNER)):
+        while not self.stash_banner_tm.match(
+                self.lf.get(Locations.STASH_BANNER)):
             if time.time() - ts1 > OpenStash.STASH_OPEN_WAIT_TIME:
                 return False
             time.sleep(0.1)
