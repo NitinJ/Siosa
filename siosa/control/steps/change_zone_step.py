@@ -1,7 +1,6 @@
 import time
 
-from siosa.control.game_step import Step
-from siosa.data.zones import Zones
+from siosa.control.game_step import Step, StepStatus
 
 
 class ChangeZone(Step):
@@ -13,15 +12,16 @@ class ChangeZone(Step):
 
     def execute(self, game_state):
         self.game_state = game_state
-        self.logger.info("Executing step: ChangeZone")
         self.cc.console_command("/" + str(self.zone.value))
         success = self._wait_for_zone()
 
         if not success:
-            raise Exception("Cannot travel to zone: {}".format(self.zone))
+            return StepStatus(False,
+                              "Cannot travel to zone: {}".format(self.zone))
 
         self.logger.debug("Moved to zone {}".format(self.zone.value))
         self.game_state.update({'current_zone': self.zone})
+        return StepStatus(True)
 
     def _wait_for_zone(self):
         self.logger.debug("Waiting to enter zone: {}".format(self.zone))
@@ -29,7 +29,9 @@ class ChangeZone(Step):
         while True:
             t2 = time.time()
             if t2 - t1 > ChangeZone.LOCATION_ENTRY_WAIT_TIME:
-                self.logger.debug("Timed out while waiting to enter zone: {}".format(self.zone))
+                self.logger.debug(
+                    "Timed out while waiting to enter zone: {}".format(
+                        self.zone))
                 return False
             state = self.game_state.get()
             if state['current_zone'] == self.zone:

@@ -1,6 +1,6 @@
 import time
 
-from siosa.control.game_step import Step
+from siosa.control.game_step import Step, StepStatus
 from siosa.image.template import Template
 from siosa.image.template_matcher import TemplateMatcher
 from siosa.image.template_registry import TemplateRegistry
@@ -19,9 +19,10 @@ class PlaceStash(Step):
 
     def execute(self, game_state):
         stash_location = game_state.get()['stash_location']
-        self.logger.info("Executing step: {}".format(self.__class__.__name__))
-        self.mc.click_at_location(self.lf.get(Locations.DECORATIONS_EDIT_HIDEOUT_ARROW))
-        self.mc.click_at_location(self.lf.get(Locations.DECORATIONS_EDIT_HIDEOUT_BUTTON))
+        self.mc.click_at_location(
+            self.lf.get(Locations.DECORATIONS_EDIT_HIDEOUT_ARROW))
+        self.mc.click_at_location(
+            self.lf.get(Locations.DECORATIONS_EDIT_HIDEOUT_BUTTON))
         self.mc.click_at_location(
             self.lf.get(Locations.DECORATIONS_OPEN_BUTTON))
 
@@ -32,22 +33,24 @@ class PlaceStash(Step):
         time.sleep(PlaceStash.SEARCH_BOX_DELAY)
 
         self.kc.write('stash')
-        self.mc.click_at_location(self.lf.get(Locations.DECORATIONS_STASH_AFTER_SEARCHING))
+        self.mc.click_at_location(
+            self.lf.get(Locations.DECORATIONS_STASH_AFTER_SEARCHING))
         self.mc.click_at_location(
             self.lf.get(Locations.DECORATIONS_CLOSE_BUTTON))
         self.mc.click_at_location(self.lf.get(Locations.SCREEN_CENTER))
-        self.mc.click_at_location(self.lf.get(Locations.DECORATIONS_EDIT_HIDEOUT_BUTTON))
+        self.mc.click_at_location(
+            self.lf.get(Locations.DECORATIONS_EDIT_HIDEOUT_BUTTON))
         self.mc.click_at_location(
             self.lf.get(Locations.DECORATIONS_EDIT_HIDEOUT_DOWN_ARROW))
 
         self.mc.click_at_location(self.lf.get(Locations.SCREEN_CENTER))
         game_state.update({'stash_location': stash_location})
+        return StepStatus(True)
 
     @staticmethod
     def wait_for_decorations_to_load():
         ts = time.time()
-        tm = TemplateMatcher(Template.from_registry(TemplateRegistry.DECORATIONS_UTILITIES_ARROW))
+        tm = TemplateMatcher(Template.from_registry(
+            TemplateRegistry.DECORATIONS_UTILITIES_ARROW))
         while not tm.match(Locations.DECORATIONS_UTILITIES_ARROW):
-            if time.time() - ts >= PlaceStash.DECORATIONS_LOAD_TIME:
-                break
             time.sleep(0.05)

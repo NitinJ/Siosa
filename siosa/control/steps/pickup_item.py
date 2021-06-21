@@ -1,8 +1,13 @@
 import time
+from enum import Enum
 
-from siosa.control.game_step import Step
+from siosa.control.game_step import Step, StepStatus
 from siosa.control.steps.change_stash_tab_step import ChangeStashTab
 from siosa.data.stash_item import StashItem
+
+
+class Error(Enum):
+    ITEM_NOT_FOUND_IN_STASH = 0
 
 
 class PickupItem(Step):
@@ -25,7 +30,7 @@ class PickupItem(Step):
         if not self.stash_item.stash_tab.is_item_at_location_ingame(
                 self.stash_item.position[0],
                 self.stash_item.position[1]):
-            raise Exception("Item not present at location !")
+            return StepStatus(False, Error.ITEM_NOT_FOUND_IN_STASH)
 
         cell = list(self.stash_item.position).copy()
         cell.reverse()
@@ -35,3 +40,4 @@ class PickupItem(Step):
         self.mc.click()
         self.kc.unhold_modifier('Ctrl')
         ChangeStashTab(0).execute(game_state)
+        return StepStatus(True)

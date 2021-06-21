@@ -1,12 +1,15 @@
 import time
-from siosa.control.game_step import Step
+from siosa.control.game_step import Step, StepStatus
+
 
 class TestStep(Step):
-    def __init__(self):
+    def __init__(self, t=""):
         Step.__init__(self)
+        self.t = t
 
     def execute(self, game_state):
-        # Nothing.
-        print("TEST TASK DOING STUFF.")
-        time.sleep(4)
-        pass
+        time.sleep(1)
+        return StepStatus(True, self.t)
+
+    def __repr__(self):
+        return "TestStep({})".format(self.t)

@@ -13,12 +13,6 @@ from siosa.trader.trade_step import TradeStep
 
 
 class TradeTask(Task):
-    def _resume_internal(self):
-        pass
-
-    def _cleanup_internal(self):
-        pass
-
     def __init__(self, trade_info, log_listener):
         Task.__init__(self, 10, name='TradeTask')
         self.logger = logging.getLogger(__name__)
@@ -27,7 +21,7 @@ class TradeTask(Task):
         self.trade_info = trade_info
 
     def get_steps(self):
-        return [
+        return (
             PickupItem(self.trade_info.stash_item),
             InvitePlayerToHideoutStep(
                 self.trade_info.trade_request.trader,
@@ -37,7 +31,7 @@ class TradeTask(Task):
             OpenStash(),
             ScanInventory(),
             CleanInventory()
-        ]
+        )
 
     @staticmethod
     def get_trade_msg(trade_info: TradeInfo):

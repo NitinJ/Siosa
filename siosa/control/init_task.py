@@ -14,18 +14,12 @@ class InitTask(Task):
         self.logger = logging.getLogger(__name__)
         Task.__init__(self, 11, name='InitTask')
 
-    def _cleanup_internal(self):
-        pass
-
-    def _resume_internal(self):
-        pass
-
     def get_steps(self):
-        return [
+        return (
             SwitchToGame(),
             CloseAllWindows(),
             OpenStash(),
             Wait(1),
             ScanInventory(),
             CleanInventory()
-        ]
+        )

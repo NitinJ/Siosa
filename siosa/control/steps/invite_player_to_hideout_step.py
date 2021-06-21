@@ -1,7 +1,12 @@
 import time
+from enum import Enum
 
 from siosa.control.console_controller import Commands
-from siosa.control.game_step import Step
+from siosa.control.game_step import Step, StepStatus
+
+
+class Error(Enum):
+    TIMEOUT = 0
 
 
 class InvitePlayerToHideoutStep(Step):
@@ -20,7 +25,8 @@ class InvitePlayerToHideoutStep(Step):
             Commands.INVITE_TO_PARTY(self.player_account_name))
         status = self._wait_for_player_to_join_hideout()
         if not status:
-            raise Exception("Timeout while waiting for player to join hideout")
+            return StepStatus(False, Error.TIMEOUT)
+        return StepStatus(True)
 
     def _wait_for_player_to_join_hideout(self):
         self.logger.debug("Waiting to {} to enter hideout".format(

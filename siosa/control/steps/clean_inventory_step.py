@@ -1,12 +1,19 @@
 import logging
+from enum import Enum
 
 from siosa.clipboard.poe_clipboard import PoeClipboard
-from siosa.control.game_step import Step
+from siosa.control.game_step import Step, StepStatus
 from siosa.control.steps.change_stash_tab_step import ChangeStashTab
 from siosa.data.inventory import Inventory
 from siosa.data.stash import Stash
 from siosa.image.inventory_scanner import InventoryScanner
 from siosa.location.location_factory import LocationFactory, Locations
+
+
+class Error(Enum):
+    STASH_NOT_OPEN = 0
+    NO_DUMP_STASH_TABS = 1
+    DUMP_TAB_FULL = 2
 
 
 class CleanInventory(Step):
@@ -24,18 +31,17 @@ class CleanInventory(Step):
         self.moved_to_stash = []
 
     def execute(self, game_state):
-        self.logger.info("Executing step: {}".format(__name__))
         self.game_state = game_state
         self.inventory_items = self.game_state.get()['inventory']
         self.stash_tab_index = self.game_state.get()['open_stash_tab_index']
         state = game_state.get()
 
         if not state['stash_open']:
-            raise Exception("Stash is not open. Cannot move items")
+            return StepStatus(False, Error.STASH_NOT_OPEN)
 
         if not self.inventory_items:
             # Empty inventory.
-            return
+            return StepStatus(True)
 
         item_positions_for_failed_moves = []
         item_positions = self.inventory_scanner.scan()
@@ -77,7 +83,7 @@ class CleanInventory(Step):
 
             dump_stash_tabs = Stash().get_dump_stash_tabs()
             if not dump_stash_tabs:
-                raise Exception("Cannot find any dump stash tabs !")
+                return StepStatus(False, Error.NO_DUMP_STASH_TABS)
             self.logger.debug("Moving items({}) which failed to move to " \
                               "their respective stashes to dump stash({})".format(
                 len(item_positions_for_failed_moves), dump_stash_tabs[0].name))
@@ -85,12 +91,12 @@ class CleanInventory(Step):
                 self._move_item_to_stash(item, stash_tab=dump_stash_tabs[0])
 
         if self.inventory_scanner.scan():
-            # Somehow couldnt' move some items to stash.
-            raise Exception("Couldn't move some/all items to stash. \
-                 Probably dump stash tab is also full")
+            # Somehow couldn't move some items to stash.
+            return StepStatus(False, Error.DUMP_TAB_FULL)
 
         self._change_stash_tab_index(0)
         self.game_state.update({'inventory': []})
+        return StepStatus(True)
 
     def _find_diff(self, list_a, list_b):
         """Returns A-B

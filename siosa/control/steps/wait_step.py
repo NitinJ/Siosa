@@ -1,6 +1,6 @@
 import time
 
-from siosa.control.game_step import Step
+from siosa.control.game_step import Step, StepStatus
 
 
 class Wait(Step):
@@ -9,5 +9,5 @@ class Wait(Step):
         self.wait_time_in_secs = wait_time_in_secs
 
     def execute(self, game_state):
-        self.logger.info("Executing step: Wait")
         time.sleep(self.wait_time_in_secs)
+        return StepStatus(True)

@@ -1,7 +1,8 @@
 import logging
+from enum import Enum
 
 from siosa.clipboard.poe_clipboard import PoeClipboard
-from siosa.control.game_step import Step
+from siosa.control.game_step import Step, StepStatus
 from siosa.data.inventory import Inventory
 from siosa.data.stash import Stash
 from siosa.image.inventory_scanner import InventoryScanner
@@ -9,6 +10,10 @@ from siosa.image.template import Template
 from siosa.image.template_matcher import TemplateMatcher
 from siosa.image.template_registry import TemplateRegistry
 from siosa.location.location_factory import Locations
+
+
+class Error(Enum):
+    STASH_TAB_NOT_FOUND = 0
 
 
 class ScanInventory(Step):
@@ -27,7 +32,6 @@ class ScanInventory(Step):
     def execute(self, game_state):
         self.game_state = game_state
 
-        self.logger.info("Executing step: {}".format(self.__class__.__name__))
         self.close_all_party_notifications()
         item_positions = self.inventory_scanner.scan()
         for p in item_positions:
@@ -38,7 +42,7 @@ class ScanInventory(Step):
             stash_tabs = self.stash.get_stash_tabs_for_item(item)
 
             if not stash_tabs:
-                raise Exception("Couldn't find a stash tab for item.")
+                return StepStatus(False, Error.STASH_TAB_NOT_FOUND)
 
             stash_tab = stash_tabs[0]
 
@@ -51,6 +55,7 @@ class ScanInventory(Step):
                 'stash_tab': stash_tab,
             })
         self.game_state.update({'inventory': self.items})
+        return StepStatus(True)
 
     def get_party_notification_close_button_locations(self):
         party_notification_area = self.lf.get(Locations.PARTY_NOTIFICATIONS_AREA)

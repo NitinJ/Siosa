@@ -2,7 +2,7 @@ import asyncio
 import time
 
 from siosa.control.console_controller import Commands
-from siosa.control.game_step import Step
+from siosa.control.game_step import Step, StepStatus
 from siosa.dfa.dfa import Dfa
 from siosa.location.location_factory import LocationFactory, Locations
 from siosa.trader.trade_info import TradeInfo
@@ -53,6 +53,7 @@ class TradeStep(Step):
             time.sleep(TradeStep.UPDATE_INTERVAL)
         self.dfa.join()
         self.on_end()
+        return StepStatus(True)
 
     def _update_trade_state(self):
         pass

@@ -1,6 +1,10 @@
 import logging
 
-from siosa.control.game_step import Step
+from siosa.control.game_step import Step, StepStatus
+
+
+class Error:
+    STASH_NOT_OPEN = 0
 
 
 class ChangeStashTab(Step):
@@ -8,7 +12,6 @@ class ChangeStashTab(Step):
         Step.__init__(self)
         self.logger = logging.getLogger(__name__)
         self.logger.setLevel('DEBUG')
-
         self.index_to = index_to
 
     def execute(self, game_state):
@@ -16,14 +19,14 @@ class ChangeStashTab(Step):
         state = self.game_state.get()
 
         if not state['stash_open']:
-            raise Exception("Stash not open")
+            return StepStatus(False, Error.STASH_NOT_OPEN)
 
         current_index = state['open_stash_tab_index']
 
         if self.index_to == current_index:
             self.logger.debug("Already at current stash tab({})".format(
                 current_index))
-            return
+            return StepStatus(True)
 
         self.logger.debug(
             "Moving stash tabs from index ({})->({})".format(
@@ -38,3 +41,5 @@ class ChangeStashTab(Step):
         self.kc.unhold_modifier('Ctrl')
 
         self.game_state.update({'open_stash_tab_index': self.index_to})
+        return StepStatus(True)
+
