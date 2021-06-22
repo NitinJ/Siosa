@@ -30,5 +30,4 @@ class InventoryScanner:
         empty_cell_locations = self.tm.match(self.inventory)
         cells_with_items = \
             self.grid.get_cells_not_in_positions(empty_cell_locations)
-        self.sorted = sorted(cells_with_items, key=(lambda x: x[1]))
-        return self.sorted
+        return sorted(cells_with_items, key=(lambda x: x[1]))
