@@ -71,7 +71,7 @@ class StashTabScanner:
         return False
 
     def get_cell_location(self, cell):
-        return self.stash_cell_location_map[str(cell)]
+        return self.stash_cell_location_map[cell]
 
     def get_location_for_placing_item(self, cell, item_dimensions):
         """
