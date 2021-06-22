@@ -37,12 +37,15 @@ class Currency:
         if not name:
             name = sd.get_name_for_trade_id(trade_name)
             if not name:
-                logger.warning("Cannot create currency as name for trade_name={} is null".format(trade_name))
+                logger.warning(
+                    "Cannot create currency as name for trade_name={} is null".format(
+                        trade_name))
                 return None
         elif not trade_name:
             trade_name = sd.get_trade_id_for_name(name)
 
-        return Currency(CurrencyExchange(), name, trade_name, max_stack_in_trade)
+        return Currency(CurrencyExchange(), name, trade_name,
+                        max_stack_in_trade)
 
     def __eq__(self, other):
         if isinstance(other, self.__class__):
@@ -51,7 +54,8 @@ class Currency:
 
 
 class CurrencyStack(Item):
-    def __init__(self, currency, quantity, item_type=ItemType.CURRENCY, item_info={}):
+    def __init__(self, currency, quantity, item_type=ItemType.CURRENCY,
+                 item_info={}):
         self.currency = currency
         self.quantity = quantity
         info = {
