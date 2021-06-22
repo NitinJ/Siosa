@@ -95,6 +95,20 @@ class StashTab:
         """
         return self.scanner.get_cell_location(cell)
 
+    def get_cell_location_for_placing_item(self, cell, item_dimensions):
+        """
+        Returns the in game location for a given stash cell if an item needs to
+        be placed in it. This location always is the center of lower right
+        quadrant of the cell. This ensures that we always place the item
+        correctly in the cell.
+        Only works for normal and quad stash tabs.
+
+        cell: The top left cell to place the item in.
+        item_dimensions: The width, height tuple of item dimensions.
+        """
+        assert (self.is_quad or self.is_premium)
+        return self.scanner.get_location_for_placing_item(cell, item_dimensions)
+
     def _get_contents(self):
         if time.time() - self.last_fetched_ts > StashTab.REFRESH_DURATION:
             self._refresh_data()
