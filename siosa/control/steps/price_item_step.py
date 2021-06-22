@@ -17,6 +17,7 @@ class Error(Enum):
     STASH_TAB_NOT_OPEN = 2
     COULD_NOT_READ_ITEM = 3
     COULD_NOT_OPEN_PRICE_WINDOW = 4
+    STASH_TAB_NOT_PRICIBLE = 5
 
 
 class PriceItem(Step):
@@ -28,7 +29,6 @@ class PriceItem(Step):
         self.stash_cell = stash_cell
 
         self.stash_tab = Stash().get_stash_tab_by_index(stash_index)
-        # TODO: Check if stash tab is premium/quad and items can be sold from it
         assert self.stash_tab is not None
 
         self.price_note = PriceItem._get_price_note(currency_stack)
@@ -55,16 +55,25 @@ class PriceItem(Step):
             return StepStatus(False, Error.ITEM_NOT_FOUND_IN_STASH_TAB)
         self.mc.move_mouse(self.stash_tab.get_cell_location(self.stash_cell))
 
-        # Check if item is already priced.
+        # Read item at cursor.
         item = self.poe_clipboard.read_item_at_cursor()
         if not item:
             return StepStatus(False, Error.COULD_NOT_READ_ITEM)
 
+        # Open pricing window.
         self.mc.right_click()
+
+        # Check if pricing window opens.
+        points = self.tm_arrow.match(self.lf.get(Locations.SCREEN_FULL))
+        if not points:
+            # Pricing window doesn't open.
+            return StepStatus(False, Error.STASH_TAB_NOT_PRICIBLE)
+
+        # Check if item is already priced.
         if "~price" in item.item_info['note']:
             # Already priced.
             self.logger.info("Item is already priced.")
-            if not self._click_on_note_option():
+            if not self._focus_note_option():
                 return StepStatus(False, Error.COULD_NOT_OPEN_PRICE_WINDOW)
 
         # Set price.
@@ -73,7 +82,13 @@ class PriceItem(Step):
         self.kc.keypress('enter')
         return StepStatus(True)
 
-    def _click_on_note_option(self):
+    def _focus_note_option(self):
+        """
+        Focuses the note option textbox assuming that the pricing window is
+        already open.
+        Returns: Whether the note option textbox could be focussed.
+
+        """
         points = self.tm_arrow.match(self.lf.get(Locations.SCREEN_FULL))
         if not points:
             # Arrow not found somehow.
@@ -94,3 +109,4 @@ class PriceItem(Step):
 
         # Move focus to note.
         self.kc.keypress('tab')
+        return True
