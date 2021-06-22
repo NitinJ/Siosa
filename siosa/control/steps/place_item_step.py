@@ -39,8 +39,7 @@ class PlaceItem(Step):
         item = Inventory.get_item_at_cell(self.item_cell, get_dimensions=True)
         if not item:
             return StepStatus(False, Error.ITEM_NOT_FOUND_IN_INVENTORY_CELL)
-        if self.stash_tab.is_item_at_location_ingame(
-                self.stash_cell[0], self.stash_cell[1]):
+        if self.stash_tab.is_item_at_location_ingame(self.stash_cell):
             return StepStatus(False, Error.ITEM_ALREADY_EXISTS_IN_STASH)
 
         # Pickup item from cell.
@@ -54,8 +53,7 @@ class PlaceItem(Step):
         self.mc.click()
         self.mc.move_mouse(self.lf.get(Locations.SCREEN_NOOP_POSITION))
 
-        if not self.stash_tab.is_item_at_location_ingame(
-                self.stash_cell[1], self.stash_cell[0]):
+        if not self.stash_tab.is_item_at_location_ingame(self.stash_cell):
             # Somehow the item isn't in the stash tab, so place it back where we
             # picked it up from.
             location = Inventory.get_location_for_placing_item(item,

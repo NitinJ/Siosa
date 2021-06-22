@@ -28,8 +28,7 @@ class PickupItem(Step):
         time.sleep(PickupItem.STASH_LOAD_WAIT_TIME)
 
         if not self.stash_item.stash_tab.is_item_at_location_ingame(
-                self.stash_item.position[0],
-                self.stash_item.position[1]):
+                self.stash_item.position):
             return StepStatus(False, Error.ITEM_NOT_FOUND_IN_STASH)
 
         cell = list(self.stash_item.position).copy()

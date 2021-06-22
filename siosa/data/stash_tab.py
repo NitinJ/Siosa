@@ -75,19 +75,18 @@ class StashTab:
                 return self.items[(x, y)]
         return None
 
-    def is_item_at_location_ingame(self, x, y):
+    def is_item_at_location_ingame(self, p):
         """
         Returns whether there is an item at x,y stash positions in this stash.
         Args:
-            x: This is the x co-ordinate in the stash (j/column)
-            y: This is the y co-ordinate in the stash (i/row)
+            p: cell
 
         Returns:
             Whether there is an item present at x,y
         """
         # We reverse the order here to go from stash location to i,j array
         # locations.
-        return not self.scanner.is_empty((y, x))
+        return not self.scanner.is_empty((p[1], p[0]))
 
     def get_cell_location(self, cell):
         """
