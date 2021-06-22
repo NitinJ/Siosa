@@ -51,7 +51,7 @@ class PlaceItem(Step):
         location = self.stash_tab.get_cell_location_for_placing_item(
             self.stash_cell, item.get_dimensions())
         self.mc.move_mouse(location)
-        # self.mc.click()
+        self.mc.click()
         self.mc.move_mouse(self.lf.get(Locations.SCREEN_NOOP_POSITION))
 
         if not self.stash_tab.is_item_at_location_ingame(
