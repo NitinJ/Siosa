@@ -69,9 +69,22 @@ class Item(object):
             'influences': '',
             'stack_size': '',
             'max_stack_size': '',
-            'note': ''
+            'note': '',
+            'w': None,
+            'h': None
         }
         self.item_info.update(item_info)
+
+    def set_dimensions(self, w, h):
+        if w <= 0 or h <=0:
+            return
+        self.item_info.update({
+            'w': w,
+            'h': h
+        })
+
+    def get_dimensions(self):
+        return self.item_info['w'], self.item_info['h']
 
     def get_price(self):
         if not self.item_info['note']:

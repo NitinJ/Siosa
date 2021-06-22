@@ -1,11 +1,12 @@
 import logging
+import math
 
 from siosa.data.currency_exchange import CurrencyExchange
 from siosa.data.poe_item import *
 from siosa.data.static_data import StaticData
 
 
-class Currency():
+class Currency:
     def __init__(self, ex, name, trade_name, max_stack_in_trade):
         self.exchange = ex
         self.name = name
@@ -63,7 +64,11 @@ class CurrencyStack(Item):
         Item.__init__(self, item_info=item_info, item_type=item_type)
 
     def is_partial(self):
-        return (not self.quantity.is_integer())
+        return not self.quantity.is_integer()
 
     def get_total_value_in_chaos(self):
         return math.floor(self.currency.get_value_in_chaos() * self.quantity)
+
+    def __str__(self):
+        return "Currency: {}, quantity: {}, info: {}".format(
+            self.currency, self.quantity, str(self.item_info))
