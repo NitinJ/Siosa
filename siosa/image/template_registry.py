@@ -55,6 +55,7 @@ class TemplateRegistry:
     SIMPLE_SEXTANT_DROP = ("sct-tmp-SIMPLE_SEXTANT_DROP.png", (1920, 1080))
     VAAL_DROP = ("sct-tmp-VAAL_DROP.png", (1920, 1080))
     DROP = ("sct-tmp-DROP.png", (1920, 1080))
+    PRICE_ITEM_WINDOW_ARROW = ("sct-tmp-PRICE_ITEM_WINDOW_ARROW.png", (1920, 1080))
 
     @staticmethod
     def get_template_for_currency_stack(currency_name, stack_size):
