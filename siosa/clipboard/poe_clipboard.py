@@ -1,5 +1,4 @@
 import logging
-import time
 
 from siosa.clipboard.clipboard_reader import ClipboardReader
 from siosa.control.keyboard_controller import KeyboardController
