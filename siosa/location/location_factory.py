@@ -21,6 +21,12 @@ class LocationFactoryBase(metaclass=Singleton):
         return self._get_in_game_location(location)
 
     def create(self, x1, y1, x2, y2) -> InGameLocation:
+        """
+        Creates an in game location from a given set of bounding box
+        co-ordinates.
+        Returns: The InGameLocation
+
+        """
         return self._get_in_game_location(
             Location(x1, y1, x2, y2, self.resolution))
 
@@ -120,9 +126,9 @@ class Locations:
     # Stash
     STASH_CLOSE_BUTTON = Location(620, 57, 636, 77, Resolutions.p1080)
     STASH_FIRST_TAB_RIGHT_LIST = Location(690, 134, 860, 154, Resolutions.p1080)
-    STASH_NORMAL_0_0 = Location(19, 129, 69, 179, Resolutions.p1080)
+    STASH_NORMAL_0_0 = Location(20, 130, 68, 178, Resolutions.p1080)
     STASH_QUAD_0_0 = Location(18, 129, 42, 153, Resolutions.p1080)
-    STASH_TAB = Location(19, 129, 648, 758, Resolutions.p1080)
+    STASH_TAB = Location(18, 129, 648, 758, Resolutions.p1080)
     STASH = Location(980, 414, 1025, 424, Resolutions.p1080)
     STASH_BANNER = Location(288, 56, 375, 81, Resolutions.p1080)
 
