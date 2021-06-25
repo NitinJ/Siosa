@@ -19,7 +19,7 @@ class MouseController(metaclass=Singleton):
     def move_mouse(self, location, mouse_move_duration=None):
         if location.equals(self.current_location):
             return
-        point = location.get_random_point()
+        point = location.get_center()
         duration = self.mouse_move_duration if not mouse_move_duration \
             else mouse_move_duration
         pyautogui.moveTo(point[0], point[1],
