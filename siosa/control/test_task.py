@@ -16,7 +16,7 @@ class TestTask(Task):
         Returns: A generator function for steps.
         """
         yield TestStep(2)
-        if self._get_last_step_execution_status().info == 1:
+        if self._get_last_step_result().info == 1:
             yield TestStep(2)
         else:
             yield TestStep(3)

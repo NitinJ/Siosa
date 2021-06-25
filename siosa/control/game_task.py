@@ -93,7 +93,7 @@ class Task(threading.Thread):
         """
         pass
 
-    def _get_last_step_execution_status(self):
+    def _get_last_step_result(self):
         """
         Returns: Returns the execution status of the last step that was run.
         Child classes can make use of this to evaluate what step to run next.
