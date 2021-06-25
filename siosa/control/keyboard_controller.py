@@ -32,7 +32,7 @@ class KeyboardController:
 
     def keypress(self, key):
         self.logger.debug(
-            'keypress {} {}'.format("+".join(self.held_modifier_keys), key))
+            'Keypress: {} {}'.format("+".join(self.held_modifier_keys), key))
         sleep(self.key_press_delay)
         pyautogui.press(key)
 
