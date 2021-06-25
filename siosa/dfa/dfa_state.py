@@ -18,26 +18,26 @@ class DfaState:
     @synchronized
     def update(self, new_state_obj):
         if not self._is_transition_valid(new_state_obj):
-            self.logger.error("Invalid state transition from {} -> {}"
-                              .format(self.get(), new_state_obj))
+            self.logger.error("Invalid state transition from [{} -> {}]"
+                              .format(self.to_string(), new_state_obj))
             return False
-        self.logger.error("State transition from {} -> {}"
-                          .format(self.get(), new_state_obj))
+        self.logger.error("State transition from [{} -> {}]"
+                          .format(self.to_string(), new_state_obj))
         self.state_obj = new_state_obj
         return True
 
     @synchronized
     def equals(self, other):
         if isinstance(other, str):
-            return self.get() == other
+            return self.to_string() == other
         if type(other) == type(self.state_obj):
             return str(self.state_obj) == str(other)
         if isinstance(other, DfaState):
-            return self.get() == other.get()
+            return self.to_string() == other.to_string()
         return False
 
     @synchronized
-    def get(self):
+    def to_string(self):
         return str(self.state_obj)
 
     @synchronized

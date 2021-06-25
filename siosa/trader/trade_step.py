@@ -3,7 +3,8 @@ import time
 
 from siosa.control.console_controller import Commands
 from siosa.control.game_step import Step, StepStatus
-from siosa.dfa.dfa import Dfa
+from siosa.dfa.dfa_asyncio import DfaAsyncio
+
 from siosa.location.location_factory import LocationFactory, Locations
 from siosa.trader.trade_info import TradeInfo
 from siosa.trader.trade_state import States, TradeState
@@ -34,7 +35,7 @@ class TradeStep(Step):
             States.LEFT,
             States.ENDED
         ]
-        self.dfa = Dfa(self.state, TradeState(States.ENDED))
+        self.dfa = DfaAsyncio(self.state, TradeState(States.ENDED))
         self._initialize_state_transitions()
 
         # Trade state variables.
@@ -95,8 +96,8 @@ class TradeStep(Step):
 
     def cancel_with_message(self, message):
         async def wrapper():
-            # Message player here that currency is missing.
             self.kc.keypress('Esc')
+            self.cc.send_chat(self.trader, message)
             self.state.update(States.CANCELLED)
         return wrapper
 
@@ -106,6 +107,17 @@ class TradeStep(Step):
             self.kc.keypress('Esc')
             self.state.update(States.CANCELLED)
         return wrapper
+
+    def _updater_end_state_reached(self):
+        for end_state in self.updater_end_states:
+            if self.state.equals(end_state):
+                self.logger.debug("End state reached for updater.")
+                return True
+        return False
+
+    def on_end(self):
+        self.logger.debug("Trade ended.")
+        self._kick_from_party()
 
     async def verify(self):
         self.logger.debug("Verifying trade".format(self.trader))
@@ -151,23 +163,6 @@ class TradeStep(Step):
     async def on_left(self):
         self.logger.debug("Trader {} left the hideout.".format(self.trader))
         self.state.update(States.ENDED)
-
-    def _updater_end_state_reached(self):
-        for end_state in self.updater_end_states:
-            if self.state.equals(end_state):
-                self.logger.debug("End state reached for updater.")
-                return True
-        return False
-
-    def on_end(self):
-        self.logger.debug("Trade ended.")
-        self._kick_from_party()
-        if not self.accepted:
-            self._cleanup()
-
-    def _cleanup(self):
-        # Move item back to where it was and price it the same.
-        pass
 
     def _kick_from_party(self):
         self.cc.console_command(Commands.KICK_FROM_PARTY(self.trader))

@@ -73,7 +73,7 @@ class TradeStateUpdater:
             TradeStateUpdater.BORDER)
 
     def update(self):
-        trade_state_at_start = self.trade_state.get()
+        trade_state_at_start = self.trade_state.to_string()
         self.logger.debug("In update with state:{} --------------------".format(
             trade_state_at_start))
         ts = time.time()
@@ -83,7 +83,7 @@ class TradeStateUpdater:
 
         if state and state != trade_state_at_start:
             # State changed
-            if trade_state_at_start != self.trade_state.get():
+            if trade_state_at_start != self.trade_state.to_string():
                 self.logger.debug("Internal state changed but trade_state has "
                                   "already changed. Discarding current run of "
                                   "the updater.")
