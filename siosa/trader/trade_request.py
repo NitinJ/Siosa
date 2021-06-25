@@ -1,6 +1,8 @@
 import json
 import time
 
+from siosa.client.trade_event import TradeEvent
+
 
 class TradeRequest:
     def __init__(self, trader, item_name, currency, league, stash, position):
@@ -13,7 +15,7 @@ class TradeRequest:
         self.ts = time.time()
 
     @staticmethod
-    def create_from(trade_event):
+    def create_from(trade_event: TradeEvent):
         return TradeRequest(
             trade_event.trader,
             trade_event.item_name,
