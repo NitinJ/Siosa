@@ -23,7 +23,7 @@ class Error(Enum):
 class PriceItem(Step):
     PRICE_STR = "~price {} {}"
 
-    def __init__(self, stash_index, stash_cell, currency_stack: CurrencyStack):
+    def __init__(self, stash_index, stash_cell, currency_stack=None):
         Step.__init__(self)
         self.stash_index = stash_index
         self.stash_cell = stash_cell
