@@ -62,6 +62,7 @@ class TradeVerifier:
         return cells_with_items
 
     def _validate_item(self, item):
+        self.logger.debug("Validating: {}".format(item))
         if not item or item.type != ItemType.CURRENCY or not item.currency:
             return False
         return item.currency.trade_name in \
