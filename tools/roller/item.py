@@ -9,7 +9,7 @@ class Affix:
     SUFFIX = "suffix modifier"
     UNIQUE = "unique modifier"
     AFFIX_DETAILS_REGEX = re.compile('{ (.*) modifier "(.*)" \(tier: (\d*)\)')
-    AFFIX_VALUE_RANGE_REGEX = re.compile("\((.*)\)")
+    AFFIX_VALUE_RANGE_REGEX = re.compile("\((.*?)\)")
 
     def __init__(self, str_val, name, tier, type):
         self.str_val = str_val
