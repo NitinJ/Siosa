@@ -16,27 +16,6 @@ class Error(Enum):
     STASH_TAB_NOT_FOUND = 0
 
 
-def _update_items_with_width_height(items, item_cells):
-    """
-    Updates width and height of all items based on which cells they occupy
-    in the inventory.
-    Args:
-        items: List of items
-        item_cells: Map containing item: [cells] mapping
-    Returns: None
-    """
-    for entry in items:
-        key = str(entry['item'])
-        if key not in item_cells.keys():
-            continue
-        cells = item_cells[key]
-        min_i = min([cell[0] for cell in cells])
-        max_i = max([cell[0] for cell in cells])
-        min_j = min([cell[1] for cell in cells])
-        max_j = max([cell[1] for cell in cells])
-        entry['item'].set_dimensions(max_j - min_j + 1, max_i - min_i + 1)
-
-
 class ScanInventory(Step):
     def __init__(self):
         Step.__init__(self)
@@ -52,11 +31,17 @@ class ScanInventory(Step):
 
     def execute(self, game_state):
         self.game_state = game_state
-
         self.close_all_party_notifications()
-        item_positions = self.inventory_scanner.scan()
+
+        # Cells which are occupied by items.
         item_cells = {}
-        for p in item_positions:
+
+        for p in self.inventory_scanner.scan():
+            if p in item_cells:
+                # The current position is part of an already scanned item, so
+                # skip it.
+                continue
+
             item = Inventory.get_item_at_cell(p)
             if not item:
                 continue
@@ -66,29 +51,33 @@ class ScanInventory(Step):
                 return StepStatus(False, Error.STASH_TAB_NOT_FOUND)
 
             stash_tab = stash_tabs[0]
-
             self.logger.info("Stash tab for item:{!s} is:{!s}".format(
                 item, stash_tab))
 
-            # De dupe items.
-            key = str(item)
-            if key not in item_cells.keys():
-                # A item might get scanned multiple times if it's size is more
-                # than 1x1. We only take one entry per item.
-                item_cells[key] = []
-                self.items.append({
-                    'item': item,
-                    'position': p,
-                    'stash_tab': stash_tab,
-                })
-            item_cells[key].append(p)
+            # Mark the cells which this item occupies.
+            ScanInventory._mark_item_cells(p, item, item_cells)
+            self.items.append({
+                'item': item,
+                'position': p,
+                'stash_tab': stash_tab,
+            })
 
-        _update_items_with_width_height(self.items, item_cells)
         self.game_state.update({'inventory': self.items})
         self.logger.info(
             "Inventory items({}) scanned: {}".format(len(self.items),
                                                      self.items))
         return StepStatus(True)
+
+    @staticmethod
+    def _mark_item_cells(p, item, cells):
+        w, h = item.get_dimensions()
+        if not w or not h:
+            w = 1
+            h = 1
+        p2 = (p[0] + h - 1, p[1] + w - 1)
+        for i in range(p[0], p2[0] + 1):
+            for j in range(p[1], p2[1] + 1):
+                cells[(i, j)] = True
 
     def get_party_notification_close_button_locations(self):
         party_notification_area = self.lf.get(
