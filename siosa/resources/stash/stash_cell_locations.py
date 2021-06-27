@@ -1,4 +1,5 @@
 import json
+import os
 
 from siosa.location.location_factory import LocationFactory
 
@@ -7,10 +8,15 @@ class StashCellLocation:
     _stash_cell_location_map = {}
 
     @staticmethod
+    def _get_path(filename):
+        return os.path.join(os.path.dirname(__file__), filename)
+
+    @staticmethod
     def _get_stash_cell_location_map(is_quad):
         lf = LocationFactory()
         filename = 'quad.json' if is_quad else 'normal.json'
-        data = json.load(open(filename, 'r'))
+        filepath = StashCellLocation._get_path(filename)
+        data = json.load(open(filepath, 'r'))
         ret = {}
         for key, location in data.items():
             cell = tuple(int(i) for i in key.split(","))
