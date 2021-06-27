@@ -16,6 +16,6 @@ class PoeClipboard:
 
     def read_item_at_cursor(self):
         self.logger.debug("Reading data from clipboard")
-        self.keyboard_controller.keypress_with_modifiers(['ctrl', 'c'])
+        self.keyboard_controller.keypress_with_modifiers(['ctrl', 'alt', 'c'])
         data = self.clipboard_reader.get_clipboard_data()
         return self.item_factory.get_item(data)

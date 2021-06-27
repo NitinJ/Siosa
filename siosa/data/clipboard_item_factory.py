@@ -1,11 +1,13 @@
 from scanf import scanf
 
+from siosa.data.affix import Affix
 from siosa.data.poe_currencies import *
 from siosa.data.poe_item import ItemType
 from siosa.network.poe_api import PoeApi
 from siosa.resources.resource import Resource
 
 LINE_FEED = '\r\n'
+NEW_LINE = '\n'
 SECTION_SEPARATOR = '--------' + LINE_FEED
 INFLUENCES = Resource.get('influences')
 
@@ -28,25 +30,26 @@ class ClipboardItemFactory:
             "Got rarity({}), type({}) from clipboard".format(rarity, type))
 
         # TODO: Handle other rarities like divination card, gem etc.
-        if rarity == 'Currency':
+        if rarity == 'currency':
             return self._create_currency_item(type, data_sections)
         else:
-            return self._create_general_item(type, data_sections)
+            return self._create_general_item(type, rarity, data_sections)
 
     def _create_currency_item(self, type, data_sections):
-        # name for currency is it's type_line.
-        name = self._get_type_line(data_sections)
+        type_line = self._get_type_line('currency', data_sections)
         stack_size = self._get_stack_size(data_sections)
         stack_max_size = self._get_max_stack_size(data_sections)
 
         info = {
+            'type_line': type_line,
+            'base_type': type_line,
             'note': self._get_note(data_sections)
         }
         currency = Currency.create(
-            name=name, max_stack_in_trade=stack_max_size)
+            name=type_line, max_stack_in_trade=stack_max_size)
         if not currency:
             self.logger.warning(
-                "Couldn't create currency item({}, {})".format(name, type))
+                "Couldn't create currency item({}, {})".format(type_line, type))
             return None
 
         item = CurrencyStack(currency, stack_size,
@@ -57,16 +60,37 @@ class ClipboardItemFactory:
     def _get(self, obj, key, fallback):
         return obj[key] if key in obj.keys() else fallback
 
-    def _create_general_item(self, type, data_sections):
+    def _parse_affixes(self, mods):
+        return [Affix.create_from_clipboard_affix(mod) for mod in mods]
+
+    def _get_num_prefixes(self, affixes):
+        return len([x for x in affixes if x.is_prefix()])
+
+    def _get_num_suffixes(self, affixes):
+        return len([x for x in affixes if x.is_suffix()])
+
+    def _create_general_item(self, type, rarity, data_sections):
         self.logger.debug("Creating general item")
+
+        try:
+            # TODO: Use these affix objects to create more metadata for item.
+            affixes = self._parse_affixes(
+                self._get_all_mods(rarity, data_sections))
+        except:
+            affixes = []
+
         info = {
-            'rarity': self._get_rarity(data_sections),
-            'name': self._get_name(data_sections),
-            'type_line': self._get_type_line(data_sections),
+            'rarity': rarity,
+            'name': self._get_name(rarity, data_sections),
+            'type_line': self._get_type_line(rarity, data_sections),
+            'base_type': self._get_base_type(rarity, affixes, data_sections),
             'ilvl': self._get_item_level(data_sections),
             'corrupted': self._get_corrupted(data_sections),
             'unidentified': self._get_unidentified(data_sections),
             'note': self._get_note(data_sections),
+            'explicit_mods': [affix.str_val for affix in affixes],
+            'n_prefixes': self._get_num_prefixes(affixes),
+            'n_suffixes': self._get_num_suffixes(affixes),
             'influences': self._get_influences(data_sections)
         }
         item = Item(item_info=info, item_type=type)
@@ -77,11 +101,11 @@ class ClipboardItemFactory:
         if not len(data_sections) or not data_sections[0]:
             return ItemType.UNKNOWN
         rarity = self._get_rarity(data_sections)
-        if rarity == "Currency":
+        if rarity == "currency":
             return self._get_currency_item_type(data_sections)
-        elif rarity == "Divination Card":
+        elif rarity == "divination Card":
             return ItemType.DIVINATION_CARD
-        elif rarity == "Gem":
+        elif rarity == "gem":
             return ItemType.GEM
         else:
             return self._get_item_type(data_sections)
@@ -125,6 +149,28 @@ class ClipboardItemFactory:
         # TODO: Add support for more ItemTypes.
         return ItemType.ITEM
 
+    def _get_mod_section(self, rarity, data_sections):
+        if rarity == 'normal':
+            return []
+        for section in data_sections:
+            for section_line in section:
+                if any([x in section_line
+                        for x in [Affix.PREFIX, Affix.SUFFIX, Affix.UNIQUE]]):
+                    return section
+        return []
+
+    def _get_all_mods(self, rarity, data_sections):
+        mods_section = self._get_mod_section(rarity, data_sections)
+        mods = []
+        # Each affix in the mod section has 1 line for the affix details like
+        # tier, name etc. and following multiple lines for the actual affix
+        # Hybrid affixes take multiple lines. Each affix is separated by a
+        # line feed and within each affix, each line is separated by a newline.
+        for affix in mods_section:
+            affix_lines = affix.split(NEW_LINE)
+            mods.extend([affix_lines])
+        return mods
+
     def _is_divine_vessel(self, data_sections):
         try:
             return data_sections[0][1] == "Divine Vessel"
@@ -140,23 +186,27 @@ class ClipboardItemFactory:
     def _is_timeless_emblem(self, data_sections):
         try:
             return scanf("Timeless %s Emblem", data_sections[0][1]) and \
-                   data_sections[1][0] == "Place two or more different Emblems in " \
-                                          "a Map Device to access the Domain of Timeless Conflict. " \
-                                          "Can only be used once."
+                   data_sections[1][
+                       0] == "Place two or more different Emblems in " \
+                             "a Map Device to access the Domain of Timeless Conflict. " \
+                             "Can only be used once."
         except:
             return False
 
     def _is_breachstone(self, data_sections):
         try:
             return data_sections[0][1].find("Breachstone") > -1 and \
-                   scanf("Travel to %s Domain by using this item in a personal Map Device", data_sections[1][0])
+                   scanf(
+                       "Travel to %s Domain by using this item in a personal Map Device",
+                       data_sections[1][0])
         except:
             return False
 
     def _is_simulacrum_splinter(self, data_sections):
         try:
             return data_sections[0][1] == "Simulacrum Splinter" and \
-                   scanf("Combine %d Splinters to create a Simulacrum.", data_sections[2][0])
+                   scanf("Combine %d Splinters to create a Simulacrum.",
+                         data_sections[2][0])
         except:
             return False
 
@@ -181,15 +231,16 @@ class ClipboardItemFactory:
 
     def _is_fragment(self, data_sections, rarity):
         try:
-            return rarity == 'Normal' and \
-                   data_sections[2][0] == "Can be used in a personal Map Device." and \
+            return rarity == 'normal' and \
+                   data_sections[2][
+                       0] == "Can be used in a personal Map Device." and \
                    len(data_sections[2]) == 1
         except:
             return False
 
     def _is_scarab(self, data_sections, rarity):
         try:
-            return rarity == 'Normal' and \
+            return rarity == 'normal' and \
                    data_sections[0][1].endswith("Scarab") and \
                    data_sections[3][0].find(
                        "Can be used in a personal Map Device to add modifiers to a Map.") > -1
@@ -208,7 +259,8 @@ class ClipboardItemFactory:
         try:
             return (
                            data_sections[0][1].find(" Essence of ") > -1
-                           and data_sections[3][0].find("Right click this item then left click a ")
+                           and data_sections[3][0].find(
+                       "Right click this item then left click a ")
                            > -1
                    ) or (
                            data_sections[0][1] == "Remnant of Corruption"
@@ -254,17 +306,37 @@ class ClipboardItemFactory:
         return sections
 
     def _get_rarity(self, sections):
-        return sections[0][1].split("Rarity: ")[1].strip()
+        return sections[0][1].split("Rarity: ")[1].strip().lower()
 
-    def _get(self, obj, key, fallback):
-        return obj[key] if key in obj.keys() else fallback
+    def _get_name(self, rarity, sections):
+        if rarity in ('normal', 'magic'):
+            return ""
+        elif rarity in ('rare', 'unique'):
+            return sections[0][2]
+        return ""
 
-    def _get_name(self, sections):
-        return sections[0][1] if len(sections[0]) == 3 else ''
-
-    def _get_type_line(self, sections):
+    def _get_type_line(self, rarity, sections):
         try:
-            return (sections[0][2] if len(sections[0]) == 3 else sections[0][1])
+            if rarity in ('rare', 'unique'):
+                return sections[0][3]
+            return sections[0][2]
+        except Exception as e:
+            self.logger.error(e)
+            return ''
+
+    def _get_base_type(self, rarity, affixes, sections):
+        try:
+            if rarity == 'normal':
+                return sections[0][2]
+            elif rarity == 'magic':
+                base_type = sections[0][2]
+                base_type = base_type.split(" of ")[0]
+                if self._get_num_prefixes(affixes) > 0:
+                    base_type = " ".join(base_type.split(" ")[1:])
+                return base_type
+            elif rarity in ('rare', 'unique'):
+                return sections[0][3]
+            return sections[0][2]
         except Exception as e:
             self.logger.error(e)
             return ''
@@ -283,7 +355,9 @@ class ClipboardItemFactory:
             for section in sections:
                 for line in section:
                     if line.find("Stack Size: ") > -1 and len(section) == 1:
-                        return int(line.split("Stack Size: ")[1].split("/")[0].replace(",", ""))
+                        return int(
+                            line.split("Stack Size: ")[1].split("/")[0].replace(
+                                ",", ""))
         except Exception as e:
             self.logger.error(e)
             return ''
@@ -293,7 +367,9 @@ class ClipboardItemFactory:
             for section in sections:
                 for line in section:
                     if line.find("Stack Size: ") > -1 and len(section) == 1:
-                        return int(line.split("Stack Size: ")[1].split("/")[1].replace(",", ""))
+                        return int(
+                            line.split("Stack Size: ")[1].split("/")[1].replace(
+                                ",", ""))
         except Exception as e:
             self.logger.error(e)
             return ''
@@ -325,7 +401,8 @@ class ClipboardItemFactory:
             influence_section = False
             for line in section:
                 influence_section = sum(
-                    [line.find(influence) > -1 for influence in INFLUENCES]) != 0
+                    [line.find(influence) > -1 for influence in
+                     INFLUENCES]) != 0
             if not influence_section:
                 continue
             for line in section:

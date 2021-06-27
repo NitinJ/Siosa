@@ -1,5 +1,7 @@
 from enum import Enum
 
+from siosa.resources.ggpk_data.base_items import BaseItems
+
 
 class ItemRarity(Enum):
     UNKNOWN = 'Unknown'
@@ -60,6 +62,7 @@ class Item(object):
         self.item_info = {
             'rarity': '',
             'type_line': '',
+            'base_type': '',
             'name': '',
             'identified': '',
             'corrupted': '',
@@ -74,6 +77,12 @@ class Item(object):
             'h': None
         }
         self.item_info.update(item_info)
+        self._update_dimensions()
+
+    def _update_dimensions(self):
+        dim = BaseItems.get_item_dimensions(self.item_info['base_type'])
+        if dim:
+            self.set_dimensions(dim[0], dim[1])
 
     def set_dimensions(self, w, h):
         if w <= 0 or h <=0:
