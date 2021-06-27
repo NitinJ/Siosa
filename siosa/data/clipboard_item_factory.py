@@ -69,6 +69,13 @@ class ClipboardItemFactory:
     def _get_num_suffixes(self, affixes):
         return len([x for x in affixes if x.is_suffix()])
 
+    def _get_is_synthesized(self, data_sections):
+        for section in data_sections:
+            for section_line in section:
+                if "Synthesised Item" in section_line:
+                    return True
+        return False
+
     def _create_general_item(self, type, rarity, data_sections):
         self.logger.debug("Creating general item")
 
@@ -91,7 +98,8 @@ class ClipboardItemFactory:
             'explicit_mods': [affix.str_val for affix in affixes],
             'n_prefixes': self._get_num_prefixes(affixes),
             'n_suffixes': self._get_num_suffixes(affixes),
-            'influences': self._get_influences(data_sections)
+            'influences': self._get_influences(data_sections),
+            'synthesized': self._get_is_synthesized(data_sections)
         }
         item = Item(item_info=info, item_type=type)
         self.logger.debug("Created general item [{}]".format(str(item)))
@@ -325,18 +333,24 @@ class ClipboardItemFactory:
             return ''
 
     def _get_base_type(self, rarity, affixes, sections):
+        base_type = None
         try:
             if rarity == 'normal':
-                return sections[0][2]
+                base_type = sections[0][2]
             elif rarity == 'magic':
                 base_type = sections[0][2]
                 base_type = base_type.split(" of ")[0]
                 if self._get_num_prefixes(affixes) > 0:
                     base_type = " ".join(base_type.split(" ")[1:])
-                return base_type
             elif rarity in ('rare', 'unique'):
-                return sections[0][3]
-            return sections[0][2]
+                base_type = sections[0][3]
+            else :
+                base_type = sections[0][2]
+
+            if self._get_is_synthesized(sections):
+                base_type = base_type.replace("Synthesised ", "")
+
+            return base_type
         except Exception as e:
             self.logger.error(e)
             return ''
