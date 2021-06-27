@@ -58,7 +58,7 @@ class Stash(metaclass=Singleton):
         self.stash_metadata = self.poe_api.get_stash_metadata()
         self._populate_internal()
 
-    def get_stash_tab_by_index(self, index):
+    def get_stash_tab_by_index(self, index) -> StashTab:
         """
         Returns the stash tab at a given index.
         Args:
