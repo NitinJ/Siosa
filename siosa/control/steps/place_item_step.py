@@ -13,6 +13,7 @@ class Error(Enum):
     STASH_TAB_NOT_OPEN = 2
     ITEM_ALREADY_EXISTS_IN_STASH = 3
     COULD_NOT_PLACE_ITEM_IN_STASH = 4
+    ITEM_DIMENSIONS_UNKNOWN = 5
 
 
 class PlaceItem(Step):
@@ -32,15 +33,23 @@ class PlaceItem(Step):
         self.game_state = game_state.get()
         if not self.game_state['stash_open']:
             return StepStatus(False, Error.STASH_NOT_OPEN)
+
         if self.game_state['open_stash_tab_index'] != self.stash_index:
             return StepStatus(False, Error.STASH_TAB_NOT_OPEN)
 
-        # Check if item is present in cell and not present in stash cell.
-        item = Inventory.get_item_at_cell(self.item_cell, get_dimensions=True)
-        if not item:
-            return StepStatus(False, Error.ITEM_NOT_FOUND_IN_INVENTORY_CELL)
         if self.stash_tab.is_item_at_location_ingame(self.stash_cell):
             return StepStatus(False, Error.ITEM_ALREADY_EXISTS_IN_STASH)
+
+        item = Inventory.get_item_at_cell(self.item_cell)
+        if not item:
+            return StepStatus(False, Error.ITEM_NOT_FOUND_IN_INVENTORY_CELL)
+        w, h = item.get_dimensions()
+        if not w or not h:
+            item = \
+                Inventory.get_item_at_cell(self.item_cell, get_dimensions=True)
+        w, h = item.get_dimensions()
+        if not w or not h:
+            return StepStatus(False, Error.ITEM_DIMENSIONS_UNKNOWN)
 
         # Pickup item from cell.
         self.mc.move_mouse(Inventory.get_location(self.item_cell))
