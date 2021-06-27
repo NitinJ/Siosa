@@ -1,6 +1,4 @@
-import json
 import logging
-import os
 
 from siosa.image.grid import Grid
 from siosa.image.template import Template
@@ -8,15 +6,7 @@ from siosa.image.template_matcher import TemplateMatcher
 from siosa.image.template_registry import TemplateRegistry
 from siosa.location.location import Location
 from siosa.location.location_factory import LocationFactory, Locations
-
-
-def _stash_cell_location_map_filepath(is_quad):
-    def parent(f): return os.path.dirname(os.path.abspath(f))
-
-    name = 'quad.json' if is_quad else 'normal.json'
-    resources_dir = os.path.join(parent(parent(__file__)), "resources")
-    stash_dir = os.path.join(resources_dir, "stash")
-    return os.path.join(stash_dir, name)
+from siosa.resources.stash.stash_cell_locations import StashCellLocation
 
 
 class StashTabScanner:
@@ -40,23 +30,9 @@ class StashTabScanner:
             self.stash_tab.cell_border_x,
             self.stash_tab.cell_border_y)
 
-        self.stash_cell_location_map = self._create_stash_cell_location_map(
-            self.stash_tab.is_quad)
-
         registry = TemplateRegistry.QUAD_STASH_0_0 if \
             self.stash_tab.is_quad else TemplateRegistry.NORMAL_STASH_0_0
         self.tm = TemplateMatcher(Template.from_registry(registry), debug=debug)
-
-    def _create_stash_cell_location_map(self, is_quad):
-        filepath = _stash_cell_location_map_filepath(is_quad)
-        data = json.load(open(filepath, 'r'))
-        ret = {}
-        for key, location in data.items():
-            cell = tuple(int(i) for i in key.split(","))
-            ret[cell] = \
-                self.lf.create(location[0], location[1], location[0],
-                               location[1])
-        return ret
 
     def is_empty(self, cell):
         self.logger.debug(
@@ -71,7 +47,7 @@ class StashTabScanner:
         return False
 
     def get_cell_location(self, cell):
-        return self.stash_cell_location_map[cell]
+        return StashCellLocation.get_cell_location(self.stash_tab.is_quad, cell)
 
     def get_location_for_placing_item(self, cell, item_dimensions):
         """
@@ -85,10 +61,11 @@ class StashTabScanner:
         Returns: The in game location for placing the item.
         """
         w, h = item_dimensions
-        cell_top_left_x, cell_top_left_y = self.stash_cell_location_map[
-            cell].get_center()
-        cell_bot_right_x, cell_bot_right_y = self.stash_cell_location_map[
-            (cell[0] + h - 1, cell[1] + w - 1)].get_center()
-        midx, midy = (cell_top_left_x + cell_bot_right_x) // 2, (
+        cell_bot_right = (cell[0] + h - 1, cell[1] + w - 1)
+        cell_top_left_x, cell_top_left_y = self.get_cell_location(
+            cell).get_center()
+        cell_bot_right, cell_bot_right_y = self.get_cell_location(
+            cell_bot_right).get_center()
+        midx, midy = (cell_top_left_x + cell_bot_right) // 2, (
                 cell_top_left_y + cell_bot_right_y) // 2
         return self.lf.get(Location(midx, midy, midx, midy, self.lf.resolution))
