@@ -61,7 +61,7 @@ rsa==4.6
 scanf==1.5.2
 scikit-image==0.17.2
 scipy==1.5.2
--e git+https://github.com/NitinJ/Siosa.git@2194fc58e9d463b6e708412cfcd4334208827a12#egg=siosa
+-e git+https://github.com/NitinJ/Siosa.git@8d93b742b13f04048c41cd7556bd0be447d9d3dd#egg=siosa
 six==1.15.0
 tifffile==2020.9.3
 torch==1.4.0
