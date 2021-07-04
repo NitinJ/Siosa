@@ -19,6 +19,7 @@ class TradeStep(Step):
     TRADE_OFFER_WAIT_TIMEOUT = 10
     TRADE_ACCEPT_WAIT_TIMEOUT = 10
     RETRY_TIMEOUT = 3
+    TRADE_REQUEST_SEND_DELAY = 3
 
     def __init__(self, trade_info: TradeInfo, log_listener):
         super().__init__()
@@ -134,6 +135,7 @@ class TradeStep(Step):
 
     async def send_trade_request(self):
         self.logger.debug("Sending trade request to {}".format(self.trader))
+        await asyncio.sleep(TradeStep.TRADE_REQUEST_SEND_DELAY)
         self.cc.console_command(Commands.TRADE(self.trader))
 
     async def offer(self):
