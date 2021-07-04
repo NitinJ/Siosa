@@ -36,7 +36,7 @@ class ClipboardItemFactory:
             return self._create_general_item(type, rarity, data_sections)
 
     def _create_currency_item(self, type, data_sections):
-        type_line = self._get_type_line('currency', data_sections)
+        type_line = self._get_type_line('currency', True, data_sections)
         stack_size = self._get_stack_size(data_sections)
         stack_max_size = self._get_max_stack_size(data_sections)
 
@@ -86,14 +86,15 @@ class ClipboardItemFactory:
         except:
             affixes = []
 
+        identified = not self._get_unidentified(data_sections)
         info = {
             'rarity': rarity,
-            'name': self._get_name(rarity, data_sections),
-            'type_line': self._get_type_line(rarity, data_sections),
-            'base_type': self._get_base_type(rarity, affixes, data_sections),
+            'name': self._get_name(rarity, identified, data_sections),
+            'type_line': self._get_type_line(rarity, identified, data_sections),
+            'base_type': self._get_base_type(rarity, affixes, identified, data_sections),
             'ilvl': self._get_item_level(data_sections),
             'corrupted': self._get_corrupted(data_sections),
-            'unidentified': self._get_unidentified(data_sections),
+            'identified': not self._get_unidentified(data_sections),
             'note': self._get_note(data_sections),
             'explicit_mods': [affix.str_val for affix in affixes],
             'n_prefixes': self._get_num_prefixes(affixes),
@@ -316,23 +317,23 @@ class ClipboardItemFactory:
     def _get_rarity(self, sections):
         return sections[0][1].split("Rarity: ")[1].strip().lower()
 
-    def _get_name(self, rarity, sections):
+    def _get_name(self, rarity, identified, sections):
         if rarity in ('normal', 'magic'):
             return ""
-        elif rarity in ('rare', 'unique'):
+        elif rarity in ('rare', 'unique') and identified:
             return sections[0][2]
         return ""
 
-    def _get_type_line(self, rarity, sections):
+    def _get_type_line(self, rarity, identified, sections):
         try:
-            if rarity in ('rare', 'unique'):
+            if rarity in ('rare', 'unique') and identified:
                 return sections[0][3]
             return sections[0][2]
         except Exception as e:
             self.logger.error(e)
             return ''
 
-    def _get_base_type(self, rarity, affixes, sections):
+    def _get_base_type(self, rarity, affixes, identified, sections):
         base_type = None
         try:
             if rarity == 'normal':
@@ -342,7 +343,7 @@ class ClipboardItemFactory:
                 base_type = base_type.split(" of ")[0]
                 if self._get_num_prefixes(affixes) > 0:
                     base_type = " ".join(base_type.split(" ")[1:])
-            elif rarity in ('rare', 'unique'):
+            elif rarity in ('rare', 'unique') and identified:
                 base_type = sections[0][3]
             else :
                 base_type = sections[0][2]
@@ -398,9 +399,9 @@ class ClipboardItemFactory:
     def _get_unidentified(self, sections):
         for section in sections:
             for line in section:
-                if line == "Unidentified":
-                    return len(section) == 1
-        return ''
+                if line == "Unidentified" and len(section) == 1:
+                    return True
+        return False
 
     def _get_note(self, sections):
         for section in sections:
