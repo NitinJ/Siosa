@@ -75,6 +75,12 @@ class StashTab:
                 return self.items[(x, y)]
         return None
 
+    def get_item_cells_ingame(self):
+        """
+        Returns: Returns the cells where items are present using in game data
+        """
+        return self.scanner.get_item_cells()
+
     def is_item_at_location_ingame(self, p):
         """
         Returns whether there is an item at x,y stash positions in this stash.

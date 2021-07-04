@@ -64,8 +64,8 @@ class Grid:
     def _get_cells_for_positions(self, positions):
         offset_x, offset_y = \
             (self.cell00.x1 - self.grid.x1, self.cell00.y1 - self.grid.y1)
-        width = self.cell00.get_width() + self.border_x
-        height = self.cell00.get_height() + self.border_y
+        width = self.cell00.get_width() + 2*self.border_x
+        height = self.cell00.get_height() + 2*self.border_y
         ret = [
             (abs(p[1] - offset_y) // height, abs(p[0] - offset_x) // width)
             for p in positions]

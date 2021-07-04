@@ -34,6 +34,13 @@ class StashTabScanner:
             self.stash_tab.is_quad else TemplateRegistry.NORMAL_STASH_0_0
         self.tm = TemplateMatcher(Template.from_registry(registry), debug=debug)
 
+    def get_item_cells(self):
+        """
+        Returns: Cells at which items are present.
+        """
+        return self.grid.get_cells_not_in_positions(
+                self.tm.match(self.lf.get(Locations.STASH_TAB)))
+
     def is_empty(self, cell):
         self.logger.debug(
             "Checking if cell ({}, {}) is empty".format(cell[0], cell[1]))
