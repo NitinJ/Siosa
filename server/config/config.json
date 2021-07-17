@@ -1,0 +1,32 @@
+{
+    "base": {
+        "account_name": "MopedDriverr",
+        "poe_session_id": "c31a47639f74935c1545ea12a9501ee0",
+        "client_log_file_path": "D:\\Games\\GrindingGearGames\\logs\\Client.txt",
+        "league": "Ultimatum",
+        "license_key": "123-12903u12-1283-1237"
+    },
+    "stashes": {
+        "dump": [
+            "~price 80 chaos"
+        ],
+        "sell": [
+            "~price 6 exalted",
+            "~price 80 chaos"
+        ],
+        "sell_index": [
+            0,
+            1
+        ],
+        "currency": [
+            "$$$"
+        ]
+    },
+    "shortcuts": {
+        "close_all_user_interface": [
+            "Ctrl",
+            "`"
+        ],
+        "task_stop": "ctrl+q"
+    }
+}
