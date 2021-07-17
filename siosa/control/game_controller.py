@@ -43,5 +43,9 @@ class GameController(metaclass=Singleton):
     def submit_task(self, task):
         self.task_executor.submit_task(task)
 
+    def stop(self):
+        self._stop_all_tasks()
+        self.task_executor.stop()
+
     def _stop_all_tasks(self):
         self.task_executor.stop_all_tasks()

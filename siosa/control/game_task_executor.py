@@ -2,14 +2,20 @@ import logging
 import threading
 import time
 
+from siosa.common.decorations import override
+from siosa.common.stoppable_thread import StoppableThread
 from siosa.control.game_task_store import GameTaskStore
 
 
-class GameTaskExecutor(threading.Thread):
+class GameTaskExecutor(StoppableThread):
     TASK_STATE_CHECK_DELAY = 0.01
 
     def __init__(self, game_state):
-        threading.Thread.__init__(self)
+        """
+        Args:
+            game_state:
+        """
+        StoppableThread.__init__(self)
         self.logger = logging.getLogger(__name__)
         self.logger.setLevel(logging.DEBUG)
         self.game_state = game_state
@@ -31,28 +37,28 @@ class GameTaskExecutor(threading.Thread):
             self.running_task.stop()
         self.task_store.remove_all()
 
-    def run(self):
-        while True:
-            self.lock.acquire()
-            task = self.task_store.get_next()
-            self.lock.release()
+    @override
+    def run_once(self):
+        self.lock.acquire()
+        task = self.task_store.get_next()
+        self.lock.release()
 
-            if not task:
-                continue
+        if not task:
+            return
 
-            if self.running_task is None:
-                self.logger.debug("There is no task running. Executing " \
-                                  "task: {}".format(task.name))
-                self.running_task = task
-                task.run_task(self.game_state)
-            elif task != self.running_task:
-                self.logger.debug("Executing a new task: {}".format(task.name))
-                if self.running_task.is_running():
-                    self.logger.debug("Stopping currently running task: {}" \
-                                      .format(self.running_task.name))
-                    self.running_task.stop()
+        if self.running_task is None:
+            self.logger.debug("There is no task running. Executing " \
+                              "task: {}".format(task.name))
+            self.running_task = task
+            task.run_task(self.game_state)
+        elif task != self.running_task:
+            self.logger.debug("Executing a new task: {}".format(task.name))
+            if self.running_task.is_running():
+                self.logger.debug("Stopping currently running task: {}" \
+                                  .format(self.running_task.name))
+                self.running_task.stop()
 
-                self.running_task = task
-                task.run_task(self.game_state)
+            self.running_task = task
+            task.run_task(self.game_state)
 
-            time.sleep(GameTaskExecutor.TASK_STATE_CHECK_DELAY)
+        time.sleep(GameTaskExecutor.TASK_STATE_CHECK_DELAY)
