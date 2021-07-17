@@ -10,9 +10,8 @@ from siosa.control.init_task import InitTask
 from siosa.control.keyboard_shortcut import KeyboardShortcut
 
 
-class GameController(metaclass=Singleton):
+class GameController:
     def __init__(self, client_log_listener):
-        super(GameController, self).__init__()
         self.logger = logging.getLogger(__name__)
         self.logger.setLevel(logging.DEBUG)
 
@@ -44,8 +43,10 @@ class GameController(metaclass=Singleton):
         self.task_executor.submit_task(task)
 
     def stop(self):
+        self.logger.info("Stopping game controller")
         self._stop_all_tasks()
-        self.task_executor.stop()
+        self.task_executor.join()
+        self.logger.info("Game controller stopped")
 
     def _stop_all_tasks(self):
         self.task_executor.stop_all_tasks()
