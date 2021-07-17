@@ -9,4 +9,8 @@ class CraftingType(Enum):
 
 
 def get_crafting_type(type_str):
+    """
+    Args:
+        type_str:
+    """
     return CraftingType(type_str)

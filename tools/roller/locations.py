@@ -21,6 +21,10 @@ class Locations:
 
     @staticmethod
     def get_currency_location(currency):
+        """
+        Args:
+            currency:
+        """
         if currency not in Locations.CURRENCY_LOCATIONS.keys():
             return None
         return Locations.CURRENCY_LOCATIONS[currency]

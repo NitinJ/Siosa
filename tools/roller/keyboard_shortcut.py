@@ -5,6 +5,11 @@ from pynput import keyboard
 
 class KeyboardShortcut:
     def __init__(self, combination, callback):
+        """
+        Args:
+            combination:
+            callback:
+        """
         self.logger = logging.getLogger(__name__)
         self.logger.setLevel(logging.DEBUG)
         self.combination = combination
@@ -18,6 +23,10 @@ class KeyboardShortcut:
             on_release=self.for_canonical(hotkey.release))
 
     def for_canonical(self, f):
+        """
+        Args:
+            f:
+        """
         return lambda k: f(self.listener.canonical(k))
 
     def start_listening(self):

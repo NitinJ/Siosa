@@ -1,24 +1,6 @@
 {
     "items": [
         {
-            "base_name": "onyx amulet",
-            "inventory_position": [2, 1],
-            "crafting_type": "chaos",
-            "item_options": [
-                {
-                    "rarity": "rare",
-                    "prefixes": [
-                        {
-                            "name": null,
-                            "tier": 10,
-                            "hint": "to maximum life"
-                        }
-                    ],
-                    "suffixes": []
-                }
-            ]
-        },
-        {
             "base_name": "ruby ring",
             "inventory_position": [4, 0],
             "crafting_type": "chancing",
@@ -26,80 +8,6 @@
                 {
                     "rarity": "unique",
                     "prefixes": [],
-                    "suffixes": []
-                }
-            ]
-        },
-        {
-            "base_name": "two-toned boots",
-            "inventory_position": [1, 0],
-            "crafting_type": "alteration",
-            "item_options": [
-                {
-                    "rarity": "magic",
-                    "prefixes": [],
-                    "suffixes": [
-                        {
-                            "name": "of shaping",
-                            "tier": 1,
-                            "hint": "avoid elemental"
-                        }
-                    ]
-                },
-                {
-                    "rarity": "magic",
-                    "prefixes": [
-                        {
-                            "name": "cheetah's",
-                            "tier": 1,
-                            "hint": null
-                        }
-                    ],
-                    "suffixes": []
-                }
-            ]
-        },
-        {
-            "base_name": "medium cluster jewel",
-            "inventory_position": [0, 0],
-            "crafting_type": "alteration_regal",
-            "item_options": [
-                {
-                    "rarity": "magic",
-                    "prefixes": [
-                        {
-                            "name": "notable",
-                            "tier": 1,
-                            "hint": "circling oblivion"
-                        }
-                    ],
-                    "suffixes": []
-                },
-                {
-                    "rarity": "magic",
-                    "prefixes": [
-                        {
-                            "name": "notable",
-                            "tier": 1,
-                            "hint": "student of decay"
-                        }
-                    ],
-                    "suffixes": []
-                },
-                {
-                    "rarity": "rare",
-                    "prefixes": [
-                        {
-                            "name": "notable",
-                            "tier": 1,
-                            "hint": "circling oblivion"
-                        },
-                        {
-                            "name": "notable",
-                            "tier": 1,
-                            "hint": "student of decay"
-                        }
-                    ],
                     "suffixes": []
                 }
             ]

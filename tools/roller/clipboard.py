@@ -5,9 +5,17 @@ import win32clipboard
 
 class Clipboard:
     def __init__(self, clipboard_read_sleep_time=0.05):
+        """
+        Args:
+            clipboard_read_sleep_time:
+        """
         self.clipboard_read_sleep_time = clipboard_read_sleep_time
 
     def set_clipboard_data(self, data):
+        """
+        Args:
+            data:
+        """
         try:
             win32clipboard.OpenClipboard()
         except:

@@ -18,6 +18,11 @@ class Roller:
     COMBINATIONS = 'r+q'
 
     def __init__(self, roller_config, max_rolls=800):
+        """
+        Args:
+            roller_config:
+            max_rolls:
+        """
         self.logger = logging.getLogger(__name__)
         self.logger.setLevel('DEBUG')
         self.keyboard_listener = KeyboardShortcut(Roller.COMBINATIONS,
@@ -40,6 +45,12 @@ class Roller:
                 self._roll_item(item, crafting_type, flog)
 
     def _roll_item(self, item, crafting_type, flog):
+        """
+        Args:
+            item:
+            crafting_type:
+            flog:
+        """
         self.gc.reset()
         self.gc.move_item_to_stash(item)
 
@@ -65,6 +76,14 @@ class Roller:
                 return self._on_failure()
 
     def log(self, flog, in_game_item, item, matches, next_currency):
+        """
+        Args:
+            flog:
+            in_game_item:
+            item:
+            matches:
+            next_currency:
+        """
         log_str = "in_game_item: {}\nitem: {}\nmatches: {}\n" \
                   "next_currency:{}".format(in_game_item, item, matches,
                                             next_currency)

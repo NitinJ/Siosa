@@ -11,6 +11,10 @@ class ValidatorFactory:
 
     @staticmethod
     def get_validator(crafting_type):
+        """
+        Args:
+            crafting_type:
+        """
         if crafting_type == CraftingType.ALTERATION:
             return AlterationCraftingValidator()
         elif crafting_type == CraftingType.ALTERATION_REGAL:
@@ -28,11 +32,13 @@ class Validator:
         self.logger.setLevel('DEBUG')
 
     def validate(self, raw_item):
-        """
-        Validates whether the config is correct or not.
-        Args:
-            raw_item: Item obtained from raw config.
+        """Validates whether the config is correct or not. :param raw_item: Item
+        obtained from raw config.
+
         Returns: None
+
+        Args:
+            raw_item:
         """
         crafting_type = get_crafting_type(raw_item['crafting_type'])
         assert crafting_type
@@ -43,10 +49,12 @@ class Validator:
         self._validate_internal(raw_item)
 
     def create_item_options(self, raw_item):
-        """
-        Creates item objects from raw_item objects (obtained from config).
+        """Creates item objects from raw_item objects (obtained from config).
+        :param raw_item: Raw item obtained from config, containing item-options
+
         Args:
-            raw_item: Raw item obtained from config, containing item-options
+            raw_item:
+
         Returns:
             Item objects which are internal representation of items in roller.
         """
@@ -55,12 +63,21 @@ class Validator:
 
     @staticmethod
     def _get_affix(affix, affix_type):
+        """
+        Args:
+            affix:
+            affix_type:
+        """
         tier = affix['tier']
         tier = int(tier) if tier else None
         return Affix(affix['hint'], affix['name'], tier, affix_type)
 
     @staticmethod
     def _create_item_from_item_option(raw_item_option):
+        """
+        Args:
+            raw_item_option:
+        """
         affixes = []
         if raw_item_option['prefixes']:
             for prefix in raw_item_option['prefixes']:
@@ -72,6 +89,10 @@ class Validator:
             'unknown', raw_item_option['rarity'], 'unknown', affixes)
 
     def _validate_internal(self, item):
+        """
+        Args:
+            item:
+        """
         raise NotImplementedError
 
 
@@ -80,10 +101,18 @@ class AlterationCraftingValidator(Validator):
         Validator.__init__(self)
 
     def _validate_internal(self, item):
+        """
+        Args:
+            item:
+        """
         for item_option in item['item_options']:
             self._validate_item_option(item_option)
 
     def _validate_item_option(self, item_option):
+        """
+        Args:
+            item_option:
+        """
         prefixes = item_option['prefixes']
         suffixes = item_option['suffixes']
         assert (len(prefixes) or len(suffixes))
@@ -97,6 +126,10 @@ class AlterationRegalCraftingValidator(AlterationCraftingValidator):
         AlterationCraftingValidator.__init__(self)
 
     def _validate_internal(self, item):
+        """
+        Args:
+            item:
+        """
         AlterationCraftingValidator._validate_internal(self, item)
         num_rare_item_options = 0
         for item_option in item['item_options']:
@@ -110,10 +143,18 @@ class ChancingCraftingValidator(Validator):
         Validator.__init__(self)
 
     def _validate_internal(self, item):
+        """
+        Args:
+            item:
+        """
         for item_option in item['item_options']:
             self._validate_item_option(item_option)
 
     def _validate_item_option(self, item_option):
+        """
+        Args:
+            item_option:
+        """
         prefixes = item_option['prefixes']
         suffixes = item_option['suffixes']
         assert (len(prefixes) == 0 and len(suffixes) == 0)
@@ -125,10 +166,18 @@ class ChaosCraftingValidator(Validator):
         Validator.__init__(self)
 
     def _validate_internal(self, item):
+        """
+        Args:
+            item:
+        """
         for item_option in item['item_options']:
             self._validate_item_option(item_option)
 
     def _validate_item_option(self, item_option):
+        """
+        Args:
+            item_option:
+        """
         prefixes = item_option['prefixes']
         suffixes = item_option['suffixes']
         assert item_option['rarity'] == 'rare'

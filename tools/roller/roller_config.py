@@ -8,6 +8,10 @@ from tools.roller.validators import ValidatorFactory
 
 class RollerConfig:
     def __init__(self, config_file_path):
+        """
+        Args:
+            config_file_path:
+        """
         self.logger = logging.getLogger(__name__)
         self.logger.setLevel('DEBUG')
         f = open(config_file_path)

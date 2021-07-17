@@ -5,6 +5,10 @@ from tools.roller.utils import *
 
 class Matcher:
     def __init__(self, item):
+        """
+        Args:
+            item:
+        """
         self.logger = logging.getLogger(__name__)
         self.logger.setLevel('DEBUG')
         self.base_name = item['base_name']
@@ -12,6 +16,10 @@ class Matcher:
         self.item_options = item['item_options']
 
     def matches(self, in_game_item):
+        """
+        Args:
+            in_game_item:
+        """
         if not self.base_match(in_game_item):
             raise WrongBaseItemException("Wrong base item!")
 
@@ -27,6 +35,10 @@ class Matcher:
         return False, None
 
     def base_match(self, in_game_item):
+        """
+        Args:
+            in_game_item:
+        """
         return in_game_item.name.find(self.base_name) > -1
 
 

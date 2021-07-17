@@ -10,6 +10,11 @@ class CrafterFactory:
 
     @staticmethod
     def get_crafter(item, crafting_type):
+        """
+        Args:
+            item:
+            crafting_type:
+        """
         if crafting_type == CraftingType.ALTERATION:
             return AlterationCrafter(item)
         elif crafting_type == CraftingType.ALTERATION_REGAL:
@@ -23,6 +28,10 @@ class CrafterFactory:
 
 class Crafter:
     def __init__(self, item):
+        """
+        Args:
+            item:
+        """
         self.matcher = Matcher(item)
         self.item = item
         self.item_options = item['item_options']
@@ -31,13 +40,15 @@ class Crafter:
         raise NotImplementedError
 
     def done(self, in_game_item):
-        """
-        Returns whether the crafter is done crafting.
-        Args:
-            in_game_item: The in game item.
+        """Returns whether the crafter is done crafting. :param in_game_item:
+        The in game item.
+
         Returns: A tuple of whether crafter succeeded in crafting & the next
         currency to use in case it didn't. If next currency to use is None,
         means item cannot be further crafted.
+
+        Args:
+            in_game_item:
         """
         try:
             matched, matched_item_option = self.matcher.matches(in_game_item)
@@ -49,26 +60,40 @@ class Crafter:
         return matched, next_currency_to_use
 
     def _get_next_currency_to_use(self, in_game_item, matched, matched_item_option):
-        """
-        Returns the next currency to use on the item given the item_option it
-        matched.
+        """Returns the next currency to use on the item given the item_option it
+        matched. :param in_game_item: The in game item. :param matched: Whether
+        the in game item matched an item option :param matched_item_option: The
+        item option that the in game item matched.
+
+            None if it didn't match any item_option
+
         Args:
-            in_game_item: The in game item.
-            matched: Whether the in game item matched an item option
-            matched_item_option: The item option that the in game item matched.
-                None if it didn't match any item_option
+            in_game_item:
+            matched:
+            matched_item_option:
+
         Returns:
-            Currency to use or None if no currency is to be used and crafting
-            is complete.
+            Currency to use or None if no currency is to be used and crafting is
+            complete.
         """
         raise NotImplementedError
 
 
 class AlterationCrafter(Crafter):
     def __init__(self, item):
+        """
+        Args:
+            item:
+        """
         Crafter.__init__(self, item)
 
     def _get_next_currency_to_use(self, in_game_item, matched, matched_item_option):
+        """
+        Args:
+            in_game_item:
+            matched:
+            matched_item_option:
+        """
         if matched:
             # Crafting complete.
             return None
@@ -84,6 +109,10 @@ class AlterationCrafter(Crafter):
         return CraftingType.ALTERATION
 
     def _should_use_augment(self, in_game_item):
+        """
+        Args:
+            in_game_item:
+        """
         if in_game_item.get_num_affixes() > 1 or \
                 in_game_item.rarity != 'magic':
             return False
@@ -122,12 +151,22 @@ class AlterationCrafter(Crafter):
 
 class AlterationRegalCrafter(AlterationCrafter):
     def __init__(self, item):
+        """
+        Args:
+            item:
+        """
         AlterationCrafter.__init__(self, item)
 
     def get_crafting_type(self):
         return CraftingType.ALTERATION_REGAL
 
     def _get_next_currency_to_use(self, in_game_item, matched, matched_item_option):
+        """
+        Args:
+            in_game_item:
+            matched:
+            matched_item_option:
+        """
         if matched:
             if matched_item_option.rarity == 'magic':
                 return Currency.AUGMENTATION if \
@@ -147,12 +186,22 @@ class AlterationRegalCrafter(AlterationCrafter):
 
 class ChancingCrafter(Crafter):
     def __init__(self, item):
+        """
+        Args:
+            item:
+        """
         Crafter.__init__(self, item)
 
     def get_crafting_type(self):
         return CraftingType.CHANCING
 
     def _get_next_currency_to_use(self, in_game_item, matched, matched_item_option):
+        """
+        Args:
+            in_game_item:
+            matched:
+            matched_item_option:
+        """
         if matched or in_game_item == 'unique':
             return None
         if in_game_item.rarity == 'normal':
@@ -162,12 +211,22 @@ class ChancingCrafter(Crafter):
 
 class ChaosCrafter(Crafter):
     def __init__(self, item):
+        """
+        Args:
+            item:
+        """
         Crafter.__init__(self, item)
 
     def get_crafting_type(self):
         return CraftingType.CHAOS
 
     def _get_next_currency_to_use(self, in_game_item, matched, matched_item_option):
+        """
+        Args:
+            in_game_item:
+            matched:
+            matched_item_option:
+        """
         if matched or in_game_item.rarity == 'unique':
             return None
         if in_game_item.rarity == 'normal':

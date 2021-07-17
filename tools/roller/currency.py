@@ -17,12 +17,22 @@ class CurrencyStack:
     SEPARATOR = "--------\r\n"
 
     def __init__(self, type, stack, stack_size):
+        """
+        Args:
+            type:
+            stack:
+            stack_size:
+        """
         self.type = type
         self.stack = stack
         self.stack_size = stack_size
 
     @staticmethod
     def create_from_clipboard_data(data):
+        """
+        Args:
+            data:
+        """
         name_section = data.split(CurrencyStack.SEPARATOR)[0]
         stack_section = data.split(CurrencyStack.SEPARATOR)[1]
         rarity = \
