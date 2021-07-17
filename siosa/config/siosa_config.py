@@ -33,17 +33,23 @@ class SiosaConfig(metaclass=Singleton):
     def write_config(self, config_file_path):
         json.dump(self.config, open(config_file_path, 'w'))
 
+    def to_json(self):
+        return self.config
+
     def get_account_name(self):
-        return self.config['required']['account_name']
+        return self.config['base']['account_name']
 
     def get_poe_session_id(self):
-        return self.config['required']['poe_session_id']
+        return self.config['base']['poe_session_id']
 
     def get_league(self):
-        return self.config['required']['league']
+        return self.config['base']['league']
 
     def get_client_log_file_path(self):
-        return self.config['required']['client_log_file_path']
+        return self.config['base']['client_log_file_path']
+
+    def get_license_key(self):
+        return self.config['base']['license_key']
 
     def get_close_all_interfaces_shortcut(self):
         return self.config['shortcuts']['close_all_user_interface']

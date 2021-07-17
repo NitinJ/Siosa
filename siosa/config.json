@@ -1,9 +1,10 @@
 {
-    "required": {
+    "base": {
         "account_name": "MopedDriverr",
-        "poe_session_id": "2561bcd7ed51683282115e110e6ea1f3",
-        "client_file_path": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\Path of Exile\\logs\\Client.txt",
-        "league": "Ultimatum"
+        "poe_session_id": "c31a47639f74935c1545ea12a9501ee0",
+        "client_log_file_path": "D:\\Games\\GrindingGearGames\\logs\\Client.txt",
+        "league": "Ultimatum",
+        "license": ""
     },
     "stashes": {
         "dump": ["~price 80 chaos"],
