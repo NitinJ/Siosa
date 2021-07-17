@@ -7,6 +7,11 @@ lf = LocationFactory()
 
 
 def create_template(name, template_path):
+    """
+    Args:
+        name:
+        template_path:
+    """
     Template.create_from_file(name, template_path, overwrite=True, debug=True)
 
 

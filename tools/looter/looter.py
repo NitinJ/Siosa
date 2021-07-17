@@ -22,6 +22,11 @@ logging.basicConfig(format=FORMAT)
 
 class KeyboardShortcut:
     def __init__(self, combination, callback):
+        """
+        Args:
+            combination:
+            callback:
+        """
         self.logger = logging.getLogger(__name__)
         self.logger.setLevel(logging.DEBUG)
         self.combination = combination
@@ -35,6 +40,10 @@ class KeyboardShortcut:
             on_release=self.for_canonical(hotkey.release))
 
     def for_canonical(self, f):
+        """
+        Args:
+            f:
+        """
         return lambda k: f(self.listener.canonical(k))
 
     def start_listening(self):
@@ -46,6 +55,10 @@ class KeyboardShortcut:
 
 
 def _create_matchers(item_templates):
+    """
+    Args:
+        item_templates:
+    """
     matchers = {}
     for template in item_templates:
         matchers[template] = TemplateMatcher(template, debug=debug,
@@ -54,6 +67,10 @@ def _create_matchers(item_templates):
 
 
 def _create_template(template_from_registry):
+    """
+    Args:
+        template_from_registry:
+    """
     return Template.from_registry(template_from_registry,
                                   scale=Looter.SCALE_FACTOR)
 
@@ -101,6 +118,10 @@ class Looter:
         self._loot()
 
     def _dedupe_locations(self, locations):
+        """
+        Args:
+            locations:
+        """
         if not locations or len(locations) == 1:
             return locations
         before = locations[0]
@@ -128,6 +149,10 @@ class Looter:
         return item_locations_with_template
 
     def find_nearest_location_from_screen_center(self, template_locations):
+        """
+        Args:
+            template_locations:
+        """
         center = self.lf.get(Locations.SCREEN_CENTER).get_scaled_location(
             Looter.SCALE_FACTOR).get_center()
 
@@ -141,6 +166,10 @@ class Looter:
         return template_locations[0]
 
     def get_bounding_location_for_template(self, template):
+        """
+        Args:
+            template:
+        """
         width, height = template.get_dimensions()
         center = self.lf.get(Locations.SCREEN_CENTER).get_scaled_location(
             Looter.SCALE_FACTOR).get_center()
