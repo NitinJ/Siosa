@@ -16,6 +16,10 @@ logger.setLevel('DEBUG')
 
 
 def diff_format(d):
+    """
+    Args:
+        d:
+    """
     minutes = int(d / 60)
     seconds = int(d - minutes * 60)
     return int(d)
@@ -24,6 +28,11 @@ def diff_format(d):
 
 class Timing:
     def __init__(self, start_zone, end_zone):
+        """
+        Args:
+            start_zone:
+            end_zone:
+        """
         self.start_time = time.time()
         self.last_zone = start_zone.lower()
         self.end_zone = end_zone.lower()
@@ -33,6 +42,10 @@ class Timing:
         self.first = {self.last_zone: 0.0}
 
     def moved_to_zone(self, zone):
+        """
+        Args:
+            zone:
+        """
         if not zone:
             return False, None
 
@@ -94,6 +107,10 @@ class Timing:
 
 
 def get_next_run_id(wks):
+    """
+    Args:
+        wks:
+    """
     headers = wks.get_row(1, include_tailing_empty=False)
     enumerated_headers = list(enumerate(headers))
     if len(enumerated_headers) == 1:
@@ -102,6 +119,10 @@ def get_next_run_id(wks):
 
 
 def get_all_zones(wks):
+    """
+    Args:
+        wks:
+    """
     first_column = wks.get_col(1)
     # We are doing a python slice here to avoid
     # extracting the column names from the first row (keyword)
@@ -110,6 +131,12 @@ def get_all_zones(wks):
 
 
 def add_column_for_run(wks, run_data, timing_type):
+    """
+    Args:
+        wks:
+        run_data:
+        timing_type:
+    """
     run_id = get_next_run_id(wks)
     all_zones_from_sheet = get_all_zones(wks)
     times = [''] * len(all_zones_from_sheet)
@@ -126,6 +153,10 @@ def add_column_for_run(wks, run_data, timing_type):
 
 
 def sheet_update(data):
+    """
+    Args:
+        data:
+    """
     client_file_abs_path = \
         os.path.join(os.path.dirname(os.path.abspath(__file__)),
                      'path-of-exile-racing-e3233f61f9c9.json')
@@ -145,6 +176,10 @@ def sheet_update(data):
 
 
 def store_data(data):
+    """
+    Args:
+        data:
+    """
     print(data)
     r = input("Save run ?")
     if r.lower() == 'y':
