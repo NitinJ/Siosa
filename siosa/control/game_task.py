@@ -75,6 +75,9 @@ class Task(threading.Thread):
         self.logger.info("Stopping task: {}".format(self.name))
         self.set_state(TaskState.STOPPED)
 
+    def get_state(self):
+        return self.state
+
     @synchronized
     def set_state(self, state):
         """
