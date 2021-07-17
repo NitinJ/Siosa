@@ -7,6 +7,11 @@ lf = LocationFactory()
 
 
 def grab_template(name, template_location):
+    """
+    Args:
+        name:
+        template_location:
+    """
     template_location = lf.get(template_location)
     pyautogui.confirm(
         text='Press OK to grab template({}) on location({})'.format(

@@ -7,6 +7,11 @@ lf = LocationFactory()
 
 
 def show_location(location_name, location_obj):
+    """
+    Args:
+        location_name:
+        location_obj:
+    """
     text = pyautogui.confirm(
         text='Showing location for: {}'.format(location_name),
         title='Location',

@@ -17,12 +17,20 @@ lf = LocationFactory()
 
 
 def get_template(stash_type):
+    """
+    Args:
+        stash_type:
+    """
     if stash_type == 'normal':
         return Template.from_registry(TemplateRegistry.NORMAL_STASH_0_0)
     return Template.from_registry(TemplateRegistry.QUAD_STASH_0_0)
 
 
 def get_grid(stash_type):
+    """
+    Args:
+        stash_type:
+    """
     if stash_type == 'normal':
         return Grid(Locations.STASH_TAB, Locations.STASH_NORMAL_0_0, 12, 12, 2,
                     2)
@@ -30,6 +38,10 @@ def get_grid(stash_type):
 
 
 def get_data(stash_type):
+    """
+    Args:
+        stash_type:
+    """
     if stash_type not in ('quad', 'normal'):
         return
 
@@ -65,6 +77,10 @@ def get_data(stash_type):
 
 
 def get_file_path(stash_type):
+    """
+    Args:
+        stash_type:
+    """
     def parent(f): return os.path.dirname(os.path.abspath(f))
 
     path = os.path.join(parent(parent(__file__)), "siosa")
