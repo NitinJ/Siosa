@@ -35,6 +35,11 @@ class TradeController(StoppableThread):
         self.game_controller = game_controller
 
     @override
+    def start(self):
+        self.logger.debug("Starting listening to incoming trades")
+        super().start()
+
+    @override
     def run_once(self):
         if not self.trade_event_queue.empty():
             trade_request = TradeRequest.create_from(
