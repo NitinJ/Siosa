@@ -6,7 +6,7 @@ from siosa.image.template_matcher import TemplateMatcher
 from siosa.image.template_registry import TemplateRegistry
 from siosa.location.location import Location
 from siosa.location.location_factory import LocationFactory, Locations
-from siosa.resources.stash.stash_cell_locations import StashCellLocation
+from siosa.data.stash_cell_locations import StashCellLocation
 
 
 class StashTabScanner:

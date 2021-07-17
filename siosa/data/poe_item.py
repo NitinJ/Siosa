@@ -1,6 +1,6 @@
 from enum import Enum
 
-from siosa.resources.ggpk_data.base_items import BaseItems
+from siosa.data.ggpk.base_items import BaseItems
 
 
 class ItemRarity(Enum):

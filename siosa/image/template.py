@@ -7,6 +7,7 @@ import mss.tools
 import numpy as np
 from PIL import Image
 
+from siosa.common.util import parent
 from siosa.location.location_factory import LocationFactory
 from siosa.location.resolution import Resolution
 
@@ -192,9 +193,5 @@ class Template:
         Returns:
             Full file path of the template file.
         """
-
-        def parent(f): return os.path.dirname(os.path.abspath(f))
-
-        resources = os.path.join(parent(parent(__file__)), "resources")
-        templates = os.path.join(resources, "templates")
-        return os.path.join(templates, name)
+        siosa_base = parent(parent(__file__))
+        return os.path.join(siosa_base, "resources/templates/{}".format(name))

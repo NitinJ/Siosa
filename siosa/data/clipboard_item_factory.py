@@ -4,12 +4,18 @@ from siosa.data.affix import Affix
 from siosa.data.poe_currencies import *
 from siosa.data.poe_item import ItemType
 from siosa.network.poe_api import PoeApi
-from siosa.resources.resource import Resource
 
 LINE_FEED = '\r\n'
 NEW_LINE = '\n'
 SECTION_SEPARATOR = '--------' + LINE_FEED
-INFLUENCES = Resource.get('influences')
+INFLUENCES = [
+    'Shaper',
+    'Elder',
+    'Crusader',
+    'Warlord',
+    'Hunter',
+    'Redeemer',
+]
 
 
 class ClipboardItemFactory:

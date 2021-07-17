@@ -1,6 +1,7 @@
 import json
 import os
 
+from siosa.common.util import parent
 from siosa.location.location_factory import LocationFactory
 
 
@@ -13,7 +14,8 @@ class StashCellLocation:
         Args:
             filename:
         """
-        return os.path.join(os.path.dirname(__file__), filename)
+        siosa_base = parent(parent(__file__))
+        return os.path.join(siosa_base, "resources/stash/{}".format(filename))
 
     @staticmethod
     def _get_stash_cell_location_map(is_quad):
@@ -44,3 +46,7 @@ class StashCellLocation:
             StashCellLocation._stash_cell_location_map = \
                 StashCellLocation._get_stash_cell_location_map(is_quad)
         return StashCellLocation._stash_cell_location_map[cell]
+
+
+if __name__ == "__main__":
+    print(StashCellLocation.get_cell_location(True, (0, 0)))

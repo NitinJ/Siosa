@@ -1,6 +1,8 @@
 import json
 import os
 
+from siosa.common.util import parent
+
 
 class BaseItems:
     """Resource file with metadata for all base items. Sample entry:"""
@@ -13,7 +15,8 @@ class BaseItems:
         Args:
             filename:
         """
-        return os.path.join(os.path.dirname(__file__), filename)
+        siosa_base = parent(parent(parent(__file__)))
+        return os.path.join(siosa_base, "resources/ggpk_data/{}".format(filename))
 
     @staticmethod
     def get_item_dimensions(item_name):
@@ -38,3 +41,7 @@ class BaseItems:
                 'inventory_height' : v['inventory_height'],
                 'inventory_width' : v['inventory_width']
             }
+
+
+if __name__ == "__main__":
+    print(BaseItems.get_item_dimensions("Chaos Orb"))
