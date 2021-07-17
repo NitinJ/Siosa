@@ -13,6 +13,10 @@ class CurrencyExchange(metaclass=Singleton):
     currency_data = None
 
     def __init__(self, poe_api):
+        """
+        Args:
+            poe_api:
+        """
         super(CurrencyExchange, self).__init__()
 
         self.logger = logging.getLogger()
@@ -30,6 +34,10 @@ class CurrencyExchange(metaclass=Singleton):
         })
 
     def update_rates(self, rates):
+        """
+        Args:
+            rates:
+        """
         self.lock.acquire()
         self.logger.info(
             "Updating currency rates {}".format(json.dumps(rates)))
@@ -38,6 +46,10 @@ class CurrencyExchange(metaclass=Singleton):
 
     # Currently only supports exalted->chaos
     def get_exchange_rate(self, currency):
+        """
+        Args:
+            currency:
+        """
         self.lock.acquire()
         if currency.trade_name not in self.exchange_rate_in_chaos.keys():
             self.lock.release()
@@ -49,6 +61,12 @@ class CurrencyExchange(metaclass=Singleton):
 
 class Exchanger(threading.Thread):
     def __init__(self, poe_api, exchange, args=()):
+        """
+        Args:
+            poe_api:
+            exchange:
+            args:
+        """
         super(Exchanger, self).__init__()
         self.api = poe_api
         self.exchange = exchange

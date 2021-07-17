@@ -17,6 +17,10 @@ class DfaState:
 
     @synchronized
     def update(self, new_state_obj):
+        """
+        Args:
+            new_state_obj:
+        """
         if not self._is_transition_valid(new_state_obj):
             self.logger.error("Invalid state transition from [{} -> {}]"
                               .format(self.to_string(), new_state_obj))
@@ -28,6 +32,10 @@ class DfaState:
 
     @synchronized
     def equals(self, other):
+        """
+        Args:
+            other:
+        """
         if isinstance(other, str):
             return self.to_string() == other
         if type(other) == type(self.state_obj):
@@ -42,4 +50,8 @@ class DfaState:
 
     @synchronized
     def _is_transition_valid(self, other):
+        """
+        Args:
+            other:
+        """
         return True

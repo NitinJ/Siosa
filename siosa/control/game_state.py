@@ -22,6 +22,10 @@ class GameState:
         self.lock = threading.Lock()
 
     def update(self, state_dictionary={}):
+        """
+        Args:
+            state_dictionary:
+        """
         self.lock.acquire()
         self.state.update(state_dictionary)
         self.logger.info(

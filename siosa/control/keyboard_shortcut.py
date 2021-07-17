@@ -5,6 +5,11 @@ import keyboard
 
 class KeyboardShortcut:
     def __init__(self, combination, callback):
+        """
+        Args:
+            combination:
+            callback:
+        """
         self.logger = logging.getLogger(__name__)
         self.logger.setLevel(logging.DEBUG)
         self.callback = callback

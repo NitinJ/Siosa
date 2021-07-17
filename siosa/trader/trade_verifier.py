@@ -28,6 +28,10 @@ class TradeVerifier:
     MOUSE_MOVE_DURATION_SLOW = 200 / 1000
 
     def __init__(self, trade_request):
+        """
+        Args:
+            trade_request:
+        """
         self.trade_request = trade_request
         self.logger = logging.getLogger(__name__)
         self.logger.setLevel(logging.DEBUG)
@@ -62,6 +66,10 @@ class TradeVerifier:
         return cells_with_items
 
     def _validate_item(self, item):
+        """
+        Args:
+            item:
+        """
         self.logger.debug("Validating: {}".format(item))
         if not item or item.type != ItemType.CURRENCY or not item.currency:
             return False
@@ -109,6 +117,10 @@ class TradeVerifier:
         return res
 
     def _get_currency_totals(self, items):
+        """
+        Args:
+            items:
+        """
         total = {
             'chaos': 0,
             'exalted': 0
@@ -121,6 +133,10 @@ class TradeVerifier:
         return total
 
     def _get_currency_totals_using_tm(self, currency_stacks):
+        """
+        Args:
+            currency_stacks:
+        """
         self.logger.info("Getting currency totals using tm.")
         total = {
             'chaos': 0,

@@ -24,6 +24,12 @@ class PriceItem(Step):
     PRICE_STR = "~price {} {}"
 
     def __init__(self, stash_index, stash_cell, currency_stack=None):
+        """
+        Args:
+            stash_index:
+            stash_cell:
+            currency_stack:
+        """
         Step.__init__(self)
         self.stash_index = stash_index
         self.stash_cell = stash_cell
@@ -40,10 +46,18 @@ class PriceItem(Step):
 
     @staticmethod
     def _get_price_note(currency_stack):
+        """
+        Args:
+            currency_stack:
+        """
         return PriceItem.PRICE_STR.format(currency_stack.quantity,
                                           currency_stack.currency.trade_name)
 
     def execute(self, game_state):
+        """
+        Args:
+            game_state:
+        """
         self.game_state = game_state.get()
         if not self.game_state['stash_open']:
             return StepStatus(False, Error.STASH_NOT_OPEN)
@@ -83,11 +97,9 @@ class PriceItem(Step):
         return StepStatus(True)
 
     def _focus_note_option(self):
-        """
-        Focuses the note option textbox assuming that the pricing window is
-        already open.
-        Returns: Whether the note option textbox could be focussed.
-
+        """Focuses the note option textbox assuming that the pricing window is
+        already open. Returns: Whether the note option textbox could be
+        focussed.
         """
         points = self.tm_arrow.match(self.lf.get(Locations.SCREEN_FULL))
         if not points:

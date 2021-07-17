@@ -8,6 +8,13 @@ from siosa.data.static_data import StaticData
 
 class Currency:
     def __init__(self, ex, name, trade_name, max_stack_in_trade):
+        """
+        Args:
+            ex:
+            name:
+            trade_name:
+            max_stack_in_trade:
+        """
         self.exchange = ex
         self.name = name
         self.trade_name = trade_name
@@ -26,6 +33,12 @@ class Currency:
 
     @staticmethod
     def create(name=None, trade_name=None, max_stack_in_trade=10):
+        """
+        Args:
+            name:
+            trade_name:
+            max_stack_in_trade:
+        """
         logger = logging.getLogger(__name__)
         logger.setLevel(logging.DEBUG)
         if not name and not trade_name:
@@ -56,6 +69,13 @@ class Currency:
 class CurrencyStack(Item):
     def __init__(self, currency, quantity, item_type=ItemType.CURRENCY,
                  item_info={}):
+        """
+        Args:
+            currency:
+            quantity:
+            item_type:
+            item_info:
+        """
         self.currency = currency
         self.quantity = quantity
         info = {

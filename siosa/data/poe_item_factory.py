@@ -8,6 +8,11 @@ class PoeItemFactory:
         self.sif_ = StashItemFactory()
 
     def get_item(self, data, source='clipboard'):
+        """
+        Args:
+            data:
+            source:
+        """
         if source == 'clipboard':
             return self.cif_.get_item(data)
         return self.sif_.get_item(data)

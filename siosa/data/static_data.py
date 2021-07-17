@@ -39,6 +39,10 @@ class StaticData(metaclass=Singleton):
         self.currency_data = data
 
     def _parse_static_currency_data(self, data):
+        """
+        Args:
+            data:
+        """
         for entry_type in data:
             for entry in entry_type['entries']:
                 self.name_to_id[entry['text']] = entry['id']

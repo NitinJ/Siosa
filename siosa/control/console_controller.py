@@ -17,12 +17,21 @@ class ConsoleController(metaclass=Singleton):
 
 
     def __init__(self, delay=CONSOLE_SPAWN_DELAY):
+        """
+        Args:
+            delay:
+        """
         self.keyboard_controller = KeyboardController()
         self.delay = delay
         self.logger = logging.getLogger(__name__)
         self.logger.setLevel(logging.DEBUG)
 
     def send_chat(self, to, chat):
+        """
+        Args:
+            to:
+            chat:
+        """
         pyautogui.press('enter')
         time.sleep(self.delay)
         pyautogui.write('@{} {}'.format(to, chat))
@@ -30,6 +39,10 @@ class ConsoleController(metaclass=Singleton):
         pyautogui.press('enter')
 
     def console_command(self, command):
+        """
+        Args:
+            command:
+        """
         pyautogui.press('enter')
         time.sleep(self.delay)
         pyautogui.write(command)

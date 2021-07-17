@@ -1,6 +1,10 @@
 
 def pascal_row(n):
     # This returns the nth row of Pascal's Triangle
+    """
+    Args:
+        n:
+    """
     result = [1]
     x, numerator = 1, n
     for denominator in range(1, n // 2 + 1):
@@ -22,8 +26,8 @@ class BezierMouseController:
         """
         Args:
             points: An array of tuples (x, y). Locations on screen.
-            deviation: Deviation from actual points in the bezier curve. 0 is
-                0% deviation
+            deviation: Deviation from actual points in the bezier curve. 0 is 0%
+                deviation
             speed: 1 is fastest
         """
         self.logger = logging.getLogger(__name__)
@@ -40,6 +44,10 @@ class BezierMouseController:
             self.connected_bez(self.points, self.deviation, self.speed)
 
     def _update_pyautogui_vars(self, restore=False):
+        """
+        Args:
+            restore:
+        """
         if restore:
             pyautogui.MINIMUM_DURATION = self.pyautogui_vars_backup[
                 'MINIMUM_DURATION']
@@ -64,6 +72,10 @@ class BezierMouseController:
 
     def make_bezier(self, xys):
         # xys should be a sequence of 2-tuples (Bezier control points)
+        """
+        Args:
+            xys:
+        """
         n = len(xys)
         combinations = pascal_row(n - 1)
 
@@ -84,14 +96,19 @@ class BezierMouseController:
         return bezier
 
     def mouse_bez(self, init_pos, fin_pos, deviation, speed):
-        '''
-        GENERATE BEZIER CURVE POINTS
-        Takes init_pos and fin_pos as a 2-tuple representing xy coordinates
-            variation is a 2-tuple representing the
-            max distance from fin_pos of control point for x and y respectively
-            speed is an int multiplier for speed. The lower, the faster. 1 is fastest.
+        """GENERATE BEZIER CURVE POINTS Takes init_pos and fin_pos as a 2-tuple
+        representing xy coordinates
 
-        '''
+            variation is a 2-tuple representing the max distance from fin_pos of
+            control point for x and y respectively speed is an int multiplier
+            for speed. The lower, the faster. 1 is fastest.
+
+        Args:
+            init_pos:
+            fin_pos:
+            deviation:
+            speed:
+        """
 
         # time parameter
         ts = [t / (speed * 100.0) for t in range(speed * 101)]
@@ -121,19 +138,23 @@ class BezierMouseController:
         return points
 
     def connected_bez(self, coord_list, deviation, speed):
-        '''
-        Connects all the coords in coord_list with bezier curve
-        and returns all the points in new curve
+        """Connects all the coords in coord_list with bezier curve and returns
+        all the points in new curve
 
         ARGUMENT: DEVIATION (INT)
-            deviation controls how straight the lines drawn my the cursor
-            are. Zero deviation gives straight lines
-            Accuracy is a percentage of the displacement of the mouse from point A to
-            B, which is given as maximum control point deviation.
-            Naturally, deviation of 10 (10%) gives maximum control point deviation
-            of 10% of magnitude of displacement of mouse from point A to B,
-            and a minimum of 5% (deviation / 2)
-        '''
+            deviation controls how straight the lines drawn my the cursor are.
+            Zero deviation gives straight lines Accuracy is a percentage of the
+            displacement of the mouse from point A to B, which is given as
+            maximum control point deviation. Naturally, deviation of 10 (10%)
+            gives maximum control point deviation of 10% of magnitude of
+            displacement of mouse from point A to B, and a minimum of 5%
+            (deviation / 2)
+
+        Args:
+            coord_list:
+            deviation:
+            speed:
+        """
         self.logger.debug("Generating bezier for: {}".format(coord_list))
         i = 1
         points = []

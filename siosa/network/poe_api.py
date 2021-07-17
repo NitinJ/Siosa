@@ -20,6 +20,12 @@ MAX_ITEMS_FOR_CALCULATING_EXCHANGE = 20
 
 class PoeApi(metaclass=Singleton):
     def __init__(self, account_name, poe_session_id, league="Ultimatum"):
+        """
+        Args:
+            account_name:
+            poe_session_id:
+            league:
+        """
         self.logger = logging.getLogger(__name__)
         self.logger.setLevel('DEBUG')
 
@@ -45,6 +51,10 @@ class PoeApi(metaclass=Singleton):
         return data
 
     def get_stash_contents(self, index):
+        """
+        Args:
+            index:
+        """
         url = STASH_INFO_API.format(
             self.account_name, self.league) + "&tabIndex=" + str(index)
         resp = requests.get(url, headers=self.headers, cookies=self.cookies)
@@ -58,6 +68,10 @@ class PoeApi(metaclass=Singleton):
 
     def get_all_trades(self, url):
         # Request
+        """
+        Args:
+            url:
+        """
         page_response = requests.get(url, headers=self.headers, cookies=self.cookies)
         if not page_response.content:
             return
@@ -85,6 +99,12 @@ class PoeApi(metaclass=Singleton):
 
     def _items_search(self, search_id, item_ids, exchange=False):
         # Search for items
+        """
+        Args:
+            search_id:
+            item_ids:
+            exchange:
+        """
         all_items = []
         for item_ids in PoeApi._divide_chunks(item_ids, 20):
             fetch_url = PoeApi.get_url_for_item_fetch(
@@ -99,11 +119,22 @@ class PoeApi(metaclass=Singleton):
     @staticmethod
     def _divide_chunks(arr, c):
         # looping till length l
+        """
+        Args:
+            arr:
+            c:
+        """
         for i in range(0, len(arr), c):
             yield arr[i:i + c]
 
     @classmethod
     def get_url_for_item_fetch(cls, search_id, item_ids, exchange):
+        """
+        Args:
+            search_id:
+            item_ids:
+            exchange:
+        """
         url = FETCH_API
         for item_id in item_ids:
             url = url + item_id + ","
@@ -114,10 +145,19 @@ class PoeApi(metaclass=Singleton):
         return url
 
     def fetch_items_from_url(self, url):
+        """
+        Args:
+            url:
+        """
         items_response = requests.get(url, headers=self.headers, cookies=self.cookies)
         return items_response.json()['result']
 
     def get_exchange_rate(self, have, want):
+        """
+        Args:
+            have:
+            want:
+        """
         if not have or not want:
             return None
         data = {
@@ -151,6 +191,10 @@ class PoeApi(metaclass=Singleton):
         return rate
 
     def _get_exchange_rate_from_exchange_entries(self, items):
+        """
+        Args:
+            items:
+        """
         if not items:
             return None
         exchanges = items[3:MAX_ITEMS_FOR_CALCULATING_EXCHANGE]
@@ -171,4 +215,8 @@ class PoeApi(metaclass=Singleton):
         return resp['result']
 
     def _get_league_specific_url(self, url):
+        """
+        Args:
+            url:
+        """
         return url.format(self.league)

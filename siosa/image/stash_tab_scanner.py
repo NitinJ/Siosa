@@ -10,12 +10,16 @@ from siosa.resources.stash.stash_cell_locations import StashCellLocation
 
 
 class StashTabScanner:
-    """
-    Only supports normal and quad stash tabs. Requires that the stash tab is
+    """Only supports normal and quad stash tabs. Requires that the stash tab is
     open in game.
     """
 
     def __init__(self, stash_tab, debug=False):
+        """
+        Args:
+            stash_tab:
+            debug:
+        """
         self.logger = logging.getLogger(__name__)
         self.logger.setLevel(logging.DEBUG)
         self.lf = LocationFactory()
@@ -35,13 +39,15 @@ class StashTabScanner:
         self.tm = TemplateMatcher(Template.from_registry(registry), debug=debug)
 
     def get_item_cells(self):
-        """
-        Returns: Cells at which items are present.
-        """
+        """Returns: Cells at which items are present."""
         return self.grid.get_cells_not_in_positions(
                 self.tm.match(self.lf.get(Locations.STASH_TAB)))
 
     def is_empty(self, cell):
+        """
+        Args:
+            cell:
+        """
         self.logger.debug(
             "Checking if cell ({}, {}) is empty".format(cell[0], cell[1]))
         empty_cells = \
@@ -54,18 +60,24 @@ class StashTabScanner:
         return False
 
     def get_cell_location(self, cell):
+        """
+        Args:
+            cell:
+        """
         return StashCellLocation.get_cell_location(self.stash_tab.is_quad, cell)
 
     def get_location_for_placing_item(self, cell, item_dimensions):
-        """
-        Returns the location on which a given item needs to be placed if item
+        """Returns the location on which a given item needs to be placed if item
         needs to be in the given cell. For example - A 4x2 item placed at (2, 2)
-        will need to be placed at mid point of (2, 2) and (5, 3)
-        Args:
-            cell: The cell location for the item (the top left cell)
-            item_dimensions: The item
+        will need to be placed at mid point of (2, 2) and (5, 3) :param cell:
+        The cell location for the item (the top left cell) :param
+        item_dimensions: The item
 
         Returns: The in game location for placing the item.
+
+        Args:
+            cell:
+            item_dimensions:
         """
         w, h = item_dimensions
         cell_bot_right = (cell[0] + h - 1, cell[1] + w - 1)

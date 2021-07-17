@@ -9,11 +9,14 @@ from siosa.location.location_factory import LocationFactory
 
 
 class StepStatus:
-    """
-    Status of a Step's execution.
-    """
+    """Status of a Step's execution."""
 
     def __init__(self, success, info={}):
+        """
+        Args:
+            success:
+            info:
+        """
         self.success = success
         self.info = info
 
@@ -22,9 +25,8 @@ class StepStatus:
 
 
 class Step:
-    """
-    Step is the smallest unit of work inside the game. Steps are supposed to be
-    highly reusable, preferably small units. Steps return the status of the
+    """Step is the smallest unit of work inside the game. Steps are supposed to
+    be highly reusable, preferably small units. Steps return the status of the
     execution via the step status object. Steps are executed at a given
     GameState.
     """
@@ -41,11 +43,12 @@ class Step:
 
     @abstractmethod
     def execute(self, game_state) -> StepStatus:
-        """
-        Executes the step and returns the status of execution.
-        Args:
-            game_state: The game state object.
+        """Executes the step and returns the status of execution. :param
+        game_state: The game state object.
 
         Returns: Status of the execution.
+
+        Args:
+            game_state:
         """
         pass

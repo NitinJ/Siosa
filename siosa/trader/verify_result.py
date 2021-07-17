@@ -5,6 +5,11 @@ class VerifyResult:
     EXTRA_MSG = "hey you've put in {} extra {}. please remove"
 
     def __init__(self, currency_diff, required):
+        """
+        Args:
+            currency_diff:
+            required:
+        """
         self.required = required
         self.diff = currency_diff
         self.verified = True

@@ -16,10 +16,18 @@ class PickupItem(Step):
     STASH_LOAD_WAIT_TIME = 1
 
     def __init__(self, stash_item: StashItem):
+        """
+        Args:
+            stash_item (StashItem):
+        """
         Step.__init__(self)
         self.stash_item = stash_item
 
     def execute(self, game_state):
+        """
+        Args:
+            game_state:
+        """
         self.game_state = game_state
 
         ChangeStashTab(self.stash_item.stash_tab.index).execute(game_state)

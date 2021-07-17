@@ -1,7 +1,6 @@
 class TemplateRegistry:
-    """
-    Stores item_templates as enums. Values are a tuple containing the template file
-    name and the resolution at which template was created.
+    """Stores item_templates as enums. Values are a tuple containing the
+    template file name and the resolution at which template was created.
     """
     INVENTORY_0_0 = ("sct-tmp-INVENTORY_0_0.png", (1920, 1080))
     INVENTORY = ("sct-tmp-INVENTORY.png", (1920, 1080))
@@ -59,4 +58,9 @@ class TemplateRegistry:
 
     @staticmethod
     def get_template_for_currency_stack(currency_name, stack_size):
+        """
+        Args:
+            currency_name:
+            stack_size:
+        """
         return "sct-tmp-{}_{}.png".format(currency_name.upper(), stack_size), (1920, 1080)

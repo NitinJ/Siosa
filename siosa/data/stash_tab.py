@@ -30,6 +30,10 @@ class StashTab:
     QUAD_STASH_TAB_BORDER_BOTTOM = 2
 
     def __init__(self, data):
+        """
+        Args:
+            data:
+        """
         self.api = PoeApi()
         self.type = data['type']
         self.index = int(data['index'])
@@ -58,11 +62,12 @@ class StashTab:
         return StashTabType.UNKNOWN
 
     def get_item_at_location(self, x, y):
-        """
-        Returns the item at given x,y co-ordinates in the stash tab.
+        """Returns the item at given x,y co-ordinates in the stash tab. :param
+        x: 0 indexed x co-ordinate :param y: 0 indexed y co-ordinate
+
         Args:
-            x: 0 indexed x co-ordinate
-            y: 0 indexed y co-ordinate
+            x:
+            y:
         """
         item = self._get_item(x, y)
         if item:
@@ -76,16 +81,17 @@ class StashTab:
         return None
 
     def get_item_cells_ingame(self):
-        """
-        Returns: Returns the cells where items are present using in game data
+        """Returns: Returns the cells where items are present using in game
+        data
         """
         return self.scanner.get_item_cells()
 
     def is_item_at_location_ingame(self, p):
-        """
-        Returns whether there is an item at x,y stash positions in this stash.
+        """Returns whether there is an item at x,y stash positions in this
+        stash. :param p: cell
+
         Args:
-            p: cell
+            p:
 
         Returns:
             Whether there is an item present at x,y
@@ -95,21 +101,25 @@ class StashTab:
         return not self.scanner.is_empty((p[1], p[0]))
 
     def get_cell_location(self, cell):
-        """
-        Returns the in game location for a given stash cell.
+        """Returns the in game location for a given stash cell.
+
+        Args:
+            cell:
         """
         return self.scanner.get_cell_location(cell)
 
     def get_cell_location_for_placing_item(self, cell, item_dimensions):
-        """
-        Returns the in game location for a given stash cell if an item needs to
-        be placed in it. This location always is the center of lower right
+        """Returns the in game location for a given stash cell if an item needs
+        to be placed in it. This location always is the center of lower right
         quadrant of the cell. This ensures that we always place the item
-        correctly in the cell.
-        Only works for normal and quad stash tabs.
+        correctly in the cell. Only works for normal and quad stash tabs.
 
-        cell: The top left cell to place the item in.
-        item_dimensions: The width, height tuple of item dimensions.
+        cell: The top left cell to place the item in. item_dimensions: The
+        width, height tuple of item dimensions.
+
+        Args:
+            cell:
+            item_dimensions:
         """
         assert (self.is_quad or self.is_premium)
         return self.scanner.get_location_for_placing_item(cell, item_dimensions)
@@ -125,11 +135,20 @@ class StashTab:
         self.last_fetched_ts = time.time()
 
     def _get_item(self, x, y):
+        """
+        Args:
+            x:
+            y:
+        """
         if (x, y) in self.items.keys():
             return self.items[(x, y)]
         return None
 
     def _is_in_bounds(self, position):
+        """
+        Args:
+            position:
+        """
         x = position[0]
         y = position[1]
         return (x >= 0 and y >= 0) and (x < self.size[0] and y < self.size[1])

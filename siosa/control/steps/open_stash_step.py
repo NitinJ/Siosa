@@ -23,6 +23,10 @@ class OpenStash(Step):
             TemplateMatcher(Template.from_registry(TemplateRegistry.STASH))
 
     def execute(self, game_state):
+        """
+        Args:
+            game_state:
+        """
         gs = game_state.get()
 
         # Check if stash already open.

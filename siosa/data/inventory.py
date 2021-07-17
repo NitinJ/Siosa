@@ -5,9 +5,7 @@ from siosa.location.location_factory import LocationFactory, Locations
 
 
 class Inventory:
-    """
-    Util methods for inventory related stuff.
-    """
+    """Util methods for inventory related stuff."""
 
     BORDER = 2
     ROWS = 5
@@ -15,13 +13,13 @@ class Inventory:
 
     @staticmethod
     def is_in_bounds(p):
-        """
-        Returns whether a given cell is in inventory bounds
-        Args:
-            p: The cell to check for
+        """Returns whether a given cell is in inventory bounds :param p: The
+        cell to check for
 
         Returns: Whether the cell is in bounds.
 
+        Args:
+            p:
         """
         # TODO: Use this method to validate input in other methods in
         # this class
@@ -30,10 +28,11 @@ class Inventory:
 
     @staticmethod
     def get_location(p):
-        """
-        Returns the absolute position for a given inventory cell on the screen.
+        """Returns the absolute position for a given inventory cell on the
+        screen. :param p: The cell
+
         Args:
-            p: The cell
+            p:
 
         Returns:
             Absolute position of the cell center on the screen.
@@ -51,14 +50,16 @@ class Inventory:
 
     @staticmethod
     def get_location_for_placing_item(item, p):
-        """
-        Returns the InGameLocation on which an item needs to be placed so that
-        item occupies the given cell in the inventory.
+        """Returns the InGameLocation on which an item needs to be placed so
+        that item occupies the given cell in the inventory. :param item: The
+        item to place. :param p: The cell in which to place the item.
+
+        Returns: The inGameLocation throws Exception if item doesn't have
+        dimensions
+
         Args:
-            item: The item to place.
-            p: The cell in which to place the item.
-        Returns: The inGameLocation
-        throws Exception if item doesn't have dimensions
+            item:
+            p:
         """
         w, h = item.get_dimensions()
         if not w or not h:
@@ -81,12 +82,13 @@ class Inventory:
 
     @staticmethod
     def get_item_at_cell(p, get_dimensions=False):
-        """
-        Returns the item present in the given inventory cell.
+        """Returns the item present in the given inventory cell. :param p: The
+        cell :param get_dimensions: Whether to get dimensions of the item as
+        well. This :param is a costly operation.:
+
         Args:
-            p: The cell
-            get_dimensions: Whether to get dimensions of the item as well. This
-            is a costly operation.
+            p:
+            get_dimensions:
 
         Returns:
             The item present in the cell. Returns None if not present.
@@ -101,11 +103,13 @@ class Inventory:
 
     @staticmethod
     def get_item_dimensions(item, p):
-        """
-        Returns the dimensions of the item present in the given inventory cell.
+        """Returns the dimensions of the item present in the given inventory
+        cell. :param item: Item :param p: The cell in which item is present.
+
         Args:
-            item: Item
-            p: The cell in which item is present.
+            item:
+            p:
+
         Returns:
             The item dimensions tuple
         """

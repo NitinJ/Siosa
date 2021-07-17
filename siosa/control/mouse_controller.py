@@ -10,6 +10,12 @@ class MouseController(metaclass=Singleton):
 
     def __init__(self, location_factory, mouse_move_duration=0.2,
                  mouse_movement_curve=pyautogui.easeInOutQuad):
+        """
+        Args:
+            location_factory:
+            mouse_move_duration:
+            mouse_movement_curve:
+        """
         self.location_factory = location_factory
         self.current_location = self.location_factory.create(0, 0, 0, 0)
         self.mouse_move_duration = mouse_move_duration
@@ -17,6 +23,11 @@ class MouseController(metaclass=Singleton):
         self.last_click_ts = None
 
     def move_mouse(self, location, mouse_move_duration=None):
+        """
+        Args:
+            location:
+            mouse_move_duration:
+        """
         if location.equals(self.current_location):
             return
         point = location.get_center()
@@ -48,6 +59,11 @@ class MouseController(metaclass=Singleton):
         self.move_mouse(self.location_factory.get_center_of_screen())
 
     def click_at_location(self, location, click='left'):
+        """
+        Args:
+            location:
+            click:
+        """
         self.move_mouse(location)
         if click == 'left':
             self.click()

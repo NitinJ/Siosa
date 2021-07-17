@@ -6,6 +6,15 @@ from siosa.client.trade_event import TradeEvent
 
 class TradeRequest:
     def __init__(self, trader, item_name, currency, league, stash, position):
+        """
+        Args:
+            trader:
+            item_name:
+            currency:
+            league:
+            stash:
+            position:
+        """
         self.trader = trader
         self.item_name = item_name
         self.currency = currency
@@ -16,6 +25,10 @@ class TradeRequest:
 
     @staticmethod
     def create_from(trade_event: TradeEvent):
+        """
+        Args:
+            trade_event (TradeEvent):
+        """
         return TradeRequest(
             trade_event.trader,
             trade_event.item_name,

@@ -10,6 +10,10 @@ from siosa.location.resolution import Resolutions, Resolution
 
 class LocationFactoryBase(metaclass=Singleton):
     def __init__(self, resolution=Resolutions.p1080):
+        """
+        Args:
+            resolution:
+        """
         self.logger = logging.getLogger(__name__)
         self.logger.setLevel(logging.DEBUG)
         self.resolution = resolution
@@ -18,20 +22,31 @@ class LocationFactoryBase(metaclass=Singleton):
             str(self.resolution)))
 
     def get(self, location: Location) -> InGameLocation:
+        """
+        Args:
+            location (Location):
+        """
         return self._get_in_game_location(location)
 
     def create(self, x1, y1, x2, y2) -> InGameLocation:
-        """
-        Creates an in game location from a given set of bounding box
-        co-ordinates.
-        Returns: The InGameLocation
+        """Creates an in game location from a given set of bounding box
+        co-ordinates. Returns: The InGameLocation
 
+        Args:
+            x1:
+            y1:
+            x2:
+            y2:
         """
         return self._get_in_game_location(
             Location(x1, y1, x2, y2, self.resolution))
 
     def _get_in_game_location(self, location):
         # Scales the given location to the location factory's resolution.
+        """
+        Args:
+            location:
+        """
         scaled_location = LocationFactoryBase._scale_to_resolution(
             location, self.resolution)
         return InGameLocation(scaled_location.x1, scaled_location.y1,
@@ -40,14 +55,14 @@ class LocationFactoryBase(metaclass=Singleton):
 
     @staticmethod
     def _get_unique_name(location):
-        """
-        Returns the unique name for a given location by using it's coordinates
-        in 1080p resolution.
-        Args:
-            location: The location for which the unique name is required.
+        """Returns the unique name for a given location by using it's
+        coordinates in 1080p resolution. :param location: The location for which
+        the unique name is required.
 
         Returns: The unique name for a location
 
+        Args:
+            location:
         """
         scaled_location_p1080 = LocationFactoryBase._scale_to_resolution(
             location,
@@ -62,11 +77,13 @@ class LocationFactoryBase(metaclass=Singleton):
 
     @staticmethod
     def _scale_to_resolution(location, resolution):
-        """
-        Scales a given location to a given resolution.
+        """Scales a given location to a given resolution. :param location:
+        Location to scale to a given resolution . :param resolution: The
+        resolution to scale the given location to.
+
         Args:
-            location: Location to scale to a given resolution .
-            resolution: The resolution to scale the given location to.
+            location:
+            resolution:
 
         Returns:
             Scaled location

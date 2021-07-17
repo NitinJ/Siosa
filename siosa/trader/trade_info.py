@@ -26,6 +26,11 @@ class TradeInfo:
         TERMINATED = 'terminated'
 
     def __init__(self, trade_request: TradeRequest, stash_item: StashItem):
+        """
+        Args:
+            trade_request (TradeRequest):
+            stash_item (StashItem):
+        """
         self.logger = logging.getLogger(__name__)
         self.trade_request = trade_request
         self.stash_item = stash_item

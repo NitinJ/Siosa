@@ -15,10 +15,11 @@ class LocationDrawer:
 
     @staticmethod
     def draw(location):
-        """
-        Draws the given location on screen
+        """Draws the given location on screen :param location: The location of
+        the screen to draw a rectangle on.
+
         Args:
-            location: The location of the screen to draw a rectangle on.
+            location:
         """
 
         # The screen part to capture
@@ -47,6 +48,10 @@ class LocationDrawer:
 
     @staticmethod
     def _get_grab_params(location):
+        """
+        Args:
+            location:
+        """
         return {
             "top": location.y1,
             "left": location.x1,

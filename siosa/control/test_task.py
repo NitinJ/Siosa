@@ -7,13 +7,16 @@ from siosa.control.steps.test_step import TestStep
 
 class TestTask(Task):
     def __init__(self, priority):
+        """
+        Args:
+            priority:
+        """
         self.logger = logging.getLogger(__name__)
         Task.__init__(self, priority, name=__name__)
 
     def get_steps(self):
-        """
-        Generator function for step execution logic.
-        Returns: A generator function for steps.
+        """Generator function for step execution logic. Returns: A generator
+        function for steps.
         """
         yield TestStep(2)
         if self._get_last_step_result().info == 1:

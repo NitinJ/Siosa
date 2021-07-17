@@ -1,5 +1,10 @@
 class Resolution:
     def __init__(self, w, h):
+        """
+        Args:
+            w:
+            h:
+        """
         self.w = w
         self.h = h
 

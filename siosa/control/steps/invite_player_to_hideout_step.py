@@ -13,11 +13,20 @@ class InvitePlayerToHideoutStep(Step):
     PLAYER_ENTRY_WAIT_TIME = 30
 
     def __init__(self, player_account_name, msg=None):
+        """
+        Args:
+            player_account_name:
+            msg:
+        """
         Step.__init__(self)
         self.player_account_name = player_account_name
         self.msg = msg
 
     def execute(self, game_state):
+        """
+        Args:
+            game_state:
+        """
         self.game_state = game_state
         if self.msg:
             self.cc.send_chat(self.player_account_name, self.msg)

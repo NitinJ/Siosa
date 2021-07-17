@@ -30,10 +30,21 @@ class States(Enum):
 
     @staticmethod
     def create_from_trading_state(state_me: str, state_other: str):
+        """
+        Args:
+            state_me (str):
+            state_other (str):
+        """
         return States.create('TRADING', state_me, state_other)
 
     @staticmethod
     def create(state_main: str, state_me: str, state_other: str):
+        """
+        Args:
+            state_main (str):
+            state_me (str):
+            state_other (str):
+        """
         logger = logging.getLogger(__name__)
         logger.setLevel(logging.DEBUG)
 
@@ -50,6 +61,7 @@ class States(Enum):
         """
         Args:
             state: A tuple of (main_state, me_state, other_state)
+
         Returns:
             Whether the tuple is a valid state or not.
         """
@@ -64,12 +76,20 @@ class TradeState(DfaState):
 
     @synchronized
     def update_me(self, me: str):
+        """
+        Args:
+            me (str):
+        """
         main = self.state_obj.value[0]
         other = self.state_obj.value[2]
         return self.update(States.create(main, me, other))
 
     @synchronized
     def _is_transition_valid(self, to):
+        """
+        Args:
+            to:
+        """
         if not isinstance(to, States):
             return False
 

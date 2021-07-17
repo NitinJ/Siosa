@@ -21,6 +21,13 @@ class TradeStateUpdater:
 
     def __init__(self, game_state: GameState, trade_state: TradeState,
                  trade_info: TradeInfo, log_listener: ClientLogListener):
+        """
+        Args:
+            game_state (GameState):
+            trade_state (TradeState):
+            trade_info (TradeInfo):
+            log_listener (ClientLogListener):
+        """
         self.logger = logging.getLogger(__name__)
         self.logger.setLevel(logging.DEBUG)
         self.lf = LocationFactory()
@@ -93,12 +100,9 @@ class TradeStateUpdater:
             "Update took: {} ms".format((time.time() - ts) * 1000))
 
     def _get_state(self) -> States:
-        """
-        Calculates the current state of trade by using template matching, based
-        on a number of factors like- trade window, player presence in hideout
-        etc.
-        Returns: The calculated state
-
+        """Calculates the current state of trade by using template matching,
+        based on a number of factors like- trade window, player presence in
+        hideout etc. Returns: The calculated state
         """
         game_state = self.game_state.get()
         trade_status = self._get_trade_status_from_log()

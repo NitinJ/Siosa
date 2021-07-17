@@ -19,6 +19,10 @@ class ClipboardItemFactory:
         self.poe_api = PoeApi()
 
     def get_item(self, clipboard_data):
+        """
+        Args:
+            clipboard_data:
+        """
         if not clipboard_data or clipboard_data.find(LINE_FEED) == -1:
             return None
         self.logger.debug("Getting item from clipboard data")
@@ -36,6 +40,11 @@ class ClipboardItemFactory:
             return self._create_general_item(type, rarity, data_sections)
 
     def _create_currency_item(self, type, data_sections):
+        """
+        Args:
+            type:
+            data_sections:
+        """
         type_line = self._get_type_line('currency', True, data_sections)
         stack_size = self._get_stack_size(data_sections)
         stack_max_size = self._get_max_stack_size(data_sections)
@@ -58,18 +67,40 @@ class ClipboardItemFactory:
         return item
 
     def _get(self, obj, key, fallback):
+        """
+        Args:
+            obj:
+            key:
+            fallback:
+        """
         return obj[key] if key in obj.keys() else fallback
 
     def _parse_affixes(self, mods):
+        """
+        Args:
+            mods:
+        """
         return [Affix.create_from_clipboard_affix(mod) for mod in mods]
 
     def _get_num_prefixes(self, affixes):
+        """
+        Args:
+            affixes:
+        """
         return len([x for x in affixes if x.is_prefix()])
 
     def _get_num_suffixes(self, affixes):
+        """
+        Args:
+            affixes:
+        """
         return len([x for x in affixes if x.is_suffix()])
 
     def _get_is_synthesized(self, data_sections):
+        """
+        Args:
+            data_sections:
+        """
         for section in data_sections:
             for section_line in section:
                 if "Synthesised Item" in section_line:
@@ -77,6 +108,12 @@ class ClipboardItemFactory:
         return False
 
     def _create_general_item(self, type, rarity, data_sections):
+        """
+        Args:
+            type:
+            rarity:
+            data_sections:
+        """
         self.logger.debug("Creating general item")
 
         try:
@@ -107,6 +144,10 @@ class ClipboardItemFactory:
         return item
 
     def _get_clipboard_item_type(self, data_sections):
+        """
+        Args:
+            data_sections:
+        """
         if not len(data_sections) or not data_sections[0]:
             return ItemType.UNKNOWN
         rarity = self._get_rarity(data_sections)
@@ -120,6 +161,10 @@ class ClipboardItemFactory:
             return self._get_item_type(data_sections)
 
     def _get_currency_item_type(self, data_sections):
+        """
+        Args:
+            data_sections:
+        """
         if self._is_delirium_orb(data_sections):
             return ItemType.DELIRIUM_ORB
         elif self._is_catalyst(data_sections):
@@ -140,6 +185,10 @@ class ClipboardItemFactory:
         return ItemType.CURRENCY
 
     def _get_item_type(self, data_sections):
+        """
+        Args:
+            data_sections:
+        """
         rarity = self._get_rarity(data_sections)
         if self._is_scarab(data_sections, rarity):
             return ItemType.SCARAB
@@ -159,6 +208,11 @@ class ClipboardItemFactory:
         return ItemType.ITEM
 
     def _get_mod_section(self, rarity, data_sections):
+        """
+        Args:
+            rarity:
+            data_sections:
+        """
         if rarity == 'normal':
             return []
         for section in data_sections:
@@ -169,6 +223,11 @@ class ClipboardItemFactory:
         return []
 
     def _get_all_mods(self, rarity, data_sections):
+        """
+        Args:
+            rarity:
+            data_sections:
+        """
         mods_section = self._get_mod_section(rarity, data_sections)
         mods = []
         # Each affix in the mod section has 1 line for the affix details like
@@ -181,18 +240,30 @@ class ClipboardItemFactory:
         return mods
 
     def _is_divine_vessel(self, data_sections):
+        """
+        Args:
+            data_sections:
+        """
         try:
             return data_sections[0][1] == "Divine Vessel"
         except:
             return False
 
     def _is_offering(self, data_sections):
+        """
+        Args:
+            data_sections:
+        """
         try:
             return data_sections[0][1] == "Offering to the Goddess"
         except:
             return False
 
     def _is_timeless_emblem(self, data_sections):
+        """
+        Args:
+            data_sections:
+        """
         try:
             return scanf("Timeless %s Emblem", data_sections[0][1]) and \
                    data_sections[1][
@@ -203,6 +274,10 @@ class ClipboardItemFactory:
             return False
 
     def _is_breachstone(self, data_sections):
+        """
+        Args:
+            data_sections:
+        """
         try:
             return data_sections[0][1].find("Breachstone") > -1 and \
                    scanf(
@@ -212,6 +287,10 @@ class ClipboardItemFactory:
             return False
 
     def _is_simulacrum_splinter(self, data_sections):
+        """
+        Args:
+            data_sections:
+        """
         try:
             return data_sections[0][1] == "Simulacrum Splinter" and \
                    scanf("Combine %d Splinters to create a Simulacrum.",
@@ -220,6 +299,10 @@ class ClipboardItemFactory:
             return False
 
     def _is_splinter(self, data_sections):
+        """
+        Args:
+            data_sections:
+        """
         try:
             # Some splinter section lines have 'Splinters' and some have 
             # 'splinters' :/
@@ -230,6 +313,11 @@ class ClipboardItemFactory:
             return False
 
     def _is_map(self, data_sections, rarity):
+        """
+        Args:
+            data_sections:
+            rarity:
+        """
         try:
             return data_sections[1][0].startswith("Map Tier:") and \
                    data_sections[5][
@@ -239,6 +327,11 @@ class ClipboardItemFactory:
             return False
 
     def _is_fragment(self, data_sections, rarity):
+        """
+        Args:
+            data_sections:
+            rarity:
+        """
         try:
             return rarity == 'normal' and \
                    data_sections[2][
@@ -248,6 +341,11 @@ class ClipboardItemFactory:
             return False
 
     def _is_scarab(self, data_sections, rarity):
+        """
+        Args:
+            data_sections:
+            rarity:
+        """
         try:
             return rarity == 'normal' and \
                    data_sections[0][1].endswith("Scarab") and \
@@ -257,6 +355,10 @@ class ClipboardItemFactory:
             return False
 
     def _is_delve_resonator(self, data_sections):
+        """
+        Args:
+            data_sections:
+        """
         try:
             return data_sections[0][1].find("Resonator") > -1 and \
                    data_sections[4][0].find(
@@ -265,6 +367,10 @@ class ClipboardItemFactory:
             return False
 
     def _is_essence(self, data_sections):
+        """
+        Args:
+            data_sections:
+        """
         try:
             return (
                            data_sections[0][1].find(" Essence of ") > -1
@@ -280,6 +386,10 @@ class ClipboardItemFactory:
             return False
 
     def _is_delve_fossil(self, data_sections):
+        """
+        Args:
+            data_sections:
+        """
         try:
             return data_sections[0][1].find("Fossil") > -1 and \
                    data_sections[3][0].find(
@@ -288,6 +398,10 @@ class ClipboardItemFactory:
             return False
 
     def _is_oil(self, data_sections):
+        """
+        Args:
+            data_sections:
+        """
         try:
             return data_sections[0][1].find("Oil") > -1 and \
                    data_sections[2][0].find(
@@ -296,6 +410,10 @@ class ClipboardItemFactory:
             return False
 
     def _is_catalyst(self, data_sections):
+        """
+        Args:
+            data_sections:
+        """
         try:
             return data_sections[0][1].find("Catalyst") > -1 and \
                    data_sections[2][0].find("Adds quality that enhances") > -1
@@ -303,9 +421,17 @@ class ClipboardItemFactory:
             return False
 
     def _is_delirium_orb(self, data_sections):
+        """
+        Args:
+            data_sections:
+        """
         return data_sections[0][1].find("Delirium Orb") > -1
 
     def _get_all_sections(self, data):
+        """
+        Args:
+            data:
+        """
         data = data.split(SECTION_SEPARATOR)
         sections = []
         for section in data:
@@ -315,9 +441,19 @@ class ClipboardItemFactory:
         return sections
 
     def _get_rarity(self, sections):
+        """
+        Args:
+            sections:
+        """
         return sections[0][1].split("Rarity: ")[1].strip().lower()
 
     def _get_name(self, rarity, identified, sections):
+        """
+        Args:
+            rarity:
+            identified:
+            sections:
+        """
         if rarity in ('normal', 'magic'):
             return ""
         elif rarity in ('rare', 'unique') and identified:
@@ -325,6 +461,12 @@ class ClipboardItemFactory:
         return ""
 
     def _get_type_line(self, rarity, identified, sections):
+        """
+        Args:
+            rarity:
+            identified:
+            sections:
+        """
         try:
             if rarity in ('rare', 'unique') and identified:
                 return sections[0][3]
@@ -334,6 +476,13 @@ class ClipboardItemFactory:
             return ''
 
     def _get_base_type(self, rarity, affixes, identified, sections):
+        """
+        Args:
+            rarity:
+            affixes:
+            identified:
+            sections:
+        """
         base_type = None
         try:
             if rarity == 'normal':
@@ -357,6 +506,10 @@ class ClipboardItemFactory:
             return ''
 
     def _get_item_level(self, sections):
+        """
+        Args:
+            sections:
+        """
         level = ''
         for section in sections:
             for line in section:
@@ -366,6 +519,10 @@ class ClipboardItemFactory:
         return level
 
     def _get_stack_size(self, sections):
+        """
+        Args:
+            sections:
+        """
         try:
             for section in sections:
                 for line in section:
@@ -378,6 +535,10 @@ class ClipboardItemFactory:
             return ''
 
     def _get_max_stack_size(self, sections):
+        """
+        Args:
+            sections:
+        """
         try:
             for section in sections:
                 for line in section:
@@ -390,6 +551,10 @@ class ClipboardItemFactory:
             return ''
 
     def _get_corrupted(self, sections):
+        """
+        Args:
+            sections:
+        """
         for section in sections:
             for line in section:
                 if line == "Corrupted":
@@ -397,6 +562,10 @@ class ClipboardItemFactory:
         return ''
 
     def _get_unidentified(self, sections):
+        """
+        Args:
+            sections:
+        """
         for section in sections:
             for line in section:
                 if line == "Unidentified" and len(section) == 1:
@@ -404,6 +573,10 @@ class ClipboardItemFactory:
         return False
 
     def _get_note(self, sections):
+        """
+        Args:
+            sections:
+        """
         for section in sections:
             for line in section:
                 if line.find("Note: ") > -1 and len(section) == 1:
@@ -411,6 +584,10 @@ class ClipboardItemFactory:
         return ''
 
     def _get_influences(self, sections):
+        """
+        Args:
+            sections:
+        """
         influences = {}
         for section in sections:
             influence_section = False

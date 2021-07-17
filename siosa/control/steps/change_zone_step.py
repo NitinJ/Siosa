@@ -7,10 +7,18 @@ class ChangeZone(Step):
     LOCATION_ENTRY_WAIT_TIME = 20
 
     def __init__(self, zone):
+        """
+        Args:
+            zone:
+        """
         Step.__init__(self)
         self.zone = zone
 
     def execute(self, game_state):
+        """
+        Args:
+            game_state:
+        """
         self.game_state = game_state
         self.cc.console_command("/" + str(self.zone.value))
         success = self._wait_for_zone()

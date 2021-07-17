@@ -3,9 +3,15 @@ import random
 
 class InGameLocation:
     def __init__(self, x1, y1, x2, y2, name):
-        """
-        Creates an InGame location, which is always based on the current screen
-        resolution.
+        """Creates an InGame location, which is always based on the current
+        screen resolution.
+
+        Args:
+            x1:
+            y1:
+            x2:
+            y2:
+            name:
         """
         self.x1 = x1
         self.y1 = y1
@@ -22,16 +28,18 @@ class InGameLocation:
         return (self.x1 + self.x2) // 2, (self.y1 + self.y2) // 2
 
     def get_center_location(self):
-        """
-        Returns an InGameLocation for center of the current location.
-        Returns:
-            InGameLocation
+        """Returns an InGameLocation for center of the current location.
+        :returns: InGameLocation
         """
         x = (self.x1 + self.x2) // 2
         y = (self.y1 + self.y2) // 2
         return InGameLocation(x, y, x, y, self.name)
 
     def equals(self, other):
+        """
+        Args:
+            other:
+        """
         return str(other) == str(self)
 
     def get_width(self):
@@ -41,6 +49,10 @@ class InGameLocation:
         return self.y2 - self.y1
 
     def get_scaled_location(self, factor):
+        """
+        Args:
+            factor:
+        """
         return InGameLocation(
             int(self.x1 * factor),
             int(self.y1 * factor),

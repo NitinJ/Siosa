@@ -3,6 +3,12 @@ from siosa.data.poe_item import Item
 
 class DivinationCard():
     def __init__(self, name, max_stack_size, gives):
+        """
+        Args:
+            name:
+            max_stack_size:
+            gives:
+        """
         self.name = name
         self.max_stack_size = max_stack_size
         self.gives = gives
@@ -22,6 +28,12 @@ class DivinationCard():
 
 class DivinationCardStack(Item):
     def __init__(self, card, quantity, item_info={}):
+        """
+        Args:
+            card:
+            quantity:
+            item_info:
+        """
         self.card = card
         self.quantity = quantity
         info = {

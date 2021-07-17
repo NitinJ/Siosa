@@ -31,6 +31,10 @@ class CleanInventory(Step):
         self.moved_to_stash = []
 
     def execute(self, game_state):
+        """
+        Args:
+            game_state:
+        """
         self.game_state = game_state
         self.inventory_items = self.game_state.get()['inventory']
         self.stash_tab_index = self.game_state.get()['open_stash_tab_index']
@@ -113,9 +117,9 @@ class CleanInventory(Step):
         return diff
 
     def _get_next_item(self, items):
-        """Returns the item to move to stash from a given list of items. Item
-        to be moved is selected based on current stash index and the stash
-        index to which an item belongs to.
+        """Returns the item to move to stash from a given list of items. Item to
+        be moved is selected based on current stash index and the stash index to
+        which an item belongs to.
 
         Args:
             items (array): List of items to select item from
@@ -141,8 +145,8 @@ class CleanInventory(Step):
         return item
 
     def _get_item_for_stash_index(self, items, stash_index):
-        """Returns an item from a list of items which belongs to the given
-        stash index.
+        """Returns an item from a list of items which belongs to the given stash
+        index.
 
         Args:
             items (array): List of items
@@ -157,6 +161,11 @@ class CleanInventory(Step):
         return None
 
     def _move_item_to_stash(self, item, stash_tab=None):
+        """
+        Args:
+            item:
+            stash_tab:
+        """
         index = stash_tab.index if stash_tab else item['stash_tab'].index
 
         if index != self.stash_tab_index:

@@ -14,6 +14,10 @@ class LocateStashStep(Step):
         self.logger.setLevel('DEBUG')
 
     def execute(self, game_state):
+        """
+        Args:
+            game_state:
+        """
         self.game_state = game_state
 
         if game_state.get()['stash_location']:

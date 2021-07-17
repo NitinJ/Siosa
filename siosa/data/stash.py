@@ -8,6 +8,10 @@ from siosa.network.poe_api import PoeApi
 
 
 def _get_stash_type_for_item(item):
+    """
+    Args:
+        item:
+    """
     if not item:
         return StashTabType.UNKNOWN
     if item.type == ItemType.CURRENCY:
@@ -59,13 +63,13 @@ class Stash(metaclass=Singleton):
         self._populate_internal()
 
     def get_stash_tab_by_index(self, index) -> StashTab:
-        """
-        Returns the stash tab at a given index.
-        Args:
-            index: Index of stash tab to return
+        """Returns the stash tab at a given index. :param index: Index of stash
+        tab to return
 
         Returns: Stash tab
 
+        Args:
+            index:
         """
         if index not in self.tabs.keys():
             self.logger.error("Invalid stash tab index={}".format(index))
@@ -73,10 +77,11 @@ class Stash(metaclass=Singleton):
         return self.tabs[index]
 
     def get_stash_tabs_by_name(self, name):
-        """
-        Returns all stash tabs with a given name
+        """Returns all stash tabs with a given name :param name: Name of the
+        stash tabs
+
         Args:
-            name: Name of the stash tabs
+            name:
         """
         if name not in self.name_to_stash_tabs.keys():
             self.logger.error("Stash tab with name={} is not present in Stash"
@@ -85,10 +90,11 @@ class Stash(metaclass=Singleton):
         return self.name_to_stash_tabs[name]
 
     def get_stash_tabs_for_item(self, item):
-        """
-        Returns a list of stash tabs to which the given item belongs.
+        """Returns a list of stash tabs to which the given item belongs. :param
+        item: Item
+
         Args:
-            item: Item
+            item:
         """
         stash_tab_type = _get_stash_type_for_item(item)
         self.logger.info("Stash tab type={} for item_type=({})".format(
@@ -141,6 +147,10 @@ class Stash(metaclass=Singleton):
             self.config.get_dump_stash_names())
 
     def _get_all_stashes_with_names(self, tab_names):
+        """
+        Args:
+            tab_names:
+        """
         stash_tabs = []
         for tab_name in tab_names:
             stash_tabs.extend(self.get_stash_tabs_by_name(tab_name))

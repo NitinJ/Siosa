@@ -15,8 +15,7 @@ class ItemRarity(Enum):
 
 
 class ItemType(Enum):
-    """Types of items.
-    Next value: 23
+    """Types of items. Next value: 23
 
     Args:
         Enum (int): Unique int value for item
@@ -56,6 +55,11 @@ class ItemType(Enum):
 class Item(object):
     def __init__(self, item_info={}, item_type=ItemType.UNKNOWN):
         # Internal type.
+        """
+        Args:
+            item_info:
+            item_type:
+        """
         self.type = item_type
 
         # Item info.
@@ -85,6 +89,11 @@ class Item(object):
             self.set_dimensions(dim[0], dim[1])
 
     def set_dimensions(self, w, h):
+        """
+        Args:
+            w:
+            h:
+        """
         if w <= 0 or h <=0:
             return
         self.item_info.update({

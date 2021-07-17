@@ -14,6 +14,14 @@ from siosa.control.window_controller import WindowController
 class TemplateMatcher:
     def __init__(self, template, confidence=0.75, debug=False,
                  confirm_foreground=False, scale=1.0):
+        """
+        Args:
+            template:
+            confidence:
+            debug:
+            confirm_foreground:
+            scale:
+        """
         self.logger = logging.getLogger(__name__)
         self.logger.setLevel(logging.DEBUG)
         self.wc = WindowController()
@@ -25,6 +33,11 @@ class TemplateMatcher:
         self.scale = scale
 
     def get_image(self, screen_location, reuse):
+        """
+        Args:
+            screen_location:
+            reuse:
+        """
         key = str(screen_location)
         if reuse and key in self.image_cache.keys():
             self.logger.info("Screen location image found in cache. Reusing.")
@@ -65,11 +78,13 @@ class TemplateMatcher:
         self.image_cache = {}
 
     def match(self, location, reuse=False):
-        """
-        Matches the template on a given screen location.
+        """Matches the template on a given screen location. :param location: The
+        location of the screen to match template with. :param reuse: Whether to
+        reuse an already taken image or not.
+
         Args:
-            location: The location of the screen to match template with.
-            reuse: Whether to reuse an already taken image or not.
+            location:
+            reuse:
 
         Returns:
             The positions (relative to the location) of matches with template.
@@ -124,6 +139,10 @@ class TemplateMatcher:
 
     @staticmethod
     def _get_grab_params(location):
+        """
+        Args:
+            location:
+        """
         return {
             "mon": "2",
             "top": location.y1,
@@ -134,6 +153,10 @@ class TemplateMatcher:
 
     @staticmethod
     def _get_bgr_min_max(img):
+        """
+        Args:
+            img:
+        """
         min_ch = (np.amin(img[:, :, 0]), np.amin(
             img[:, :, 1]), np.amin(img[:, :, 2]))
         max_ch = (np.amax(img[:, :, 0]), np.amax(

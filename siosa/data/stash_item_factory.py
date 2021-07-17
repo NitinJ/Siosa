@@ -19,8 +19,7 @@ FRAMETYPE_TO_RARITY = {
 
 
 class StashItemFactory:
-    """Creates poe items from poe stash api.
-    """
+    """Creates poe items from poe stash api."""
 
     def __init__(self):
         self.logger = logging.getLogger(__name__)
@@ -31,8 +30,7 @@ class StashItemFactory:
         """Creates a POE item from data obtained from stash.
 
         Args:
-            stash_data (dict): Dictionary containing data for the item obtained
-            from stash API
+            item_data:
         """
         if not item_data:
             return None
@@ -47,6 +45,10 @@ class StashItemFactory:
         return None
 
     def _create_currency_item(self, item_data):
+        """
+        Args:
+            item_data:
+        """
         self.logger.debug("Creating currency item from stash data")
         # name for currency is it's type_line.
         name = self._get(item_data, 'typeLine', '')
@@ -67,19 +69,37 @@ class StashItemFactory:
         return item
 
     def _get_stash_item_type(self, data):
+        """
+        Args:
+            data:
+        """
         if not set.isdisjoint(set(STASH_CURRENCY_KEYS), set(data.keys())):
             return ItemType.CURRENCY
         else:
             return ItemType.ITEM
 
     def _get(self, obj, key, fallback):
+        """
+        Args:
+            obj:
+            key:
+            fallback:
+        """
         return obj[key] if key in obj.keys() else fallback
 
     def _get_rarity_of_stash_item(self, item_data):
+        """
+        Args:
+            item_data:
+        """
         frametype = self._get(item_data, 'frameType', 0)
         return self._get(FRAMETYPE_TO_RARITY, frametype, 'Normal')
 
     def _create_general_item(self, item_data):
+        """
+        Args:
+            item_data:
+        """
         self.logger.debug("Creating general item from stash data")
         info = {
             'rarity': self._get_rarity_of_stash_item(item_data),

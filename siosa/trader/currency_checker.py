@@ -7,9 +7,8 @@ from siosa.network.poe_api import PoeApi
 
 
 class CurrencyChecker:
-    """
-    Class to calculate currency diffs between what is required for a trade and
-    what was offered. Only supports chaos and exalted orbs at the moment.
+    """Class to calculate currency diffs between what is required for a trade
+    and what was offered. Only supports chaos and exalted orbs at the moment.
     """
     SUPPORTED_CURRENCY_TYPES = ['chaos', 'exalted']
 
@@ -17,6 +16,11 @@ class CurrencyChecker:
             self,
             required_currency,
             support_exalted_as_chaos=False):
+        """
+        Args:
+            required_currency:
+            support_exalted_as_chaos:
+        """
         self.logger = logging.getLogger(__name__)
         self.logger.setLevel(logging.DEBUG)
         self.support_exalted_as_chaos = support_exalted_as_chaos
@@ -25,13 +29,14 @@ class CurrencyChecker:
         self.required_currencies = self._get_required_currencies()
 
     def get_diffs(self, currency):
-        """
-        Calculates and returns currency diffs between trade request and
-        currency offered.
-        Args:
-            currency: A dictionary of {currency_name: currency_count..}
+        """Calculates and returns currency diffs between trade request and
+        currency offered. :param currency: A dictionary of {currency_name:
+        currency_count..}
 
         Returns: A dictionary of {currency_name: diff}
+
+        Args:
+            currency:
         """
         for c in CurrencyChecker.SUPPORTED_CURRENCY_TYPES:
             if c not in currency.keys():
@@ -57,6 +62,10 @@ class CurrencyChecker:
             }
 
     def _get_chaos(self, currency):
+        """
+        Args:
+            currency:
+        """
         return currency['exalted'] * self._get_ex_to_chaos() + currency['chaos']
 
     def _get_required_currencies(self):

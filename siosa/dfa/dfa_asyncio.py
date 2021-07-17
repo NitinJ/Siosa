@@ -6,10 +6,9 @@ from siosa.dfa.dfa_state import DfaState
 
 
 class DfaAsyncio(threading.Thread):
-    """
-    A DFA implementation that executes tasks based on state transitions. A
-    transition function is called when a given state is reached. States
-    are encapsulated in DfaState objects. A state can have only one registered
+    """A DFA implementation that executes tasks based on state transitions. A
+    transition function is called when a given state is reached. States are
+    encapsulated in DfaState objects. A state can have only one registered
     transition function. Uses asyncio to fire and forget tasks. Running task is
     cancelled if a new one is to be run.
     """
@@ -17,6 +16,11 @@ class DfaAsyncio(threading.Thread):
     SLEEP_DURATION = 0.01
 
     def __init__(self, state: DfaState, end: DfaState):
+        """
+        Args:
+            state (DfaState):
+            end (DfaState):
+        """
         super().__init__()
         self.logger = logging.getLogger(__name__)
         self.logger.setLevel(logging.DEBUG)
@@ -28,15 +32,15 @@ class DfaAsyncio(threading.Thread):
         self.event_loop = asyncio.new_event_loop()
 
     def add_state_fn(self, state: DfaState, transition_fn):
-        """
-        Registers a transition function for a given state.Overwrites any already
-        registered function.
-        Args:
-            state: The state on which to execute transition function
-            transition_fn: The transition function
+        """Registers a transition function for a given state.Overwrites any
+        already registered function. :param state: The state on which to execute
+        transition function :param transition_fn: The transition function
 
         Returns: None
 
+        Args:
+            state (DfaState):
+            transition_fn:
         """
         self.fn[state.to_string()] = transition_fn
 
@@ -91,11 +95,7 @@ class DfaAsyncio(threading.Thread):
                 pass
 
     def _runfn(self):
-        """
-        Runs the fn for the current state.
-        Returns: None
-
-        """
+        """Runs the fn for the current state. Returns: None"""
         new_state_str = self.state.to_string()
         if new_state_str not in self.fn:
             return

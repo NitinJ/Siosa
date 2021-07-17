@@ -30,6 +30,10 @@ class ScanInventory(Step):
         self.items = []
 
     def execute(self, game_state):
+        """
+        Args:
+            game_state:
+        """
         self.game_state = game_state
         self.close_all_party_notifications()
 
@@ -70,6 +74,12 @@ class ScanInventory(Step):
 
     @staticmethod
     def _mark_item_cells(p, item, cells):
+        """
+        Args:
+            p:
+            item:
+            cells:
+        """
         w, h = item.get_dimensions()
         if not w or not h:
             w = 1

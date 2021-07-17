@@ -2,10 +2,9 @@ import logging
 
 
 def _filter(task):
-    """Filters tasks. Keeping tasks -
-    1. Are not none, and
-    2. Have not started or are alive if they have been started.
-    Null tasks and tasks that have finished running are filtered out.
+    """Filters tasks. Keeping tasks - 1. Are not none, and 2. Have not started
+    or are alive if they have been started. Null tasks and tasks that have
+    finished running are filtered out.
 
     Args:
         task (GameTask): The game task to filter
@@ -27,6 +26,10 @@ class GameTaskStore:
         self.tasks = []
 
     def add(self, t):
+        """
+        Args:
+            t:
+        """
         self.logger.debug(
             "Adding new task to task store: {}".format(t.name))
         self.tasks.append(t)

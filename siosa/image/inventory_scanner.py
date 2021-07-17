@@ -11,6 +11,10 @@ from siosa.location.location_factory import LocationFactory, Locations
 
 class InventoryScanner:
     def __init__(self, debug=False):
+        """
+        Args:
+            debug:
+        """
         self.logger = logging.getLogger(__name__)
         self.logger.setLevel('DEBUG')
         self.cc = ConsoleController()

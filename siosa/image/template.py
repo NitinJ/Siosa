@@ -31,9 +31,8 @@ class Template:
                                           cv2.COLOR_BGR2GRAY)
 
     def get_dimensions(self):
-        """
-        Returns: Returns the dimensions of the template in 1080p resolution and
-        not in the current resolution.
+        """Returns: Returns the dimensions of the template in 1080p resolution
+        and not in the current resolution.
         """
         template = cv2.imread(
             Template._get_template_file_path(self.template_file_name))
@@ -44,10 +43,8 @@ class Template:
         return self.template_file_name
 
     def _get_resized_template(self):
-        """
-        Returns the template image resized to the current_key_set screen resolution.
-        Returns:
-            The resized template.
+        """Returns the template image resized to the current_key_set screen
+        resolution. :returns: The resized template.
         """
         template = cv2.imread(
             Template._get_template_file_path(self.template_file_name))
@@ -61,23 +58,26 @@ class Template:
         return cv2.resize(template, dim, interpolation=cv2.INTER_AREA)
 
     def get(self):
-        """
-        Returns the template image resized to the current screen resolution.
-        Returns:
-            The resized template.
+        """Returns the template image resized to the current screen resolution.
+        :returns: The resized template.
         """
         return self.resized_template, self.template_gray
 
     @staticmethod
     def create(name, location, overwrite=False, debug=False):
-        """
-        Creates a template with a given name by capturing screen at the given
-        location.
+        """Creates a template with a given name by capturing screen at the given
+        location. :param name: Name of the file, in which template image will be
+        stored. :param location: Screen location to capture and create template
+        from. :param overwrite: Whether to overwrite the template file if it
+        already
+
+            exists.
+
         Args:
-            name: Name of the file, in which template image will be stored.
-            location: Screen location to capture and create template from.
-            overwrite: Whether to overwrite the template file if it already
-                exists.
+            name:
+            location:
+            overwrite:
+            debug:
 
         Returns:
             The full template file path
@@ -112,15 +112,19 @@ class Template:
 
     @staticmethod
     def create_from_file(name, input_file_path, overwrite=False, debug=False):
-        """
-        Creates a template with a given name from the image present at the given
-        file system location.
+        """Creates a template with a given name from the image present at the
+        given file system location. :param name: Name of the file, in which
+        template image will be stored. :param input_file_path: File system path
+        of the image to create template :param from.: :param overwrite: Whether
+        to overwrite the template file if it already
+
+            exists.
+
         Args:
-            name: Name of the file, in which template image will be stored.
-            input_file_path: File system path of the image to create template
-            from.
-            overwrite: Whether to overwrite the template file if it already
-                exists.
+            name:
+            input_file_path:
+            overwrite:
+            debug:
 
         Returns:
             The full template file path
@@ -154,6 +158,11 @@ class Template:
 
     @staticmethod
     def from_registry(template_registry, scale=1.0):
+        """
+        Args:
+            template_registry:
+            scale:
+        """
         return Template(
             template_registry[0],
             Resolution(template_registry[1][0], template_registry[1][1]),
@@ -161,6 +170,10 @@ class Template:
 
     @staticmethod
     def _get_grab_params(location):
+        """
+        Args:
+            location:
+        """
         return {
             "top": location.y1,
             "left": location.x1,
@@ -170,10 +183,11 @@ class Template:
 
     @staticmethod
     def _get_template_file_path(name):
-        """
-        Returns the template output file path given name of the template.
+        """Returns the template output file path given name of the template.
+        :param name: Name of the template
+
         Args:
-            name: Name of the template
+            name:
 
         Returns:
             Full file path of the template file.

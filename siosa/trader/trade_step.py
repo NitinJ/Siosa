@@ -22,6 +22,11 @@ class TradeStep(Step):
     TRADE_REQUEST_SEND_DELAY = 3
 
     def __init__(self, trade_info: TradeInfo, log_listener):
+        """
+        Args:
+            trade_info (TradeInfo):
+            log_listener:
+        """
         super().__init__()
         self.trade_info = trade_info
         self.trader = self.trade_info.trade_request.trader
@@ -45,6 +50,10 @@ class TradeStep(Step):
         self.trade_verifier = TradeVerifier(trade_info.trade_request)
 
     def execute(self, game_state):
+        """
+        Args:
+            game_state:
+        """
         self.game_state = game_state
         self.state_updater = TradeStateUpdater(
             game_state, self.state, self.trade_info, self.log_listener)
@@ -91,11 +100,19 @@ class TradeStep(Step):
                               self.cancel_with_message(""))
 
     def transition(self, state_value):
+        """
+        Args:
+            state_value:
+        """
         async def wrapper():
             self.state.update(state_value)
         return wrapper
 
     def cancel_with_message(self, message):
+        """
+        Args:
+            message:
+        """
         async def wrapper():
             self.kc.keypress('Esc')
             self.cc.send_chat(self.trader, message)
@@ -103,6 +120,10 @@ class TradeStep(Step):
         return wrapper
 
     def cancel(self, timeout):
+        """
+        Args:
+            timeout:
+        """
         async def wrapper():
             await asyncio.sleep(timeout)
             self.kc.keypress('Esc')

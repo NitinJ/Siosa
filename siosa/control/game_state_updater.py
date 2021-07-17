@@ -7,6 +7,10 @@ from siosa.common.decorations import abstractmethod
 
 class GameStateUpdater(threading.Thread):
     def __init__(self, game_state):
+        """
+        Args:
+            game_state:
+        """
         threading.Thread.__init__(self)
         self.logger = logging.getLogger(__name__)
         self.game_state = game_state
@@ -18,6 +22,11 @@ class GameStateUpdater(threading.Thread):
 
 class PlayerInHideoutUpdater(GameStateUpdater):
     def __init__(self, game_state, log_listener):
+        """
+        Args:
+            game_state:
+            log_listener:
+        """
         GameStateUpdater.__init__(self, game_state)
         self.log_listener = log_listener
         self.hideout_event_queue = self.log_listener.hideout_event_queue
@@ -38,6 +47,11 @@ class PlayerInHideoutUpdater(GameStateUpdater):
 
 class ZoneUpdater(GameStateUpdater):
     def __init__(self, game_state, log_listener):
+        """
+        Args:
+            game_state:
+            log_listener:
+        """
         GameStateUpdater.__init__(self, game_state)
         self.log_listener = log_listener
         self.location_change_event_queue = self.log_listener.location_change_event_queue

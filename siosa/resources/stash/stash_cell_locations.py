@@ -9,10 +9,18 @@ class StashCellLocation:
 
     @staticmethod
     def _get_path(filename):
+        """
+        Args:
+            filename:
+        """
         return os.path.join(os.path.dirname(__file__), filename)
 
     @staticmethod
     def _get_stash_cell_location_map(is_quad):
+        """
+        Args:
+            is_quad:
+        """
         lf = LocationFactory()
         filename = 'quad.json' if is_quad else 'normal.json'
         filepath = StashCellLocation._get_path(filename)
@@ -26,6 +34,11 @@ class StashCellLocation:
 
     @staticmethod
     def get_cell_location(is_quad, cell):
+        """
+        Args:
+            is_quad:
+            cell:
+        """
         name = 'quad' if is_quad else 'normal'
         if name not in StashCellLocation._stash_cell_location_map.keys():
             StashCellLocation._stash_cell_location_map = \

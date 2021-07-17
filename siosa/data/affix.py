@@ -14,6 +14,15 @@ class Affix:
 
     def __init__(self, str_val, name, tier, type, crafted=False,
                  fractured=False):
+        """
+        Args:
+            str_val:
+            name:
+            tier:
+            type:
+            crafted:
+            fractured:
+        """
         self.str_val = str_val
         self.name = name
         self.tier = tier
@@ -41,6 +50,10 @@ class Affix:
 
     @staticmethod
     def _get_details(affix_details):
+        """
+        Args:
+            affix_details:
+        """
         crafted = False
         match = Affix.UNIQUE_AFFIX_DETAILS_REGEX.match(affix_details)
         if match:
@@ -58,6 +71,10 @@ class Affix:
 
     @staticmethod
     def create_from_clipboard_affix(affix_arr):
+        """
+        Args:
+            affix_arr:
+        """
         affix_details = affix_arr[0]
         fractured = False
 
@@ -65,7 +82,7 @@ class Affix:
         crafted = (name is 'Upgraded')
         affix_str_lines = []
         for affix_line in affix_arr[1:]:
-            affix_line = affix_line.replace(" — Unscalable Value", "")
+            affix_line = affix_line.replace(" â€” Unscalable Value", "")
             affix_line = re.sub(Affix.AFFIX_VALUE_RANGE_REGEX, '', affix_line)
 
             if affix_line.find("fractured"):

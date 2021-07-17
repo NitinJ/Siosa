@@ -3,19 +3,24 @@ import os
 
 
 class BaseItems:
-    '''
-    Resource file with metadata for all base items. Sample entry:
-
-    '''
+    """Resource file with metadata for all base items. Sample entry:"""
     _items = {}
     FILE_NAME = "base_items.json"
 
     @staticmethod
     def _get_path(filename):
+        """
+        Args:
+            filename:
+        """
         return os.path.join(os.path.dirname(__file__), filename)
 
     @staticmethod
     def get_item_dimensions(item_name):
+        """
+        Args:
+            item_name:
+        """
         if not BaseItems._items:
             BaseItems._preprocess()
         if item_name not in BaseItems._items.keys():

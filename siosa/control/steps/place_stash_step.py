@@ -18,6 +18,10 @@ class PlaceStash(Step):
     """
 
     def execute(self, game_state):
+        """
+        Args:
+            game_state:
+        """
         stash_location = game_state.get()['stash_location']
         self.mc.click_at_location(
             self.lf.get(Locations.DECORATIONS_EDIT_HIDEOUT_ARROW))

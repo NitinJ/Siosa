@@ -9,12 +9,20 @@ class Error:
 
 class ChangeStashTab(Step):
     def __init__(self, index_to):
+        """
+        Args:
+            index_to:
+        """
         Step.__init__(self)
         self.logger = logging.getLogger(__name__)
         self.logger.setLevel('DEBUG')
         self.index_to = index_to
 
     def execute(self, game_state):
+        """
+        Args:
+            game_state:
+        """
         self.game_state = game_state
         state = self.game_state.get()
 

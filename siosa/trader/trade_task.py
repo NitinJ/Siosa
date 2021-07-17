@@ -18,6 +18,11 @@ from siosa.trader.trade_step import TradeStep
 
 class TradeTask(Task):
     def __init__(self, trade_info: TradeInfo, log_listener):
+        """
+        Args:
+            trade_info (TradeInfo):
+            log_listener:
+        """
         Task.__init__(self, 10, name='TradeTask')
         self.logger = logging.getLogger(__name__)
         self.info = trade_info
@@ -56,6 +61,10 @@ class TradeTask(Task):
 
     @staticmethod
     def get_currency_stack_from_trade_info(trade_info):
+        """
+        Args:
+            trade_info:
+        """
         type = trade_info.trade_request.currency['type']
         amount = trade_info.trade_request.currency['amount']
         currency = Currency(CurrencyExchange(), 'Unknown', type, 10)
@@ -63,6 +72,10 @@ class TradeTask(Task):
 
     @staticmethod
     def get_trade_msg(trade_info: TradeInfo):
+        """
+        Args:
+            trade_info (TradeInfo):
+        """
         return "Ready to be picked up: [{}], for [{} {}]".format(
             trade_info.trade_request.item_name,
             trade_info.trade_request.currency['type'],

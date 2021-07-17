@@ -17,6 +17,11 @@ class TaskState(Enum):
 
 
 def _is_valid_state_transition(state_from, state_to):
+    """
+    Args:
+        state_from:
+        state_to:
+    """
     if state_from == state_to:
         return True
     if state_to == TaskState.NOT_STARTED or state_from == TaskState.COMPLETE:
@@ -26,19 +31,22 @@ def _is_valid_state_transition(state_from, state_to):
 
 
 class Task(threading.Thread):
-    """
-    Encapsulates a game task. Game tasks run inside the game and are executed
+    """Encapsulates a game task. Game tasks run inside the game and are executed
     via the GameTaskExecutor. A single task is a thread and can have multiple
     reusable components called Steps. Steps of a task are synchronous and are
-    ran in a sequence.
-    Child classes of this class must return an iterator of steps to be executed
-    and also handle cleanup in case any of the steps fail to execute.
-    Tasks cannot be paused but can be stopped. Tasks are stopped when Path of
-    Exile is not in focus. In which case tasks must handle cleanup.
+    ran in a sequence. Child classes of this class must return an iterator of
+    steps to be executed and also handle cleanup in case any of the steps fail
+    to execute. Tasks cannot be paused but can be stopped. Tasks are stopped
+    when Path of Exile is not in focus. In which case tasks must handle cleanup.
     """
     STEP_EXECUTION_DELAY = 0.1
 
     def __init__(self, priority, name='GameTask'):
+        """
+        Args:
+            priority:
+            name:
+        """
         threading.Thread.__init__(self, name=name)
         self.logger = logging.getLogger(name)
         self.logger.setLevel(logging.DEBUG)
@@ -56,6 +64,10 @@ class Task(threading.Thread):
         self.wc = WindowController()
 
     def run_task(self, game_state):
+        """
+        Args:
+            game_state:
+        """
         self.game_state = game_state
         return self.start()
 
@@ -65,6 +77,10 @@ class Task(threading.Thread):
 
     @synchronized
     def set_state(self, state):
+        """
+        Args:
+            state:
+        """
         self.state = state
         self._log_task_status()
 
@@ -78,14 +94,11 @@ class Task(threading.Thread):
 
     @abstractmethod
     def get_steps(self):
-        """
-        Returns: Returns an iterator for the steps of the task.
-        """
+        """Returns: Returns an iterator for the steps of the task."""
         pass
 
     def _cleanup_internal(self):
-        """
-        Runs when a step in the task execution throws an exception. Can be
+        """Runs when a step in the task execution throws an exception. Can be
         overridden by child classes to ensure that game state is cleaned up
         properly. A task cannot be stopped while cleanup is underway.
 
@@ -94,8 +107,7 @@ class Task(threading.Thread):
         pass
 
     def _get_last_step_result(self):
-        """
-        Returns: Returns the execution status of the last step that was run.
+        """Returns: Returns the execution status of the last step that was run.
         Child classes can make use of this to evaluate what step to run next.
         """
         return self._last_step_execution_status

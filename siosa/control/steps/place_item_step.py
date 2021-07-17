@@ -18,6 +18,12 @@ class Error(Enum):
 
 class PlaceItem(Step):
     def __init__(self, stash_index, stash_cell, item_cell):
+        """
+        Args:
+            stash_index:
+            stash_cell:
+            item_cell:
+        """
         Step.__init__(self)
         self.stash_index = stash_index
         self.stash_cell = stash_cell
@@ -30,6 +36,10 @@ class PlaceItem(Step):
         self.poe_clipboard = PoeClipboard()
 
     def execute(self, game_state):
+        """
+        Args:
+            game_state:
+        """
         self.game_state = game_state.get()
         if not self.game_state['stash_open']:
             return StepStatus(False, Error.STASH_NOT_OPEN)

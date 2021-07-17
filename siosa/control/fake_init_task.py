@@ -22,6 +22,10 @@ class FakeInitTask(Task):
 
 class FakeStep(Step):
     def execute(self, game_state):
+        """
+        Args:
+            game_state:
+        """
         game_state.update(
             {'stash_location': self.lf.get(Locations.SCREEN_CENTER)})
         game_state.update({'stash_open': True})

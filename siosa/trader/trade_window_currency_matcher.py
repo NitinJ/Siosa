@@ -4,18 +4,29 @@ from siosa.image.reusable_template_matcher import ReusableTemplateMatcher
 
 
 class TradeWindowCurrencyMatcher(ReusableTemplateMatcher):
-    """
-    Matcher for specifically matching currencies in the trade window_other.
+    """Matcher for specifically matching currencies in the trade window_other.
     Removes the green channel from the image before matching. Template used
     should also not have the green channel.
     """
     def __init__(self, location, debug=False, confirm_foreground=True, scale=1.0):
+        """
+        Args:
+            location:
+            debug:
+            confirm_foreground:
+            scale:
+        """
         ReusableTemplateMatcher.__init__(self, location, confidence=0.88,
                                          debug=debug,
                                          confirm_foreground=confirm_foreground,
                                          scale=scale)
 
     def get_image(self, screen_location, reuse):
+        """
+        Args:
+            screen_location:
+            reuse:
+        """
         image_bytes_bgr, image_bytes_gray = super().get_image(screen_location,
                                                               reuse)
         # Remove the green channel from the screen area to remove the green
