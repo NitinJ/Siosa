@@ -5,35 +5,57 @@ from siosa.common.singleton import Singleton
 
 
 class SiosaConfig(metaclass=Singleton):
-    def __init__(self, config_file_path):
+    def __init__(self, config=None):
         super(SiosaConfig, self).__init__()
-
-        self.path = config_file_path
+        if config is None:
+            config = {}
         self.logger = logging.getLogger(__name__)
         self.logger.setLevel(logging.DEBUG)
 
-        # Can probably use configparser or a jsonconfig parser.
-        config = json.load(open(config_file_path, 'r'))
-        self._validate_config(config)
+        self.config = SiosaConfig._validate_config(config)
         self.logger.debug("Initialized config: {}".format(str(self.config)))
 
-    def _validate_config(self, config):
+    @staticmethod
+    def create_from_file(config_file_path):
+        return SiosaConfig(json.load(open(config_file_path, 'r')))
+
+    @staticmethod
+    def _validate_config(config):
         # TODO: Validate here actually
-        self.config = config
+        return config
 
-    def update(self, config={}):
+    def update(self, config=None):
+        if config is None:
+            config = {}
         self.logger.info("Updating config with {}".format(str(config)))
-        self.config.update(config)
-        self._write_updated_config()
+        self.config = SiosaConfig._validate_config(self.config.update(config))
 
-    def _write_updated_config(self):
-        json.dump(self.config, open(self.path, 'w'))
+    def write_config(self, config_file_path):
+        json.dump(self.config, open(config_file_path, 'w'))
+
+    def get_account_name(self):
+        return self.config['required']['account_name']
+
+    def get_poe_session_id(self):
+        return self.config['required']['poe_session_id']
+
+    def get_league(self):
+        return self.config['required']['league']
+
+    def get_client_log_file_path(self):
+        return self.config['required']['client_log_file_path']
+
+    def get_close_all_interfaces_shortcut(self):
+        return self.config['shortcuts']['close_all_user_interface']
+
+    def get_task_stop_shortcut(self):
+        return self.config['shortcuts']['task_stop']
 
     def get_sell_tab_index(self):
         return self.config['stashes']['sell_index']
 
-    def get_account_name(self):
-        return self.config['account_name']
+    def get_currency_stash_names(self):
+        return self.config['stashes']['currency']
 
-    def get_poe_session_id(self):
-        return self.config['poe_session_id']
+    def get_dump_stash_names(self):
+        return self.config['stashes']['dump']

@@ -45,7 +45,7 @@ class Stash(metaclass=Singleton):
         self.logger = logging.getLogger(__name__)
         self.logger.setLevel('DEBUG')
 
-        self.config = SiosaConfig().config
+        self.config = SiosaConfig()
         self.poe_api = PoeApi()
         self.name_to_stash_tabs = {}
         self.tab_type_to_tabs = {}
@@ -134,10 +134,11 @@ class Stash(metaclass=Singleton):
 
     def get_currency_stash_tabs(self):
         return self._get_all_stashes_with_names(
-            self.config['stashes']['currency'])
+            self.config.get_currency_stash_names())
 
     def get_dump_stash_tabs(self):
-        return self._get_all_stashes_with_names(self.config['stashes']['dump'])
+        return self._get_all_stashes_with_names(
+            self.config.get_dump_stash_names())
 
     def _get_all_stashes_with_names(self, tab_names):
         stash_tabs = []

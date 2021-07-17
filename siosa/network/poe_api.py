@@ -24,8 +24,8 @@ class PoeApi(metaclass=Singleton):
         self.logger.setLevel('DEBUG')
 
         self.account_name = account_name
-        self.league = league
         self.session_id = poe_session_id
+        self.league = league
         self.cookies = {'POESESSID': self.session_id}
         self.headers = {
             'Content-type': 'application/json',

@@ -1,6 +1,7 @@
 import logging
 
 from siosa.common.singleton import Singleton
+from siosa.config.siosa_config import SiosaConfig
 from siosa.control.game_state import GameState
 from siosa.control.game_state_updater import (PlayerInHideoutUpdater,
                                               ZoneUpdater)
@@ -10,8 +11,6 @@ from siosa.control.keyboard_shortcut import KeyboardShortcut
 
 
 class GameController(metaclass=Singleton):
-    TASK_STOP_COMBINATION = "ctrl+q"
-
     def __init__(self, client_log_listener):
         super(GameController, self).__init__()
         self.logger = logging.getLogger(__name__)
@@ -21,7 +20,7 @@ class GameController(metaclass=Singleton):
         self.task_executor = GameTaskExecutor(self.game_state)
 
         self.keyboard_listener = KeyboardShortcut(
-            GameController.TASK_STOP_COMBINATION, self._stop_all_tasks)
+            SiosaConfig().get_task_stop_shortcut(), self._stop_all_tasks)
         self.log_listener = client_log_listener
         self.game_state_updaters = [
             PlayerInHideoutUpdater(self.game_state, self.log_listener),

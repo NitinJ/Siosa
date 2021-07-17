@@ -7,6 +7,7 @@ from siosa.client.hideout_event import HideoutEvent
 from siosa.client.location_change_event import ZoneChangeEvent
 from siosa.client.trade_event import TradeEvent
 from siosa.client.trade_status_event import TradeStatusEvent
+from siosa.config.siosa_config import SiosaConfig
 
 
 class ClientLogListener(threading.Thread):
@@ -15,15 +16,14 @@ class ClientLogListener(threading.Thread):
 
     def __init__(self,
                  target=None,
-                 name=None,
-                 client_log_file_path="C:\Program Files (x86)\Steam\steamapps\common\Path of Exile\logs\Client.txt"):
+                 name=None):
         super(ClientLogListener, self).__init__()
         self.logger = logging.getLogger(__name__)
         self.logger.setLevel('DEBUG')
         self.target = target
         self.name = name
 
-        self.path = client_log_file_path
+        self.path = SiosaConfig().get_client_log_file_path()
         self.last_read_ptr = None
 
         self.trade_event_queue = queue.Queue(ClientLogListener.MAX_QUEUE_SIZE)

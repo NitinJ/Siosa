@@ -1,13 +1,18 @@
 {
-    "account_name": "MopedDriverr",
-    "poe_session_id": "2561bcd7ed51683282115e110e6ea1f3",
+    "required": {
+        "account_name": "MopedDriverr",
+        "poe_session_id": "2561bcd7ed51683282115e110e6ea1f3",
+        "client_file_path": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\Path of Exile\\logs\\Client.txt",
+        "league": "Ultimatum"
+    },
     "stashes": {
-        "dump": ["~price 40 chaos"],
-        "sell": ["SELL"],
-        "sell_index": 6,
+        "dump": ["~price 80 chaos"],
+        "sell": ["~price 6 exalted", "~price 80 chaos"],
+        "sell_index": [0, 1],
         "currency": ["$$$"]
     },
     "shortcuts": {
-      "close_all_user_interface": ["Ctrl", "`"]
+        "close_all_user_interface": ["Ctrl", "`"],
+        "task_stop": "ctrl+q"
     }
 }
