@@ -1,6 +1,8 @@
 import logging
 import time
 
+from siosa.common.decorations import override
+from siosa.common.stoppable_thread import StoppableThread
 from siosa.config.siosa_config import SiosaConfig
 from siosa.control.game_controller import GameController
 from siosa.data.stash import Stash
@@ -10,10 +12,17 @@ from siosa.trader.trade_request import TradeRequest
 from siosa.trader.trade_task import TradeTask
 
 
-class TradeController:
+class TradeController(StoppableThread):
     QUEUE_LISTEN_DELAY = 0.05
 
     def __init__(self, game_controller: GameController, log_listener, config: SiosaConfig):
+        """
+        Args:
+            game_controller (GameController):
+            log_listener:
+            config (SiosaConfig):
+        """
+        StoppableThread.__init__(self)
         self.logger = logging.getLogger(__name__)
         self.logger.setLevel('DEBUG')
         self.config = config
@@ -25,37 +34,35 @@ class TradeController:
         # Controlling all game related stuff.
         self.game_controller = game_controller
 
-    def start_trading(self):
-        self.logger.debug("Starting listening to logs")
-        self._start_listening_for_incoming_trades()
-
-    def _start_listening_for_incoming_trades(self):
-        while True:
-            if not self.trade_event_queue.empty():
-                trade_request = TradeRequest.create_from(
-                    self.trade_event_queue.get())
-                self.logger.debug(
-                    "Got a trade request : {}".format(trade_request))
-                trade_info = self._validate_trade_request(trade_request)
-                self.logger.debug("TradeRequest is {}".format(
-                    "Valid" if trade_info else "Invalid"))
-                if not trade_info:
-                    continue
-                self._start_new_trade(trade_info)
-            time.sleep(TradeController.QUEUE_LISTEN_DELAY)
+    @override
+    def run_once(self):
+        if not self.trade_event_queue.empty():
+            trade_request = TradeRequest.create_from(
+                self.trade_event_queue.get())
+            self.logger.debug(
+                "Got a trade request : {}".format(trade_request))
+            trade_info = self._validate_trade_request(trade_request)
+            self.logger.debug("TradeRequest is {}".format(
+                "Valid" if trade_info else "Invalid"))
+            if not trade_info:
+                return
+            self._start_new_trade(trade_info)
+        time.sleep(TradeController.QUEUE_LISTEN_DELAY)
 
     def _start_new_trade(self, trade_info):
+        """
+        Args:
+            trade_info:
+        """
         self.logger.debug("Starting new trade with {}".format(
             trade_info.trade_request))
         self.game_controller.submit_task(TradeTask(trade_info, self.log_listener))
 
     def _validate_trade_request(self, trade_request):
         """Validates a trade request object and returns a trade_info object if
-        validated. Verifies that -
-        1. Trader isn't blacklisted.
-        2. Basic sanity checks on stash index and item indexes are passing.
-        3. Currency is allowed for trade.
-        4. League is allowed for trade.
+        validated. Verifies that - 1. Trader isn't blacklisted. 2. Basic sanity
+        checks on stash index and item indexes are passing. 3. Currency is
+        allowed for trade. 4. League is allowed for trade.
 
         Args:
             trade_request (TradeRequest): The trade request object
@@ -96,9 +103,18 @@ class TradeController:
 
     def _is_item_valid(self, stash_item):
         # TODO: Fill this up.
+        """
+        Args:
+            stash_item:
+        """
         return True
 
     def _get_item_from_candidate_stash_tabs(self, candidate_stash_tabs, trade_request):
+        """
+        Args:
+            candidate_stash_tabs:
+            trade_request:
+        """
         for stash_tab in candidate_stash_tabs:
             x = trade_request.position[0]
             y = trade_request.position[1]
