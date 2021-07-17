@@ -26,3 +26,7 @@ def abstractmethod(func_):
         raise Exception("In-implemented abstract method Exception!")
 
     return abstract_method
+
+
+def override(f):
+    return f
