@@ -28,10 +28,12 @@ class SiosaConfig(metaclass=Singleton):
         if config is None:
             config = {}
         self.logger.info("Updating config with {}".format(str(config)))
-        self.config = SiosaConfig._validate_config(self.config.update(config))
+        c = self.config.copy()
+        c.update(config)
+        self.config = SiosaConfig._validate_config(c)
 
     def write_config(self, config_file_path):
-        json.dump(self.config, open(config_file_path, 'w'))
+        json.dump(self.config, open(config_file_path, 'w'), indent=4)
 
     def to_json(self):
         return self.config
