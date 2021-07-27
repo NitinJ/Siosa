@@ -40,7 +40,6 @@ class PickupItem(Step):
             return StepStatus(False, Error.ITEM_NOT_FOUND_IN_STASH)
 
         cell = list(self.stash_item.position).copy()
-        cell.reverse()
         item_position_xy = self.stash_item.stash_tab.get_cell_location(cell)
         self.mc.move_mouse(item_position_xy)
         self.kc.hold_modifier('Ctrl')

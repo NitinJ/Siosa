@@ -1,4 +1,5 @@
 import logging
+import time
 
 from siosa.common.singleton import Singleton
 from siosa.config.siosa_config import SiosaConfig
@@ -45,6 +46,8 @@ def _get_stash_type_for_item(item):
 
 
 class Stash(metaclass=Singleton):
+    MIN_TIME_STASH_REFRESH = 60 # One minute
+
     def __init__(self):
         self.logger = logging.getLogger(__name__)
         self.logger.setLevel('DEBUG')
@@ -55,9 +58,16 @@ class Stash(metaclass=Singleton):
         self.tab_type_to_tabs = {}
         self.tabs = {}
         self.stash_metadata = None
+        self.last_refresh_ts = None
         self.refresh()
 
     def refresh(self):
+        if not self.last_refresh_ts:
+            self.last_refresh_ts = time.time()
+        elif time.time() - self.last_refresh_ts <= Stash.MIN_TIME_STASH_REFRESH:
+            # Don't refresh if we have refreshed in a threshold min time.
+            return
+
         self.logger.info("Refreshing stash data.")
         self.stash_metadata = self.poe_api.get_stash_metadata()
         self._populate_internal()

@@ -77,6 +77,7 @@ class TradeController(StoppableThread):
             followed by the trade_info object.
         """
         stash = Stash()
+        stash.refresh()
 
         candidate_stash_tabs = stash.get_stash_tabs_by_name(
             trade_request.stash)
@@ -125,5 +126,6 @@ class TradeController(StoppableThread):
             y = trade_request.position[1]
             item_at_location = stash_tab.get_item_at_location(x, y)
             if item_at_location and item_at_location.get_full_name() == trade_request.item_name:
-                return StashItem(item_at_location, stash_tab, (x, y))
+                # Use y,x for position instead of x,y as x:Left, y:Top
+                return StashItem(item_at_location, stash_tab, (y, x))
         return None
