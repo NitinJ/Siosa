@@ -16,10 +16,10 @@ class TradeStep(Step):
     UPDATE_INTERVAL = 0.01
     MAX_RETRIES = 2
     TRADE_THANK_YOU = "Thanks and have fun !"
-    TRADE_OFFER_WAIT_TIMEOUT = 10
-    TRADE_ACCEPT_WAIT_TIMEOUT = 10
+    TRADE_OFFER_WAIT_TIMEOUT = 30
+    TRADE_ACCEPT_WAIT_TIMEOUT = 20
     RETRY_TIMEOUT = 3
-    TRADE_REQUEST_SEND_DELAY = 3
+    TRADE_REQUEST_SEND_DELAY = 5
 
     def __init__(self, trade_info: TradeInfo, log_listener):
         """
