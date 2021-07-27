@@ -10,7 +10,7 @@ class Error(Enum):
 
 
 class InvitePlayerToHideoutStep(Step):
-    PLAYER_ENTRY_WAIT_TIME = 30
+    PLAYER_ENTRY_WAIT_TIME = 60
 
     def __init__(self, player_account_name, msg=None):
         """
