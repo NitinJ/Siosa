@@ -15,11 +15,11 @@ STASH_INFO_API = "https://www.pathofexile.com/character-window/get-stash-items?a
 SCRAPE_STR1 = 'require(["main"], function(){require(["trade"], function(t){    t('
 SCRAPE_STR2 = ');});});'
 USER_AGENT = 'Mozilla/5.0'
-MAX_ITEMS_FOR_CALCULATING_EXCHANGE = 20
+MAX_ITEMS_FOR_CALCULATING_EXCHANGE = 30
 
 
 class PoeApi(metaclass=Singleton):
-    def __init__(self, account_name, poe_session_id, league="Ultimatum"):
+    def __init__(self, account_name, poe_session_id, league="Standard"):
         """
         Args:
             account_name:
