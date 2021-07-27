@@ -41,7 +41,7 @@ class StashTabScanner:
     def get_item_cells(self):
         """Returns: Cells at which items are present."""
         return self.grid.get_cells_not_in_positions(
-                self.tm.match(self.lf.get(Locations.STASH_TAB)))
+            self.tm.match(self.lf.get(Locations.STASH_TAB)))
 
     def is_empty(self, cell):
         """
@@ -88,3 +88,17 @@ class StashTabScanner:
         midx, midy = (cell_top_left_x + cell_bot_right) // 2, (
                 cell_top_left_y + cell_bot_right_y) // 2
         return self.lf.get(Location(midx, midy, midx, midy, self.lf.resolution))
+
+
+if __name__ == "__main__":
+    class StashTabFake:
+        def __init__(self, is_quad, size, cell_border):
+            self.is_quad = is_quad
+            self.size = size
+            self.cell_border_x = cell_border[0]
+            self.cell_border_y = cell_border[1]
+
+
+    s = StashTabFake(True, (24, 24), (1, 1))
+    scanner = StashTabScanner(s, debug=True)
+    print(scanner.is_empty((6, 14)))
