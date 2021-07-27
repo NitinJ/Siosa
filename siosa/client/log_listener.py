@@ -51,7 +51,7 @@ class ClientLogListener(threading.Thread):
 
     def read_unread_lines(self):
         lines = []
-        f = open(self.path, 'r')
+        f = open(self.path, 'r', encoding="utf8")
         if self.last_read_ptr is not None:
             f.seek(self.last_read_ptr)
         else:
