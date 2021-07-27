@@ -43,6 +43,7 @@ class TradeEvent:
             trader = log_line.split(": Hi, I would like to buy your ")[0]
             if not trader:
                 return None
+            trader = trader.split(" ")[-1]
 
             # Item name
             item_name = log_line.split(" Hi, I would like to buy your ")[1].split(" listed for ")[0]
@@ -73,7 +74,7 @@ class TradeEvent:
 
 if __name__ == "__main__":
     te = TradeEvent.create('@From <[KREK]> Corpz: Hi, I would like to buy your Rapture Ruin Medium Cluster Jewel listed for 3.5 exalted in Ritual (stash tab "SELL"; position: left 4, top 9)')
-    assert te.trader == "<[KREK]> Corpz"
+    assert te.trader == "Corpz"
     assert te.item_name == "Rapture Ruin Medium Cluster Jewel"
     assert te.currency['type'] == "exalted"
     assert math.isclose(te.currency['amount'], 3.5)
