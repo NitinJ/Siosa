@@ -39,8 +39,12 @@ class StashCellLocation:
         """
         Args:
             is_quad:
-            cell:
+            cell: Tuple (x, y)
         """
+        cell = tuple(cell)
+        if not StashCellLocation._stash_cell_location_map:
+            StashCellLocation._stash_cell_location_map = \
+                StashCellLocation._get_stash_cell_location_map(True)
         name = 'quad' if is_quad else 'normal'
         if name not in StashCellLocation._stash_cell_location_map.keys():
             StashCellLocation._stash_cell_location_map = \
