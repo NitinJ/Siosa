@@ -53,6 +53,7 @@ class TemplateRegistry:
     SCOURING_DROP = ("sct-tmp-SCOURING_DROP.png", (1920, 1080))
     SIMPLE_SEXTANT_DROP = ("sct-tmp-SIMPLE_SEXTANT_DROP.png", (1920, 1080))
     VAAL_DROP = ("sct-tmp-VAAL_DROP.png", (1920, 1080))
+    INVENTORY_BANNER = ("sct-tmp-INVENTORY_BANNER.png", (1920, 1080))
     DROP = ("sct-tmp-DROP.png", (1920, 1080))
     PRICE_ITEM_WINDOW_ARROW = ("sct-tmp-PRICE_ITEM_WINDOW_ARROW.png", (1920, 1080))
 
