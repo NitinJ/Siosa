@@ -3,21 +3,24 @@ from siosa.control.game_step import Step, StepStatus
 
 
 class TestStep(Step):
-    def __init__(self, t=""):
+    def __init__(self, t:float, fail=False, name="TestStep"):
         """
         Args:
-            t:
+            t: Time to sleep in seconds
         """
         Step.__init__(self)
         self.t = t
+        self.fail = fail
+        self.name = name
 
     def execute(self, game_state):
         """
         Args:
             game_state:
         """
-        time.sleep(1)
-        return StepStatus(True, self.t)
+        self.logger.debug("Executing {}. Sleeping for {} secs".format(self.name, self.t))
+        time.sleep(self.t)
+        return StepStatus(self.fail, self.t)
 
     def __repr__(self):
         return "TestStep({})".format(self.t)
