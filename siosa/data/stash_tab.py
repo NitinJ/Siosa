@@ -96,9 +96,7 @@ class StashTab:
         Returns:
             Whether there is an item present at x,y
         """
-        # We reverse the order here to go from stash location to i,j array
-        # locations.
-        return not self.scanner.is_empty((p[1], p[0]))
+        return not self.scanner.is_empty((p[0], p[1]))
 
     def get_cell_location(self, cell):
         """Returns the in game location for a given stash cell.
