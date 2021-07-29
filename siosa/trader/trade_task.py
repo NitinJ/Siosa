@@ -1,6 +1,7 @@
 import logging
 
 from siosa.control.game_task import Task
+from siosa.control.steps.change_stash_tab_step import ChangeStashTab
 from siosa.control.steps.clean_inventory_step import CleanInventory
 from siosa.control.steps.invite_player_to_hideout_step import \
     InvitePlayerToHideoutStep
@@ -33,13 +34,17 @@ class TradeTask(Task):
         yield PickupItem(self.trade_info.stash_item)
         ret = self._get_last_step_result()
         if not ret.success:
+            yield ChangeStashTab(0)
             return
 
         yield InvitePlayerToHideoutStep(
             self.trade_info.trade_request.trader,
             msg=TradeTask.get_trade_msg(self.trade_info))
+
         ret = self._get_last_step_result()
         if not ret.success:
+            yield from self.place_item_back()
+            yield ChangeStashTab(0)
             return
 
         yield TradeStep(self.trade_info, self.log_listener)
@@ -52,7 +57,15 @@ class TradeTask(Task):
             return
 
         # Place item back to the stash where it belongs and list it again.
+        yield from self.place_item_back()
+        yield ChangeStashTab(0)
+
+    def place_item_back(self):
+        # Place item back to the stash where it belongs and list it again.
+        # Change to the item's stash.
         stash_index = self.trade_info.stash_item.stash_tab.index
+        yield ChangeStashTab(stash_index)
+
         stash_cell = self.trade_info.stash_item.position
         yield PlaceItem(stash_index, stash_cell, (0, 0))
         yield PriceItem(stash_index, stash_cell,
