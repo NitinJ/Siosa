@@ -4,6 +4,7 @@ import time
 from enum import Enum
 
 from siosa.common.decorations import abstractmethod, synchronized
+from siosa.control.game_step import StepStatus
 from siosa.control.window_controller import WindowController
 
 
@@ -109,7 +110,7 @@ class Task(threading.Thread):
         """
         pass
 
-    def _get_last_step_result(self):
+    def _get_last_step_result(self) -> StepStatus:
         """Returns: Returns the execution status of the last step that was run.
         Child classes can make use of this to evaluate what step to run next.
         """
