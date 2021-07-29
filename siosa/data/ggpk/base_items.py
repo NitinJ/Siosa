@@ -24,6 +24,7 @@ class BaseItems:
         Args:
             item_name:
         """
+        item_name = item_name.strip().lower()
         if not BaseItems._items:
             BaseItems._preprocess()
         if item_name not in BaseItems._items.keys():
@@ -44,4 +45,4 @@ class BaseItems:
 
 
 if __name__ == "__main__":
-    print(BaseItems.get_item_dimensions("Chaos Orb"))
+    print(BaseItems.get_item_dimensions("Contract: Tunnels"))
