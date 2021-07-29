@@ -142,7 +142,7 @@ class Locations:
 
     # Stash
     STASH_CLOSE_BUTTON = Location(620, 57, 636, 77, Resolutions.p1080)
-    STASH_FIRST_TAB_RIGHT_LIST = Location(690, 134, 860, 154, Resolutions.p1080)
+    STASH_FIRST_TAB_RIGHT_LIST = Location(764, 111, 764, 111, Resolutions.p1080)
     STASH_NORMAL_0_0 = Location(20, 130, 68, 178, Resolutions.p1080)
     STASH_QUAD_0_0 = Location(18, 129, 42, 153, Resolutions.p1080)
     STASH_TAB = Location(18, 129, 648, 758, Resolutions.p1080)
@@ -155,6 +155,7 @@ class Locations:
     INVENTORY_0_0_WITH_RIGHT_BORDER = Location(1273, 590, 1325, 640, Resolutions.p1080)
     INVENTORY_0_0_WITH_BOTTOM_BORDER = Location(1273, 590, 1323, 642, Resolutions.p1080)
     INVENTORY_ROW1 = Location(1273, 590, 1903, 640, Resolutions.p1080)
+    INVENTORY_BANNER = Location(1520, 58, 1650, 80, Resolutions.p1080)
 
     # Player items
     PLAYER_ITEMS_CHEST_PIECE = Location(1577, 269, 1596, 288, Resolutions.p1080)
