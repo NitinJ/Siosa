@@ -1,6 +1,7 @@
 import logging
 
 from siosa.control.game_step import Step, StepStatus
+from siosa.location.location_factory import Locations
 
 
 class Error:
@@ -28,6 +29,13 @@ class ChangeStashTab(Step):
 
         if not state['stash_open']:
             return StepStatus(False, Error.STASH_NOT_OPEN)
+
+        if self.index_to == 0:
+            self.logger.debug("Moving stash tabs to index 0")
+            self.mc.click_at_location(
+                self.lf.get(Locations.STASH_FIRST_TAB_RIGHT_LIST))
+            self.game_state.update({'open_stash_tab_index': self.index_to})
+            return StepStatus(True)
 
         current_index = state['open_stash_tab_index']
 
