@@ -2,6 +2,7 @@ import logging
 from enum import Enum
 
 from siosa.clipboard.poe_clipboard import PoeClipboard
+from siosa.control.console_controller import Commands
 from siosa.control.game_step import Step, StepStatus
 from siosa.data.inventory import Inventory
 from siosa.data.stash import Stash
@@ -14,6 +15,7 @@ from siosa.location.location_factory import Locations
 
 class Error(Enum):
     STASH_TAB_NOT_FOUND = 0
+    INVENTORY_NOT_OPEN = 1
 
 
 class ScanInventory(Step):
@@ -26,6 +28,8 @@ class ScanInventory(Step):
         self.inventory_0_0 = self.lf.get(Locations.INVENTORY_0_0)
         self.party_notification_tm = TemplateMatcher(Template.from_registry(
             TemplateRegistry.PARTY_NOTIFICATIONS_CLOSE_BUTTON))
+        self.inventory_banner_tm = TemplateMatcher(Template.from_registry(
+            TemplateRegistry.INVENTORY_BANNER))
         self.stash = Stash()
         self.items = []
 
@@ -35,6 +39,10 @@ class ScanInventory(Step):
             game_state:
         """
         self.game_state = game_state
+        if not self._is_inventory_open():
+            return StepStatus(False, Error.INVENTORY_NOT_OPEN)
+
+        self.clear_chat_messages()
         self.close_all_party_notifications()
 
         # Cells which are occupied by items.
@@ -98,6 +106,13 @@ class ScanInventory(Step):
         return [self.lf.create(p[0] + x, p[1] + y, p[0] + x, p[1] + y)
                 for p in points]
 
+    def clear_chat_messages(self):
+        self.cc.console_command(Commands.CLEAR)
+
     def close_all_party_notifications(self):
         for pos in self.get_party_notification_close_button_locations():
             self.mc.click_at_location(pos)
+
+    def _is_inventory_open(self):
+        return len(self.inventory_banner_tm.match(self.lf.get(
+            Locations.INVENTORY_BANNER))) > 0
