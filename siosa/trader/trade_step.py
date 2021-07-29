@@ -16,10 +16,10 @@ class TradeStep(Step):
     UPDATE_INTERVAL = 0.01
     MAX_RETRIES = 2
     TRADE_THANK_YOU = "Thanks and have fun !"
-    TRADE_OFFER_WAIT_TIMEOUT = 30
-    TRADE_ACCEPT_WAIT_TIMEOUT = 20
+    TRADE_OFFER_WAIT_TIMEOUT = 20
+    TRADE_ACCEPT_WAIT_TIMEOUT = 10
     RETRY_TIMEOUT = 3
-    TRADE_REQUEST_SEND_DELAY = 5
+    TRADE_REQUEST_SEND_DELAY = 3
 
     def __init__(self, trade_info: TradeInfo, log_listener):
         """
@@ -64,7 +64,7 @@ class TradeStep(Step):
             time.sleep(TradeStep.UPDATE_INTERVAL)
         self.dfa.join()
         self.on_end()
-        return StepStatus(True)
+        return StepStatus(self.accepted)
 
     def _update_trade_state(self):
         pass
