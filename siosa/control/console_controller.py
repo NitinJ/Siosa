@@ -3,6 +3,7 @@ import time
 from enum import Enum
 
 import pyautogui
+import pyperclip
 
 from siosa.common.singleton import Singleton
 from siosa.control.keyboard_controller import KeyboardController
@@ -34,7 +35,15 @@ class ConsoleController(metaclass=Singleton):
         """
         pyautogui.press('enter')
         time.sleep(self.delay)
-        pyautogui.write('@{} {}'.format(to, chat))
+
+        if not to.isascii():
+            pyautogui.write('@')
+            pyperclip.copy(to)
+            pyautogui.hotkey("ctrl", "v")
+            pyautogui.write(' {}'.format(chat))
+        else:
+            pyautogui.write('@{} {}'.format(to, chat))
+
         time.sleep(self.delay)
         pyautogui.press('enter')
 
@@ -64,3 +73,9 @@ class Commands:
     INVITE_TO_PARTY = (lambda x: "/invite {}".format(x))
     TRADE = (lambda x: "/tradewith {}".format(x))
     KICK_FROM_PARTY = (lambda x: "/kick {}".format(x))
+    CLEAR = "/clear"
+
+
+if __name__ == "__main__":
+    cc = ConsoleController()
+    cc.send_chat('@ыфвпуфкап', 'hey still want the gem ?')
