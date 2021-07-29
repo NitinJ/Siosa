@@ -1,6 +1,7 @@
 import logging
 
 from siosa.control.game_task import Task
+from siosa.control.steps.change_stash_tab_step import ChangeStashTab
 from siosa.control.steps.clean_inventory_step import CleanInventory
 from siosa.control.steps.close_all_windows_step import CloseAllWindows
 from siosa.control.steps.open_stash_step import OpenStash
@@ -20,6 +21,7 @@ class InitTask(Task):
             CloseAllWindows(),
             OpenStash(),
             Wait(1),
+            ChangeStashTab(0),
             ScanInventory(),
             CleanInventory()
         )
