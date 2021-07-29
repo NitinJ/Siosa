@@ -39,10 +39,11 @@ class GameTaskExecutor(StoppableThread):
 
     @override
     def run_once(self):
+        time.sleep(GameTaskExecutor.TASK_STATE_CHECK_DELAY)
+
         self.lock.acquire()
         task = self.task_store.get_next()
         self.lock.release()
-
         if not task:
             return
 
@@ -52,13 +53,16 @@ class GameTaskExecutor(StoppableThread):
             self.running_task = task
             task.run_task(self.game_state)
         elif task != self.running_task:
-            self.logger.debug("Executing a new task: {}".format(task.name))
             if self.running_task.is_running():
                 self.logger.debug("Stopping currently running task: {}" \
                                   .format(self.running_task.name))
                 self.running_task.stop()
-
-            self.running_task = task
-            task.run_task(self.game_state)
-
-        time.sleep(GameTaskExecutor.TASK_STATE_CHECK_DELAY)
+            elif not self.running_task.is_alive():
+                # We need to check alive status here as task might take some
+                # time to stop and during this phase (running -> stopping), the
+                # is_running method will return False.
+                # TODO: Fix this in GameTask by adding more states like stopping
+                # Running task stopped.
+                self.running_task = task
+                self.logger.debug("Executing a new task: {}".format(task.name))
+                task.run_task(self.game_state)
