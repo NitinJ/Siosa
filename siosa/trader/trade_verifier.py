@@ -1,4 +1,5 @@
 import logging
+import time
 
 from siosa.clipboard.poe_clipboard import PoeClipboard
 from siosa.control.mouse_controller import MouseController
@@ -178,5 +179,5 @@ if __name__ == "__main__":
     trade_info = TradeRequest("Pew", "pew", {
         'type': 'chaos',
         'amount': 85.0
-    }, 'pew', 'pew', (0, 0))
+    }, 'pew', 'pew', (0, 0), time.time())
     print(TradeVerifier(trade_info).verify())

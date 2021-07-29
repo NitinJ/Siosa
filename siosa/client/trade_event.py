@@ -1,6 +1,7 @@
 import logging
 import math
 import re
+import time
 
 
 class TradeEvent:
@@ -16,6 +17,7 @@ class TradeEvent:
         self.league = league
         self.stash = stash
         self.position = position
+        self.request_time = time.time()
 
     def __str__(self):
         return str({
