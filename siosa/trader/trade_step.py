@@ -90,6 +90,7 @@ class TradeStep(Step):
                               self.cancel(offer_timeout))
         self.dfa.add_state_fn(TradeState(States.TRADING_O_O),
                               self.cancel(accept_timeout))
+        self.dfa.add_state_fn(TradeState(States.TRADING_O_R), self.verify)
         self.dfa.add_state_fn(TradeState(States.TRADING_O_A), self.verify)
 
         # Verified success
@@ -157,7 +158,7 @@ class TradeStep(Step):
     async def send_trade_request(self):
         self.logger.debug("Sending trade request to {}".format(self.trader))
         await asyncio.sleep(TradeStep.TRADE_REQUEST_SEND_DELAY)
-        self.cc.console_command(Commands.TRADE(self.trader))
+        self.cc.player_console_command(self.trader, Commands.TRADE)
 
     async def offer(self):
         self.logger.debug("Offering item to trade")
@@ -188,4 +189,5 @@ class TradeStep(Step):
         self.state.update(States.ENDED)
 
     def _kick_from_party(self):
-        self.cc.console_command(Commands.KICK_FROM_PARTY(self.trader))
+        self.cc.player_console_command(self.trader, Commands.KICK_FROM_PARTY)
+
