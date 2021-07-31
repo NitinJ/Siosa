@@ -161,17 +161,17 @@ class ClipboardItemFactory:
         return item
 
     def _get_gem_level_quality(self, data_sections):
+        section = data_sections[1]
         level = 1
         quality = 0
-        for section in data_sections:
-            for line in section:
-                if "Level: " in line:
-                    level = int(line.split("Level: ")[1].split(" ")[0])
-                if "Quality: " in line:
-                    match = re.compile(GEM_QUALITY_REGEX).match(
-                        line.split("Quality: ")[1].split(" ")[0])
-                    if match:
-                        quality = int(match.groups()[0])
+        for line in section:
+            if "Level: " in line:
+                level = int(line.split("Level: ")[1].split(" ")[0])
+            if "Quality: " in line:
+                match = re.compile(GEM_QUALITY_REGEX).match(
+                    line.split("Quality: ")[1].split(" ")[0])
+                if match:
+                    quality = int(match.groups()[0])
         return level, quality
 
     def _create_gem_item(self, info, data_sections):

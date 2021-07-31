@@ -24,4 +24,6 @@ if __name__ == "__main__":
     PoeApi('MopedDriverr', 'c31a47639f74935c1545ea12a9501ee0', 'Expedition')
     data = ClipboardReader().get_clipboard_data()
     factory = PoeItemFactory()
-    print(factory.get_item(data))
+    item = factory.get_item(data)
+    print(item)
+    print(item.get_trade_name())
