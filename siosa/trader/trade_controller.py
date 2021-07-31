@@ -152,15 +152,23 @@ class TradeController(StoppableThread):
             candidate_stash_tabs:
             trade_request:
         """
+        self.logger.debug(
+            "Checking item ({}) in candidate stash tabs: {}".format(
+                (trade_request.position[0], trade_request.position[1]),
+                candidate_stash_tabs))
+
         for stash_tab in candidate_stash_tabs:
+            # These positions are 0 indexed but still are x,y and not row,col.
             x = trade_request.position[0]
             y = trade_request.position[1]
+
             item_at_location = stash_tab.get_item_at_location(x, y)
+
             if "Map" in trade_request.item_name:
                 trade_request.item_name = trade_request.item_name.split(" (")[0]
+
             if item_at_location and \
-                    item_at_location.get_full_name() == trade_request.item_name:
+                    item_at_location.get_trade_name() == trade_request.item_name:
                 # Use y,x for position instead of x,y as x:Left, y:Top
                 return StashItem(item_at_location, stash_tab, (y, x))
-        return None
         return None
