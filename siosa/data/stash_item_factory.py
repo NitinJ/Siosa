@@ -121,6 +121,8 @@ class StashItemFactory:
         }
 
     def _get_property(self, item_data, property):
+        if 'properties' not in item_data.keys():
+            return None
         for prop in item_data['properties']:
             if prop['name'] == property:
                 return prop
