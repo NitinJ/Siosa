@@ -165,3 +165,10 @@ class Stash(metaclass=Singleton):
         for tab_name in tab_names:
             stash_tabs.extend(self.get_stash_tabs_by_name(tab_name))
         return stash_tabs
+
+
+if __name__ == "__main__":
+    PoeApi('MopedDriverr', 'c31a47639f74935c1545ea12a9501ee0', 'Expedition')
+    s = Stash()
+    tab = s.get_stash_tab_by_index(3)
+    print(tab.get_item_at_location(0, 13))

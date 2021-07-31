@@ -1,6 +1,9 @@
+import re
+
 from scanf import scanf
 
 from siosa.data.affix import Affix
+from siosa.data.gem import Gem
 from siosa.data.poe_currencies import *
 from siosa.data.poe_item import ItemType
 from siosa.network.poe_api import PoeApi
@@ -16,6 +19,8 @@ INFLUENCES = [
     'Hunter',
     'Redeemer',
 ]
+# TODO: Move to common place between stash and clipboard item factories.
+GEM_QUALITY_REGEX = "\+(\d*)\%"
 
 
 class ClipboardItemFactory:
@@ -113,15 +118,7 @@ class ClipboardItemFactory:
                     return True
         return False
 
-    def _create_general_item(self, type, rarity, data_sections):
-        """
-        Args:
-            type:
-            rarity:
-            data_sections:
-        """
-        self.logger.debug("Creating general item")
-
+    def _get_item_info(self, rarity, data_sections):
         try:
             # TODO: Use these affix objects to create more metadata for item.
             affixes = self._parse_affixes(
@@ -145,9 +142,41 @@ class ClipboardItemFactory:
             'influences': self._get_influences(data_sections),
             'synthesized': self._get_is_synthesized(data_sections)
         }
-        item = Item(item_info=info, item_type=type)
-        self.logger.debug("Created general item [{}]".format(str(item)))
+        return info
+
+    def _create_general_item(self, type, rarity, data_sections):
+        """
+        Args:
+            type:
+            rarity:
+            data_sections:
+        """
+        self.logger.debug("Creating general item")
+        info = self._get_item_info(rarity, data_sections)
+        if type == ItemType.GEM:
+            item = self._create_gem_item(info, data_sections)
+        else:
+            item = Item(item_info=info, item_type=type)
+        self.logger.debug("Created item [{}]".format(str(item)))
         return item
+
+    def _get_gem_level_quality(self, data_sections):
+        level = 1
+        quality = 0
+        for section in data_sections:
+            for line in section:
+                if "Level: " in line:
+                    level = int(line.split("Level: ")[1].split(" ")[0])
+                if "Quality: " in line:
+                    match = re.compile(GEM_QUALITY_REGEX).match(
+                        line.split("Quality: ")[1].split(" ")[0])
+                    if match:
+                        quality = int(match.groups()[0])
+        return level, quality
+
+    def _create_gem_item(self, info, data_sections):
+        level, quality = self._get_gem_level_quality(data_sections)
+        return Gem(level, quality, item_info=info)
 
     def _get_clipboard_item_type(self, data_sections):
         """

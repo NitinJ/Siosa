@@ -1,5 +1,7 @@
+from siosa.clipboard.clipboard_reader import ClipboardReader
 from siosa.data.clipboard_item_factory import ClipboardItemFactory
 from siosa.data.stash_item_factory import StashItemFactory
+from siosa.network.poe_api import PoeApi
 
 
 class PoeItemFactory:
@@ -16,3 +18,10 @@ class PoeItemFactory:
         if source == 'clipboard':
             return self.cif_.get_item(data)
         return self.sif_.get_item(data)
+
+
+if __name__ == "__main__":
+    PoeApi('MopedDriverr', 'c31a47639f74935c1545ea12a9501ee0', 'Expedition')
+    data = ClipboardReader().get_clipboard_data()
+    factory = PoeItemFactory()
+    print(factory.get_item(data))

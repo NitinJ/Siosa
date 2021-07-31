@@ -1,3 +1,6 @@
+import re
+
+from siosa.data.gem import Gem
 from siosa.data.poe_currencies import *
 from siosa.data.poe_item import ItemType
 from siosa.network.poe_api import PoeApi
@@ -16,6 +19,7 @@ FRAMETYPE_TO_RARITY = {
     5: 'Currency',
     6: 'Divination Card'
 }
+GEM_QUALITY_REGEX = "\+(\d*)\%"
 
 
 class StashItemFactory:
@@ -40,6 +44,8 @@ class StashItemFactory:
         self.logger.debug("Got {} from stash data".format(type))
         if type == ItemType.CURRENCY:
             return self._create_currency_item(item_data)
+        elif type == ItemType.GEM:
+            return self._create_gem_item(item_data)
         elif type == ItemType.ITEM:
             return self._create_general_item(item_data)
         return None
@@ -75,6 +81,8 @@ class StashItemFactory:
         """
         if not set.isdisjoint(set(STASH_CURRENCY_KEYS), set(data.keys())):
             return ItemType.CURRENCY
+        elif data['frameType'] == 4:
+            return ItemType.GEM
         else:
             return ItemType.ITEM
 
@@ -95,13 +103,8 @@ class StashItemFactory:
         frametype = self._get(item_data, 'frameType', 0)
         return self._get(FRAMETYPE_TO_RARITY, frametype, 'Normal')
 
-    def _create_general_item(self, item_data):
-        """
-        Args:
-            item_data:
-        """
-        self.logger.debug("Creating general item from stash data")
-        info = {
+    def _get_item_info(self, item_data):
+        return {
             'rarity': self._get_rarity_of_stash_item(item_data),
             'name': self._get(item_data, 'name', ''),
             'type_line': self._get(item_data, 'typeLine', ''),
@@ -111,6 +114,42 @@ class StashItemFactory:
             'note': self._get(item_data, 'note', ''),
             'influences': self._get(item_data, 'influences', {}),
         }
+
+    def _get_property(self, item_data, property):
+        for prop in item_data['properties']:
+            if prop['name'] == property:
+                return prop
+        return None
+
+    def _get_gem_quality(self, item_data):
+        quality_s = self._get_property(item_data, 'Quality')
+        if not quality_s:
+            return 0
+        quality_s = ['values'][0][0]
+        match = re.compile(GEM_QUALITY_REGEX).match(quality_s)
+        if match:
+            return int(match[0])
+        else:
+            return 0
+
+    def _create_gem_item(self, item_data):
+        """
+        Args:
+            item_data:
+        """
+        info = self._get_item_info(item_data)
+        gem_quality = self._get_gem_quality(item_data)
+        gem_level = int(self._get_property(item_data, 'Level')['values'][0][0].split(" ")[0])
+        item = Gem(gem_level, gem_quality, info)
+        self.logger.debug("Created gem item [{}]".format(str(item)))
+        return item
+
+    def _create_general_item(self, item_data):
+        """
+        Args:
+            item_data:
+        """
+        info = self._get_item_info(item_data)
         item = Item(item_info=info, item_type=ItemType.ITEM)
         self.logger.debug("Created general item [{}]".format(str(item)))
         return item
