@@ -35,14 +35,22 @@ class ConsoleController(metaclass=Singleton):
         """
         pyautogui.press('enter')
         time.sleep(self.delay)
+        pyautogui.write('@')
 
-        if not to.isascii():
-            pyautogui.write('@')
-            pyperclip.copy(to)
-            pyautogui.hotkey("ctrl", "v")
-            pyautogui.write(' {}'.format(chat))
-        else:
-            pyautogui.write('@{} {}'.format(to, chat))
+        pyperclip.copy(to)
+        pyautogui.hotkey("ctrl", "v")
+
+        pyautogui.write(' {}'.format(chat))
+        time.sleep(self.delay)
+        pyautogui.press('enter')
+
+    def player_console_command(self, to, command):
+        pyautogui.press('enter')
+        time.sleep(self.delay)
+        pyautogui.write(command + ' ')
+
+        pyperclip.copy(to)
+        pyautogui.hotkey("ctrl", "v")
 
         time.sleep(self.delay)
         pyautogui.press('enter')
@@ -70,12 +78,13 @@ class ConsoleController(metaclass=Singleton):
 
 
 class Commands:
-    INVITE_TO_PARTY = (lambda x: "/invite {}".format(x))
-    TRADE = (lambda x: "/tradewith {}".format(x))
-    KICK_FROM_PARTY = (lambda x: "/kick {}".format(x))
+    INVITE_TO_PARTY = "/invite"
+    TRADE = "/tradewith"
+    KICK_FROM_PARTY = "/kick"
     CLEAR = "/clear"
 
 
 if __name__ == "__main__":
     cc = ConsoleController()
-    cc.send_chat('@ыфвпуфкап', 'hey still want the gem ?')
+    cc.send_chat('@Мороженый_Рожок', 'hey still want the gem ?')
+    cc.player_console_command('@ыфвпуфкап', Commands.TRADE)
