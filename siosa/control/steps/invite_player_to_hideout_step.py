@@ -30,8 +30,8 @@ class InvitePlayerToHideoutStep(Step):
         self.game_state = game_state
         if self.msg:
             self.cc.send_chat(self.player_account_name, self.msg)
-        self.cc.console_command(
-            Commands.INVITE_TO_PARTY(self.player_account_name))
+        self.cc.player_console_command(self.player_account_name,
+                                       Commands.INVITE_TO_PARTY)
         status = self._wait_for_player_to_join_hideout()
         if not status:
             return StepStatus(False, Error.TIMEOUT)
