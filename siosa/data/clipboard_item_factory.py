@@ -4,6 +4,7 @@ from scanf import scanf
 
 from siosa.data.affix import Affix
 from siosa.data.gem import Gem
+from siosa.data.map import Map
 from siosa.data.poe_currencies import *
 from siosa.data.poe_item import ItemType
 from siosa.network.poe_api import PoeApi
@@ -155,6 +156,8 @@ class ClipboardItemFactory:
         info = self._get_item_info(rarity, data_sections)
         if type == ItemType.GEM:
             item = self._create_gem_item(info, data_sections)
+        elif type == ItemType.MAP:
+            item = self._create_map_item(info, data_sections)
         else:
             item = Item(item_info=info, item_type=type)
         self.logger.debug("Created item [{}]".format(str(item)))
@@ -177,6 +180,16 @@ class ClipboardItemFactory:
     def _create_gem_item(self, info, data_sections):
         level, quality = self._get_gem_level_quality(data_sections)
         return Gem(level, quality, item_info=info)
+
+    def _get_map_tier(self, data_sections):
+        section = data_sections[1]
+        for line in section:
+            if "Map Tier: " in line:
+                return int(line.split("Map Tier: ")[1])
+        return None
+
+    def _create_map_item(self, info, data_sections):
+        return Map(self._get_map_tier(data_sections), item_info=info)
 
     def _get_clipboard_item_type(self, data_sections):
         """
@@ -354,10 +367,7 @@ class ClipboardItemFactory:
             rarity:
         """
         try:
-            return data_sections[1][0].startswith("Map Tier:") and \
-                   data_sections[5][
-                       0] == "Travel to this Map by using it in a personal Map Device. Maps can only be used once." and \
-                   len(data_sections[5]) == 1
+            return data_sections[1][0].startswith("Map Tier:")
         except:
             return False
 

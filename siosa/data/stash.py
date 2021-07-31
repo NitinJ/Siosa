@@ -170,5 +170,7 @@ class Stash(metaclass=Singleton):
 if __name__ == "__main__":
     PoeApi('MopedDriverr', 'c31a47639f74935c1545ea12a9501ee0', 'Expedition')
     s = Stash()
-    tab = s.get_stash_tab_by_index(3)
-    print(tab.get_item_at_location(0, 13))
+    tab = s.get_stash_tab_by_index(9)
+    item = tab.get_item_at_location(0, 2)
+    print(item)
+    print(item.get_trade_name())

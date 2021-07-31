@@ -1,6 +1,7 @@
 import re
 
 from siosa.data.gem import Gem
+from siosa.data.map import Map
 from siosa.data.poe_currencies import *
 from siosa.data.poe_item import ItemType
 from siosa.network.poe_api import PoeApi
@@ -46,6 +47,8 @@ class StashItemFactory:
             return self._create_currency_item(item_data)
         elif type == ItemType.GEM:
             return self._create_gem_item(item_data)
+        elif type == ItemType.MAP:
+            return self._create_map_item(item_data)
         elif type == ItemType.ITEM:
             return self._create_general_item(item_data)
         return None
@@ -83,6 +86,8 @@ class StashItemFactory:
             return ItemType.CURRENCY
         elif data['frameType'] == 4:
             return ItemType.GEM
+        elif self._get_property(data, "Map Tier"):
+            return ItemType.MAP
         else:
             return ItemType.ITEM
 
@@ -131,6 +136,17 @@ class StashItemFactory:
             return int(match[0])
         else:
             return 0
+
+    def _create_map_item(self, item_data):
+        """
+        Args:
+            item_data:
+        """
+        info = self._get_item_info(item_data)
+        map_tier = int(self._get_property(item_data, 'Map Tier')['values'][0][0])
+        item = Map(map_tier, info)
+        self.logger.debug("Created map item [{}]".format(str(item)))
+        return item
 
     def _create_gem_item(self, item_data):
         """
