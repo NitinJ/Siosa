@@ -113,7 +113,7 @@ class Item(object):
     def get_name(self):
         return self.item_info['type_line']
 
-    def get_full_name(self):
+    def get_trade_name(self):
         if self.item_info['name'] and self.item_info['type_line']:
             return "{} {}".format(self.item_info['name'], self.item_info['type_line'])
         elif self.item_info['type_line']:
