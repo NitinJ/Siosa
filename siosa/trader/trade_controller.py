@@ -163,10 +163,6 @@ class TradeController(StoppableThread):
             y = trade_request.position[1]
 
             item_at_location = stash_tab.get_item_at_location(x, y)
-
-            if "Map" in trade_request.item_name:
-                trade_request.item_name = trade_request.item_name.split(" (")[0]
-
             if item_at_location and \
                     item_at_location.get_trade_name() == trade_request.item_name:
                 # Use y,x for position instead of x,y as x:Left, y:Top
