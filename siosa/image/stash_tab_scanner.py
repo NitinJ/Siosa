@@ -54,8 +54,7 @@ class StashTabScanner:
             self.grid.get_cells_in_positions(
                 self.tm.match(self.lf.get(Locations.STASH_TAB)))
         if cell in empty_cells:
-            self.logger.debug(
-                "Cell({}, {}) is empty".format(cell[0], cell[1]))
+            self.logger.debug("Cell({}, {}) is empty".format(cell[0], cell[1]))
             return True
         return False
 
@@ -91,6 +90,8 @@ class StashTabScanner:
 
 
 if __name__ == "__main__":
+    logging.basicConfig(level=logging.INFO,
+                        format="[%(filename)s:%(lineno)s - %(funcName)s() ] %(message)s")
     class StashTabFake:
         def __init__(self, is_quad, size, cell_border):
             self.is_quad = is_quad
@@ -101,4 +102,4 @@ if __name__ == "__main__":
 
     s = StashTabFake(True, (24, 24), (1, 1))
     scanner = StashTabScanner(s, debug=True)
-    print(scanner.is_empty((6, 14)))
+    print(scanner.is_empty((10, 18)))
