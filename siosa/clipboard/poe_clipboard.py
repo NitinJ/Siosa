@@ -23,8 +23,10 @@ class PoeClipboard:
             PoeClipboard.COPY_KEY_COMBINATION)
 
         try:
-            return self.item_factory.get_item(
-                self.clipboard_reader.get_clipboard_data())
+            data = self.clipboard_reader.get_clipboard_data()
+            if not data:
+                return None
+            return self.item_factory.get_item(data)
         except ClipboardDataFormatException as e:
             self.keyboard_controller.keypress_with_modifiers(
                 PoeClipboard.COPY_KEY_COMBINATION)
