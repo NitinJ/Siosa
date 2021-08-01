@@ -68,5 +68,8 @@ class KeyboardController:
         pyautogui.write(text)
 
     def unhold(self):
-        for key in self.held_modifier_keys.keys():
-            self.unhold_modifier(key)
+        for k in self.held_modifier_keys.keys():
+            sleep(self.key_press_delay)
+            pyautogui.keyUp(k)
+        self.held_modifier_keys.clear()
+
