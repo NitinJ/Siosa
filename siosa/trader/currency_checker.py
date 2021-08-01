@@ -91,7 +91,7 @@ class CurrencyChecker:
     def _get_ex_to_chaos(self):
         if self.exalted_ratio:
             return self.exalted_ratio
-        exalted = Currency(CurrencyExchange(), 'Exalted orb', 'exalted', 10)
+        exalted = Currency(CurrencyExchange(), 'Exalted Orb', 'exalted', 10)
         self.exalted_ratio = math.floor(exalted.get_value_in_chaos())
         self.logger.debug("Got chaos-ex ratio: {}".format(self.exalted_ratio))
         return self.exalted_ratio
