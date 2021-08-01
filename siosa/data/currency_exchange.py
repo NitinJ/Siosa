@@ -28,10 +28,11 @@ class CurrencyExchange(metaclass=Singleton):
         self.exchanger = Exchanger(self.poe_api, self)
         self.exchanger.start()
 
-        self.update_rates({
-            'exalted': int(math.floor(
-                self.poe_api.get_exchange_rate("exalted", "chaos")))
-        })
+        rate = self.poe_api.get_exchange_rate("exalted", "chaos")
+        if rate:
+            self.update_rates({
+                'exalted': int(math.floor(rate))
+            })
 
     def update_rates(self, rates):
         """
@@ -74,7 +75,9 @@ class Exchanger(threading.Thread):
     def run(self):
         while True:
             time.sleep(REFRESH_DURATION)
+            rate = self.api.get_exchange_rate("exalted", "chaos")
+            if not rate:
+                continue
             self.exchange.update_rates({
-                'exalted': int(math.floor(
-                    self.api.get_exchange_rate("exalted", "chaos")))
+                'exalted': int(math.floor(rate))
             })
