@@ -82,7 +82,7 @@ class Affix:
         crafted = (name is 'Upgraded')
         affix_str_lines = []
         for affix_line in affix_arr[1:]:
-            affix_line = affix_line.replace(" â€” Unscalable Value", "")
+            affix_line = affix_line.replace(" Unscalable Value", "")
             affix_line = re.sub(Affix.AFFIX_VALUE_RANGE_REGEX, '', affix_line)
 
             if affix_line.find("fractured"):
