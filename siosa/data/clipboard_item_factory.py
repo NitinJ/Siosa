@@ -119,14 +119,7 @@ class ClipboardItemFactory:
                     return True
         return False
 
-    def _get_item_info(self, rarity, data_sections):
-        try:
-            # TODO: Use these affix objects to create more metadata for item.
-            affixes = self._parse_affixes(
-                self._get_all_mods(rarity, data_sections))
-        except:
-            affixes = []
-
+    def _get_item_info(self, rarity, affixes, data_sections):
         identified = not self._get_unidentified(data_sections)
         info = {
             'rarity': rarity,
@@ -153,13 +146,20 @@ class ClipboardItemFactory:
             data_sections:
         """
         self.logger.debug("Creating general item")
-        info = self._get_item_info(rarity, data_sections)
+        try:
+            # TODO: Use these affix objects to create more metadata for item.
+            affixes = self._parse_affixes(
+                self._get_all_mods(rarity, data_sections))
+        except:
+            affixes = []
+        info = self._get_item_info(rarity, affixes, data_sections)
+
         if type == ItemType.GEM:
             item = self._create_gem_item(info, data_sections)
         elif type == ItemType.MAP:
             item = self._create_map_item(info, data_sections)
         else:
-            item = Item(item_info=info, item_type=type)
+            item = Item(item_info=info, affixes=affixes, item_type=type)
         self.logger.debug("Created item [{}]".format(str(item)))
         return item
 

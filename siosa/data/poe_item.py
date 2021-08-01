@@ -53,14 +53,19 @@ class ItemType(Enum):
 
 
 class Item(object):
-    def __init__(self, item_info={}, item_type=ItemType.UNKNOWN):
+    def __init__(self, item_info=None, affixes=None, item_type=ItemType.UNKNOWN):
         # Internal type.
         """
         Args:
             item_info:
             item_type:
         """
+        if affixes is None:
+            affixes = []
+        if item_info is None:
+            item_info = {}
         self.type = item_type
+        self.affixes = affixes
 
         # Item info.
         self.item_info = {
@@ -101,6 +106,21 @@ class Item(object):
             'h': h
         })
 
+    def get_prefixes(self):
+        return [x for x in self.affixes if x.is_prefix()]
+
+    def get_suffixes(self):
+        return [x for x in self.affixes if x.is_suffix()]
+
+    def get_num_affixes(self):
+        return len(self.affixes)
+
+    def get_num_prefixes(self):
+        return self.item_info['n_prefixes']
+
+    def get_num_suffixes(self):
+        return self.item_info['n_suffixes']
+
     def get_dimensions(self):
         return self.item_info['w'], self.item_info['h']
 
@@ -110,8 +130,14 @@ class Item(object):
             return None
         return None
 
+    def get_rarity(self):
+        return self.item_info['rarity']
+
     def get_name(self):
         return self.item_info['type_line']
+
+    def get_base_type(self):
+        return self.item_info['base_type']
 
     def get_trade_name(self):
         if self.item_info['name'] and self.item_info['type_line']:
