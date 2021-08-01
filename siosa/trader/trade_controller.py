@@ -16,7 +16,7 @@ from siosa.trader.trade_task import TradeTask
 
 class TradeController(StoppableThread):
     QUEUE_LISTEN_DELAY = 0.05
-    AFK_TIME = 15 * 60  # 15 mins
+    AFK_TIME = 10 * 60  # 10 mins
     MAX_BACKLOG_TIME = 60  # 1 minute
 
     def __init__(self, game_controller: GameController, log_listener,
@@ -164,7 +164,8 @@ class TradeController(StoppableThread):
 
             item_at_location = stash_tab.get_item_at_location(x, y)
             if item_at_location and \
-                    item_at_location.get_trade_name() == trade_request.item_name:
+                    item_at_location.get_trade_name().lower() == \
+                    trade_request.item_name.lower():
                 # Use y,x for position instead of x,y as x:Left, y:Top
                 return StashItem(item_at_location, stash_tab, (y, x))
         return None
