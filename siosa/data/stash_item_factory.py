@@ -132,10 +132,10 @@ class StashItemFactory:
         quality_s = self._get_property(item_data, 'Quality')
         if not quality_s:
             return 0
-        quality_s = ['values'][0][0]
+        quality_s = quality_s['values'][0][0]
         match = re.compile(GEM_QUALITY_REGEX).match(quality_s)
         if match:
-            return int(match[0])
+            return int(match.groups()[0])
         else:
             return 0
 
