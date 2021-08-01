@@ -122,12 +122,15 @@ class Locations:
     SCREEN_RIGHT_STRIP = Location(1870, 0, 1920, 1080, Resolutions.p1080)
 
     # Currency tab
-    CURRENCY_CENTER = Location(295, 366, 371, 525, Resolutions.p1080)
-    CURRENCY_ALTERATION = Location(98, 245, 131, 281, Resolutions.p1080)
-    CURRENCY_AUGMENT = Location(217, 299, 245, 329, Resolutions.p1080)
-    CURRENCY_REGAL = Location(413, 241, 451, 279, Resolutions.p1080)
-    CURRENCY_SCOURING = Location(157, 423, 195, 461, Resolutions.p1080)
-    CURRENCY_TRANSMUTATION = Location(39, 242, 77, 280, Resolutions.p1080)
+    ITEM_LOCATION = Location(336, 419, 336, 419, Resolutions.p1080)
+    CURRENCY_ALTERATION = Location(114, 263, 114, 263, Resolutions.p1080)
+    CURRENCY_AUGMENTATION = Location(233, 318, 233, 318, Resolutions.p1080)
+    CURRENCY_REGAL = Location(431, 263, 431, 263, Resolutions.p1080)
+    CURRENCY_SCOURING = Location(116, 441, 116, 441, Resolutions.p1080)
+    CURRENCY_TRANSMUTATION = Location(56, 268, 56, 268, Resolutions.p1080)
+    CURRENCY_CHANCE = Location(230, 264, 230, 264, Resolutions.p1080)
+    CURRENCY_CHAOS = Location(546, 264, 546, 264, Resolutions.p1080)
+    CURRENCY_ALCHEMY = Location(490, 264, 490, 264, Resolutions.p1080)
 
     # Decorations
     DECORATIONS_BANNER = Location(1503, 56, 1674, 81,
@@ -164,17 +167,14 @@ class Locations:
     TRADE_AWAITING_TRADE_BOX = Location(714, 568, 1203, 601, Resolutions.p1080)
     TRADE_AWAITING_TRADE_CANCEL_BUTTON = Location(1054, 544, 1176, 572, Resolutions.p1080)
     TRADE_WINDOW_TITLE = Location(541, 78, 713, 114, Resolutions.p1080)
-
     TRADE_WINDOW_ME = Location(309, 533, 944, 799, Resolutions.p1080)
     TRADE_WINDOW_ME_0_0 = Location(312, 536, 363, 587, Resolutions.p1080)
     TRADE_WINDOW_ME_EMPTY_TEXT = Location(469, 658, 785, 676, Resolutions.p1080)
-
     TRADE_WINDOW_OTHER = Location(308, 200, 947, 471, Resolutions.p1080)
     TRADE_WINDOW_OTHER_0_0 = Location(313, 206, 363, 256, Resolutions.p1080)
     TRADE_WINDOW_OTHER_ROW1 = Location(311, 204, 942, 256, Resolutions.p1080)
     TRADE_WINDOW_OTHER_0_0_COUNT = Location(315, 206, 336, 225, Resolutions.p1080)
     TRADE_WINDOW_OTHER_SMALL_0_0 = Location(328, 222, 348, 241, Resolutions.p1080)
-
     TRADE_WINDOW_MOUSEOVER_WARNING_TEXT = Location(492, 828, 537, 842, Resolutions.p1080)
     TRADE_ACCEPT_RETRACTED = Location(383, 821, 404, 850, Resolutions.p1080)
     TRADE_ACCEPT_GREEN_AURA = Location(349, 470, 397, 524, Resolutions.p1080)
@@ -188,3 +188,4 @@ class Locations:
     PARTY_NOTIFICATIONS_AREA = Location(1875, 585, 1920, 860, Resolutions.p1080)
 
     PRICE_ITEM_WINDOW_ARROW = Location(157, 251, 189, 283, Resolutions.p1080)
+
