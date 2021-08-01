@@ -8,5 +8,13 @@ class LicenseService:
         self.license = License(self.config)
 
     def get(self):
-        return {"key": self.config.get_license_key(),
-                "valid": self.license.valid()}
+        return {
+            "key": self.config.get_license_key(),
+            "valid": self.license.valid()
+        }
+
+    def register(self, key):
+        return {
+            "key": key,
+            "valid": self.license.register(key)
+        }

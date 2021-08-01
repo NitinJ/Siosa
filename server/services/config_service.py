@@ -6,9 +6,8 @@ class ConfigService:
         self.config = siosa_config
         self.config_file_path = config_file_path
 
-    def update(self, config={}):
+    def update(self, config):
         self.config.update(config)
-        self.config.write_config(self.config_file_path)
         return self.config.to_json()
 
     def get(self):

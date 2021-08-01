@@ -29,13 +29,14 @@ class ServiceManager:
         except:
             self.services[ServiceType.TASK] = None
         self.services[ServiceType.CONFIG] = \
-                self._create_service(ServiceType.CONFIG)
+            self._create_service(ServiceType.CONFIG)
         self.services[ServiceType.LICENSE] = \
-                self._create_service(ServiceType.LICENSE)
+            self._create_service(ServiceType.LICENSE)
 
     def get_service(self, service_type):
-        service = self.services[service_type]
-        return service
+        if service_type in self.services:
+            return self.services[service_type]
+        return None
 
     def restart_service(self, service_type):
         service = self.services[service_type]
