@@ -1,7 +1,9 @@
-from tools.roller.crafting_type import CraftingType
-from tools.roller.currency import Currency
-from tools.roller.matcher import WrongBaseItemException, Matcher
-from tools.roller.utils import affix_match_all
+from siosa.data.poe_currencies import CurrencyType
+from siosa.data.poe_item import Item
+from siosa.roller.crafting_type import CraftingType
+from siosa.roller.item_option import ItemOption
+from siosa.roller.matcher import Matcher, WrongBaseItemException
+from siosa.roller.utils import affix_match_all
 
 
 class CrafterFactory:
@@ -9,7 +11,7 @@ class CrafterFactory:
         pass
 
     @staticmethod
-    def get_crafter(item, crafting_type):
+    def get_crafter(item, crafting_type: CraftingType):
         """
         Args:
             item:
@@ -39,7 +41,7 @@ class Crafter:
     def get_crafting_type(self):
         raise NotImplementedError
 
-    def done(self, in_game_item):
+    def done(self, in_game_item: Item):
         """Returns whether the crafter is done crafting. :param in_game_item:
         The in game item.
 
@@ -57,9 +59,10 @@ class Crafter:
             return False, None
         next_currency_to_use = self._get_next_currency_to_use(
             in_game_item, matched, matched_item_option)
-        return matched, next_currency_to_use
+        done = matched and next_currency_to_use is None
+        return done, next_currency_to_use
 
-    def _get_next_currency_to_use(self, in_game_item, matched, matched_item_option):
+    def _get_next_currency_to_use(self, in_game_item: Item, matched, matched_item_option):
         """Returns the next currency to use on the item given the item_option it
         matched. :param in_game_item: The in game item. :param matched: Whether
         the in game item matched an item option :param matched_item_option: The
@@ -87,7 +90,7 @@ class AlterationCrafter(Crafter):
         """
         Crafter.__init__(self, item)
 
-    def _get_next_currency_to_use(self, in_game_item, matched, matched_item_option):
+    def _get_next_currency_to_use(self, in_game_item: Item, matched, matched_item_option):
         """
         Args:
             in_game_item:
@@ -97,24 +100,24 @@ class AlterationCrafter(Crafter):
         if matched:
             # Crafting complete.
             return None
-        if in_game_item.rarity == 'normal':
-            return Currency.TRANSMUTATION
-        if in_game_item.rarity == 'rare':
-            return Currency.SCOURING
+        if in_game_item.get_rarity() == 'normal':
+            return CurrencyType.TRANSMUTATION
+        if in_game_item.get_rarity() == 'rare':
+            return CurrencyType.SCOURING
         if self._should_use_augment(in_game_item):
-            return Currency.AUGMENTATION
-        return Currency.ALTERATION
+            return CurrencyType.AUGMENTATION
+        return CurrencyType.ALTERATION
 
     def get_crafting_type(self):
         return CraftingType.ALTERATION
 
-    def _should_use_augment(self, in_game_item):
+    def _should_use_augment(self, in_game_item: Item):
         """
         Args:
             in_game_item:
         """
         if in_game_item.get_num_affixes() > 1 or \
-                in_game_item.rarity != 'magic':
+                in_game_item.get_rarity() != 'magic':
             return False
         prefixes = in_game_item.get_prefixes()
         suffixes = in_game_item.get_suffixes()
@@ -131,7 +134,7 @@ class AlterationCrafter(Crafter):
                     # Suffix isn't required.
                     continue
                 if item_option.get_num_prefixes() == 0 or \
-                        affix_match_all(prefix, item_option.get_prefixes()):
+                        affix_match_all(item_option.get_prefixes(), prefix):
                     # Prefix isn't required or prefix matches.
                     return True
         if len(suffixes) > 0:
@@ -143,7 +146,7 @@ class AlterationCrafter(Crafter):
                     # Prefix isn't required.
                     continue
                 if item_option.get_num_suffixes() == 0 or \
-                        affix_match_all(suffix, item_option.get_num_suffixes()):
+                        affix_match_all(item_option.get_num_suffixes(), suffix):
                     # Suffix isn't required or suffix matches.
                     return True
         return False
@@ -160,7 +163,7 @@ class AlterationRegalCrafter(AlterationCrafter):
     def get_crafting_type(self):
         return CraftingType.ALTERATION_REGAL
 
-    def _get_next_currency_to_use(self, in_game_item, matched, matched_item_option):
+    def _get_next_currency_to_use(self, in_game_item: Item, matched, matched_item_option: ItemOption):
         """
         Args:
             in_game_item:
@@ -169,18 +172,18 @@ class AlterationRegalCrafter(AlterationCrafter):
         """
         if matched:
             if matched_item_option.rarity == 'magic':
-                return Currency.AUGMENTATION if \
-                    in_game_item.get_num_affixes() == 1 else Currency.REGAL
+                return CurrencyType.AUGMENTATION if \
+                    in_game_item.get_num_affixes() == 1 else CurrencyType.REGAL
             return None
 
-        if in_game_item.rarity == 'normal':
-            return Currency.TRANSMUTATION
-        if in_game_item.rarity == 'magic':
+        if in_game_item.get_rarity() == 'normal':
+            return CurrencyType.TRANSMUTATION
+        if in_game_item.get_rarity() == 'magic':
             if self._should_use_augment(in_game_item):
-                return Currency.AUGMENTATION
-            return Currency.ALTERATION
-        if in_game_item.rarity == 'rare':
-            return Currency.SCOURING
+                return CurrencyType.AUGMENTATION
+            return CurrencyType.ALTERATION
+        if in_game_item.get_rarity() == 'rare':
+            return CurrencyType.SCOURING
         return None
 
 
@@ -195,18 +198,18 @@ class ChancingCrafter(Crafter):
     def get_crafting_type(self):
         return CraftingType.CHANCING
 
-    def _get_next_currency_to_use(self, in_game_item, matched, matched_item_option):
+    def _get_next_currency_to_use(self, in_game_item, matched, matched_item_option: ItemOption):
         """
         Args:
             in_game_item:
             matched:
             matched_item_option:
         """
-        if matched or in_game_item == 'unique':
+        if matched or in_game_item.get_rarity() == 'unique':
             return None
-        if in_game_item.rarity == 'normal':
-            return Currency.CHANCE
-        return Currency.SCOURING
+        if in_game_item.get_rarity() == 'normal':
+            return CurrencyType.CHANCE
+        return CurrencyType.SCOURING
 
 
 class ChaosCrafter(Crafter):
@@ -220,17 +223,17 @@ class ChaosCrafter(Crafter):
     def get_crafting_type(self):
         return CraftingType.CHAOS
 
-    def _get_next_currency_to_use(self, in_game_item, matched, matched_item_option):
+    def _get_next_currency_to_use(self, in_game_item: Item, matched, matched_item_option: ItemOption):
         """
         Args:
             in_game_item:
             matched:
             matched_item_option:
         """
-        if matched or in_game_item.rarity == 'unique':
+        if matched or in_game_item.get_rarity() == 'unique':
             return None
-        if in_game_item.rarity == 'normal':
-            return Currency.ALCHEMY
-        if in_game_item.rarity == 'magic':
-            return Currency.REGAL
-        return Currency.CHAOS
+        if in_game_item.get_rarity() == 'normal':
+            return CurrencyType.ALCHEMY
+        if in_game_item.get_rarity() == 'magic':
+            return CurrencyType.REGAL
+        return CurrencyType.CHAOS

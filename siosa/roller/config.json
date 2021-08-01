@@ -1,0 +1,24 @@
+{
+    "items": [
+        {
+            "base_name": "conjurer boots",
+            "inventory_position": [
+                0,
+                0
+            ],
+            "crafting_type": "alteration",
+            "item_options": [
+                {
+                    "rarity": "magic",
+                    "prefixes": [
+                        {
+                            "name": "",
+                            "tier": 8,
+                            "hint": "movement"
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

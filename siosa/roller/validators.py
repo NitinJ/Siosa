@@ -1,8 +1,9 @@
 import itertools
 import logging
 
-from tools.roller.crafting_type import CraftingType, get_crafting_type
-from tools.roller.item import Affix, Item
+from siosa.data.affix import Affix
+from siosa.roller.crafting_type import CraftingType, get_crafting_type
+from siosa.roller.item_option import ItemOption
 
 
 class ValidatorFactory:
@@ -68,8 +69,7 @@ class Validator:
             affix:
             affix_type:
         """
-        tier = affix['tier']
-        tier = int(tier) if tier else None
+        tier = int(affix['tier']) if 'tier' in affix else None
         return Affix(affix['hint'], affix['name'], tier, affix_type)
 
     @staticmethod
@@ -79,14 +79,13 @@ class Validator:
             raw_item_option:
         """
         affixes = []
-        if raw_item_option['prefixes']:
+        if 'prefixes' in raw_item_option and raw_item_option['prefixes']:
             for prefix in raw_item_option['prefixes']:
-                affixes.append(Validator._get_affix(prefix, 'prefix'))
-        if raw_item_option['suffixes']:
+                affixes.append(Validator._get_affix(prefix, 'Prefix'))
+        if 'suffixes' in raw_item_option and raw_item_option['suffixes']:
             for suffix in raw_item_option['suffixes']:
-                affixes.append(Validator._get_affix(suffix, 'suffix'))
-        return Item(
-            'unknown', raw_item_option['rarity'], 'unknown', affixes)
+                affixes.append(Validator._get_affix(suffix, 'Suffix'))
+        return ItemOption('', raw_item_option['rarity'], '', affixes)
 
     def _validate_internal(self, item):
         """
@@ -113,8 +112,8 @@ class AlterationCraftingValidator(Validator):
         Args:
             item_option:
         """
-        prefixes = item_option['prefixes']
-        suffixes = item_option['suffixes']
+        prefixes = item_option.get('prefixes', [])
+        suffixes = item_option.get('suffixes', [])
         assert (len(prefixes) or len(suffixes))
         for affix in itertools.chain(prefixes, suffixes):
             if affix['name'] and affix['tier']:
@@ -123,7 +122,7 @@ class AlterationCraftingValidator(Validator):
 
 class AlterationRegalCraftingValidator(AlterationCraftingValidator):
     def __init__(self):
-        AlterationCraftingValidator.__init__(self)
+        super().__init__()
 
     def _validate_internal(self, item):
         """
@@ -155,9 +154,6 @@ class ChancingCraftingValidator(Validator):
         Args:
             item_option:
         """
-        prefixes = item_option['prefixes']
-        suffixes = item_option['suffixes']
-        assert (len(prefixes) == 0 and len(suffixes) == 0)
         assert item_option['rarity'] == 'unique'
 
 
