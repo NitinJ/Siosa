@@ -7,10 +7,20 @@ from siosa.control.game_controller import GameController
 from siosa.data.currency_exchange import CurrencyExchange
 from siosa.data.stash import Stash
 from siosa.network.poe_api import PoeApi
+from siosa.roller.roll_task import RollTask
+from siosa.roller.roller_config import RollerConfig
 from siosa.trader.trade_controller import TradeController
 
 FORMAT = "%(created)f - %(thread)d: [%(filename)s:%(lineno)s - %(funcName)s() ] %(message)s"
-logging.basicConfig(format=FORMAT)
+
+logging.basicConfig(
+    level=logging.INFO,
+    format=FORMAT,
+    handlers={
+        logging.FileHandler('siosa.log', encoding='utf-8'),
+        logging.StreamHandler()
+    }
+)
 
 
 def run():
@@ -18,13 +28,14 @@ def run():
 
     # Configuration
     config_file_path = os.path.join(os.path.dirname(__file__), "config.json")
-    config = SiosaConfig(config_file_path)
+    config = SiosaConfig.create_from_file(config_file_path)
 
     # Currency exchange for getting chaos-exalt ratios and creating currency
     # items. Uses PoeApi object. PoeApi is used for fetching stuff using poe
     # web api restful endpoints.
     exchange = CurrencyExchange(
-        PoeApi(config.get_account_name(), config.get_poe_session_id()))
+        PoeApi(config.get_account_name(), config.get_poe_session_id(),
+               config.get_league()))
 
     # Stash object for managing stash, stash-tabs and getting static stash
     # information for the account such as - number of tabs, their contents etc.
@@ -39,12 +50,18 @@ def run():
     # tasks,steps in game.
     gc = GameController(log_listener)
 
-    # Submit test task to test out stuff. All testing needs to be done through
-    # test task.
-    # gc.submit_task(TestTask(15))
+    # run_roller(gc)
+    run_trader(gc, log_listener, config)
 
+
+def run_trader(gc, log_listener, config):
     trader = TradeController(gc, log_listener, config)
-    trader.start_trading()
+    trader.start()
+
+
+def run_roller(gc):
+    roller_task = RollTask(RollerConfig.create_from_file('roller/config.json'))
+    gc.submit_task(roller_task)
 
 
 if __name__ == "__main__":
