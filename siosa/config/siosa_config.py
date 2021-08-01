@@ -5,19 +5,21 @@ from siosa.common.singleton import Singleton
 
 
 class SiosaConfig(metaclass=Singleton):
-    def __init__(self, config=None):
+    def __init__(self, config, config_file_path=None):
         super(SiosaConfig, self).__init__()
         if config is None:
             config = {}
+
         self.logger = logging.getLogger(__name__)
         self.logger.setLevel(logging.DEBUG)
 
+        self.config_file_path = config_file_path
         self.config = SiosaConfig._validate_config(config)
         self.logger.debug("Initialized config: {}".format(str(self.config)))
 
     @staticmethod
     def create_from_file(config_file_path):
-        return SiosaConfig(json.load(open(config_file_path, 'r')))
+        return SiosaConfig(json.load(open(config_file_path, 'r')), config_file_path)
 
     @staticmethod
     def _validate_config(config):
@@ -26,14 +28,17 @@ class SiosaConfig(metaclass=Singleton):
 
     def update(self, config=None):
         if config is None:
-            config = {}
-        self.logger.info("Updating config with {}".format(str(config)))
+            return
+
         c = self.config.copy()
         c.update(config)
         self.config = SiosaConfig._validate_config(c)
+        self.logger.info("Updating config with {}".format(str(self.config)))
+        self.write_config()
 
-    def write_config(self, config_file_path):
-        json.dump(self.config, open(config_file_path, 'w'), indent=4)
+    def write_config(self):
+        if self.config_file_path:
+            json.dump(self.config, open(self.config_file_path, 'w'), indent=4)
 
     def to_json(self):
         return self.config
@@ -49,6 +54,12 @@ class SiosaConfig(metaclass=Singleton):
 
     def get_client_log_file_path(self):
         return self.config['base']['client_log_file_path']
+
+    def set_license_key(self, key):
+        if not key:
+            return
+        self.config['base']['license_key'] = key
+        self.write_config()
 
     def get_license_key(self):
         return self.config['base']['license_key']
