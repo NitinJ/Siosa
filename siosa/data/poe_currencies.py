@@ -6,6 +6,17 @@ from siosa.data.poe_item import *
 from siosa.data.static_data import StaticData
 
 
+class CurrencyType(Enum):
+    ALTERATION = 'Orb of Alteration'
+    AUGMENTATION = 'Orb of Augmentation'
+    REGAL = 'Regal Orb'
+    SCOURING = 'Orb of Scouring'
+    TRANSMUTATION = 'Orb of Transmutation'
+    CHANCE = 'Orb of Chance'
+    ALCHEMY = 'Orb of Alchemy'
+    CHAOS = 'Chaos Orb'
+
+
 class Currency:
     def __init__(self, ex, name, trade_name, max_stack_in_trade):
         """
@@ -19,6 +30,7 @@ class Currency:
         self.name = name
         self.trade_name = trade_name
         self.max_stack_in_trade = max_stack_in_trade
+        self.currency_type = Currency.get_currency_type(self.name)
 
     def get_value_in_chaos(self):
         return self.exchange.get_exchange_rate(self)
@@ -30,6 +42,13 @@ class Currency:
             self.trade_name,
             self.max_stack_in_trade,
             exchange_rate if exchange_rate else "unknown")
+
+    @staticmethod
+    def get_currency_type(name):
+        for ct in list(CurrencyType):
+            if ct.value == name:
+                return ct
+        return None
 
     @staticmethod
     def create(name=None, trade_name=None, max_stack_in_trade=10):
