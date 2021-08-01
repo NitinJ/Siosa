@@ -25,8 +25,8 @@ class VerifyResult:
             return
         if 'chaos' in self.diff.keys():
             # Discount 1c only above the ALLOWED_CHAOS_DIFF_AT threshold.
-            if (self.required['chaos'] <= VerifyResult.ALLOWED_CHAOS_DIFF_AT and
-                self.diff['chaos'] != 0) or \
+            if (self.required['chaos'] <= VerifyResult.ALLOWED_CHAOS_DIFF_AT
+                and self.diff['chaos'] < 0) or \
                     self.diff['chaos'] < VerifyResult.ALLOWED_CHAOS_DIFF:
                 self.verified = False
                 self.missing_currency = 'chaos'
