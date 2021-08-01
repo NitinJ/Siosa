@@ -63,6 +63,7 @@ class TradeTask(Task):
     def place_item_back(self):
         # Place item back to the stash where it belongs and list it again.
         # Change to the item's stash.
+        yield OpenStash()
         stash_index = self.trade_info.stash_item.stash_tab.index
         yield ChangeStashTab(stash_index)
 
