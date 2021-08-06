@@ -12,40 +12,54 @@ EXCHANGE_API = "https://www.pathofexile.com/api/trade/exchange/{}"
 FETCH_API = "https://www.pathofexile.com/api/trade/fetch/"
 STATIC_DATA_API = "https://www.pathofexile.com/api/trade/data/static"
 STASH_INFO_API = "https://www.pathofexile.com/character-window/get-stash-items?accountName={}&realm=pc&league={}&tabs=1"
+CHARACTER_LIST_API = "https://www.pathofexile.com/character-window/get-characters?accountName={}"
+PROFILE_API = "https://api.pathofexile.com/profile"
+LEAGUE_API = "https://api.pathofexile.com/leagues"
 SCRAPE_STR1 = 'require(["main"], function(){require(["trade"], function(t){    t('
 SCRAPE_STR2 = ');});});'
 USER_AGENT = 'Mozilla/5.0'
 MAX_ITEMS_FOR_CALCULATING_EXCHANGE = 30
+STASH_METADATA_REFRESH_DELAY = 30
 
 
 class PoeApi(metaclass=Singleton):
-    def __init__(self, account_name, poe_session_id, league="Standard"):
+    # Cache for static methods.
+    CHARACTERS_FOR_ACCOUNT_NAME = {}
+    LEAGUES = None
+    PROFILE = {}
+
+    def __init__(self, config):
         """
         Args:
-            account_name:
-            poe_session_id:
-            league:
+            config: SiosaConfig
         """
         self.logger = logging.getLogger(__name__)
         self.logger.setLevel('DEBUG')
-
-        self.account_name = account_name
-        self.session_id = poe_session_id
-        self.league = league
-        self.cookies = {'POESESSID': self.session_id}
+        self.config = config
+        self.stash_metadata = None
+        self.stash_metadata_fetch_ts = None
+        self.cookies = {'POESESSID': config.get_poe_session_id()}
         self.headers = {
             'Content-type': 'application/json',
             'Accept': 'text/plain',
-            'POESESSID': self.session_id,
+            'POESESSID': config.get_poe_session_id(),
             'user-agent': USER_AGENT
         }
 
-    def get_stash_metadata(self):
-        url = STASH_INFO_API.format(self.account_name, self.league)
+    def get_stash_metadata(self, refresh=True):
+        if not refresh and self.stash_metadata and \
+                time.time() - self.stash_metadata_fetch_ts <= \
+                STASH_METADATA_REFRESH_DELAY:
+            return self.stash_metadata
+
+        url = STASH_INFO_API.format(self.config.get_account_name(),
+                                    self.config.get_league())
         resp = requests.get(url, headers=self.headers, cookies=self.cookies)
         if not resp.content:
             return
         data = json.loads(resp.content)
+        self.stash_metadata = data
+        self.stash_metadata_fetch_ts = time.time()
         self.logger.debug("Got stash metadata. Number of tabs: {}".format(
             len(data['tabs'])))
         return data
@@ -56,7 +70,8 @@ class PoeApi(metaclass=Singleton):
             index:
         """
         url = STASH_INFO_API.format(
-            self.account_name, self.league) + "&tabIndex=" + str(index)
+            self.config.get_account_name(),
+            self.config.get_league()) + "&tabIndex=" + str(index)
         resp = requests.get(url, headers=self.headers, cookies=self.cookies)
         if not resp.content:
             return
@@ -72,7 +87,8 @@ class PoeApi(metaclass=Singleton):
         Args:
             url:
         """
-        page_response = requests.get(url, headers=self.headers, cookies=self.cookies)
+        page_response = requests.get(url, headers=self.headers,
+                                     cookies=self.cookies)
         if not page_response.content:
             return
 
@@ -149,7 +165,8 @@ class PoeApi(metaclass=Singleton):
         Args:
             url:
         """
-        items_response = requests.get(url, headers=self.headers, cookies=self.cookies)
+        items_response = requests.get(url, headers=self.headers,
+                                      cookies=self.cookies)
         return items_response.json()['result']
 
     def get_exchange_rate(self, have, want):
@@ -213,7 +230,8 @@ class PoeApi(metaclass=Singleton):
 
     def get_static_data(self):
         url = STATIC_DATA_API
-        resp = requests.get(url, headers=self.headers, cookies=self.cookies).json()
+        resp = requests.get(url, headers=self.headers,
+                            cookies=self.cookies).json()
         if not resp or not resp['result']:
             return
         self.logger.debug(
@@ -225,4 +243,70 @@ class PoeApi(metaclass=Singleton):
         Args:
             url:
         """
-        return url.format(self.league)
+        return url.format(self.config.get_league())
+
+    @staticmethod
+    def get_characters(account_name):
+        if not account_name:
+            return []
+
+        if account_name in PoeApi.CHARACTERS_FOR_ACCOUNT_NAME:
+            characters = PoeApi.CHARACTERS_FOR_ACCOUNT_NAME.get(account_name)
+            if time.time() - characters['ts'] <= 60 * 60:
+                # One hour
+                return characters['characters']
+
+        url = CHARACTER_LIST_API.format(account_name)
+        headers = {
+            'Content-type': 'application/json',
+            'Accept': 'text/plain',
+            'user-agent': USER_AGENT
+        }
+        resp = requests.get(url, headers=headers)
+        try:
+            characters = resp.json()
+            PoeApi.CHARACTERS_FOR_ACCOUNT_NAME[account_name] = {
+                'ts': time.time(),
+                'characters': characters
+            }
+            return characters
+        except:
+            return []
+
+    @staticmethod
+    def get_profile(poe_ssid):
+        if poe_ssid in PoeApi.PROFILE:
+            return PoeApi.PROFILE[poe_ssid]
+
+        if not poe_ssid:
+            return {}
+        cookies = {'POESESSID': poe_ssid}
+        headers = {
+            'Content-type': 'application/json',
+            'Accept': 'text/plain',
+            'POESESSID': poe_ssid,
+            'user-agent': USER_AGENT
+        }
+        resp = requests.get(PROFILE_API, headers=headers, cookies=cookies)
+        try:
+            PoeApi.PROFILE[poe_ssid] = resp.json()
+            return PoeApi.PROFILE[poe_ssid]
+        except:
+            return {}
+
+    @staticmethod
+    def get_leagues():
+        if PoeApi.LEAGUES:
+            return PoeApi.LEAGUES
+
+        headers = {
+            'Content-type': 'application/json',
+            'Accept': 'text/plain',
+            'user-agent': USER_AGENT
+        }
+        resp = requests.get(LEAGUE_API, headers=headers)
+        try:
+            PoeApi.LEAGUES = resp.json()
+            return PoeApi.LEAGUES
+        except:
+            return []
