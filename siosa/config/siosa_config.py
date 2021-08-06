@@ -2,6 +2,9 @@ import json
 import logging
 
 from siosa.common.singleton import Singleton
+from siosa.config.exception import InvalidConfigException
+
+from siosa.config.utils import validate_config, get_validator_for_field
 
 
 class SiosaConfig(metaclass=Singleton):
@@ -19,11 +22,23 @@ class SiosaConfig(metaclass=Singleton):
 
     @staticmethod
     def create_from_file(config_file_path):
-        return SiosaConfig(json.load(open(config_file_path, 'r')), config_file_path)
+        return SiosaConfig(
+            json.load(open(config_file_path, 'r')), config_file_path)
 
     @staticmethod
     def _validate_config(config):
-        # TODO: Validate here actually
+        """
+        Validates the given config. Raises InvalidConfigException if config is
+        invalid. Otherwise returns the cleaned up config object.
+        Args:
+            config: The config json object
+
+        Returns: The cleaned up config json object
+
+        """
+        valid, error = validate_config(config)
+        if not valid:
+            raise InvalidConfigException(error)
         return config
 
     def update(self, config=None):
@@ -32,9 +47,19 @@ class SiosaConfig(metaclass=Singleton):
 
         c = self.config.copy()
         c.update(config)
-        self.config = SiosaConfig._validate_config(c)
-        self.logger.info("Updating config with {}".format(str(self.config)))
-        self.write_config()
+
+        valid = True
+        for key, value in config.items():
+            if not get_validator_for_field(key)(value, c):
+                self.logger.debug("Validation failed for field: {}".format(key))
+                valid = False
+                break
+
+        if valid:
+            self.config = c
+            self.logger.info("Updating config with {}".format(
+                str(self.config)))
+            self.write_config()
 
     def write_config(self):
         if self.config_file_path:
@@ -44,37 +69,31 @@ class SiosaConfig(metaclass=Singleton):
         return self.config
 
     def get_account_name(self):
-        return self.config['base']['account_name']
+        return self.config['account_name']
 
     def get_poe_session_id(self):
-        return self.config['base']['poe_session_id']
+        return self.config['poe_session_id']
 
     def get_league(self):
-        return self.config['base']['league']
+        return self.config['league']
 
     def get_client_log_file_path(self):
-        return self.config['base']['client_log_file_path']
-
-    def set_license_key(self, key):
-        if not key:
-            return
-        self.config['base']['license_key'] = key
-        self.write_config()
+        return self.config['client_log_file_path']
 
     def get_license_key(self):
-        return self.config['base']['license_key']
+        return self.config['license_key']
 
     def get_close_all_interfaces_shortcut(self):
-        return self.config['shortcuts']['close_all_user_interface']
+        return self.config['close_all_user_interface']
 
     def get_task_stop_shortcut(self):
-        return self.config['shortcuts']['task_stop']
+        return self.config['task_stop']
 
-    def get_sell_tab_index(self):
-        return self.config['stashes']['sell_index']
+    def get_sell_tabs_names(self):
+        return self.config['sell']
 
     def get_currency_stash_names(self):
-        return self.config['stashes']['currency']
+        return self.config['currency']
 
     def get_dump_stash_names(self):
-        return self.config['stashes']['dump']
+        return self.config['dump']
