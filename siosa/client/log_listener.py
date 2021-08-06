@@ -7,7 +7,6 @@ from siosa.client.hideout_event import HideoutEvent
 from siosa.client.location_change_event import ZoneChangeEvent
 from siosa.client.trade_event import TradeEvent
 from siosa.client.trade_status_event import TradeStatusEvent
-from siosa.config.siosa_config import SiosaConfig
 
 
 class ClientLogListener(threading.Thread):
@@ -15,6 +14,7 @@ class ClientLogListener(threading.Thread):
     MAX_QUEUE_SIZE = 1000
 
     def __init__(self,
+                 config,
                  target=None,
                  name=None):
         super(ClientLogListener, self).__init__()
@@ -22,10 +22,8 @@ class ClientLogListener(threading.Thread):
         self.logger.setLevel('DEBUG')
         self.target = target
         self.name = name
-
-        self.path = SiosaConfig().get_client_log_file_path()
+        self.config = config
         self.last_read_ptr = None
-
         self.trade_event_queue = queue.Queue(ClientLogListener.MAX_QUEUE_SIZE)
         self.hideout_event_queue = queue.Queue(ClientLogListener.MAX_QUEUE_SIZE)
         self.location_change_event_queue = queue.Queue(ClientLogListener.MAX_QUEUE_SIZE)
@@ -51,7 +49,7 @@ class ClientLogListener(threading.Thread):
 
     def read_unread_lines(self):
         lines = []
-        f = open(self.path, 'r', encoding="utf8")
+        f = open(self.config.get_client_log_file_path(), 'r', encoding="utf8")
         if self.last_read_ptr is not None:
             f.seek(self.last_read_ptr)
         else:
