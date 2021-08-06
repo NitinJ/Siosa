@@ -48,11 +48,11 @@ def _get_stash_type_for_item(item):
 class Stash(metaclass=Singleton):
     MIN_TIME_STASH_REFRESH = 60 # One minute
 
-    def __init__(self):
+    def __init__(self, config: SiosaConfig):
         self.logger = logging.getLogger(__name__)
         self.logger.setLevel('DEBUG')
 
-        self.config = SiosaConfig()
+        self.config = config
         self.poe_api = PoeApi()
         self.name_to_stash_tabs = {}
         self.tab_type_to_tabs = {}
