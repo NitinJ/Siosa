@@ -127,10 +127,10 @@ class TradeController(StoppableThread):
             self.logger.debug("TradeRequest invalid: Item isn't valid.")
             return None
 
-        # Hack to ensure that we only sell from a fixed tab defined in config
-        # by sell_index.
-        # TODO: Remove this check when we are able to sell from any stash.
-        if stash_item.stash_tab.index not in self.config.get_sell_tab_index():
+        # Ensure that we only sell from fixed tabs defined in config
+        stash_tab_name = \
+            stash.get_stash_tab_by_index(stash_item.stash_tab.index).name
+        if stash_tab_name not in self.config.get_sell_tabs_names():
             self.logger.debug("TradeRequest invalid: Trade not from "
                               "allowed stash tab.")
             return None
