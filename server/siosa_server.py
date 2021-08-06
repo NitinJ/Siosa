@@ -3,6 +3,7 @@ import logging
 from flask import Flask, request
 
 from server.services.service_manager import ServiceManager, ServiceType
+from siosa.config.metadata import get_metadata
 
 FORMAT = "%(created)f - %(thread)d: [%(filename)s:%(lineno)s - %(funcName)s() " \
          "] %(message)s "
@@ -71,7 +72,8 @@ def get_config():
     if not config_service:
         return {"status": False}
 
-    return {"status": True, "details": {"config": config_service.get()}}
+    return {"status": True, "details": {"config": config_service.get(),
+                                        "metadata": get_metadata()}}
 
 
 @app.route("/config/update", methods=['POST'])
@@ -87,6 +89,16 @@ def update_config():
     return {"status": True,
             "details": {"config": config_service.update(config)}}
 
+
+# ##############################################################################
+# Metadata
+@app.route("/metadata/get_stashes", methods=['GET'])
+def get_stashes():
+    metadata_service = service_manager.get_service(ServiceType.METADATA)
+    if not metadata_service:
+        return {"status": False}
+
+    return {"status": True, "stashes": metadata_service.get_stashes()}
 
 # ##############################################################################
 # License
