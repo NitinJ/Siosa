@@ -33,17 +33,15 @@ def run():
     # Currency exchange for getting chaos-exalt ratios and creating currency
     # items. Uses PoeApi object. PoeApi is used for fetching stuff using poe
     # web api restful endpoints.
-    exchange = CurrencyExchange(
-        PoeApi(config.get_account_name(), config.get_poe_session_id(),
-               config.get_league()))
+    exchange = CurrencyExchange(PoeApi(config))
 
     # Stash object for managing stash, stash-tabs and getting static stash
     # information for the account such as - number of tabs, their contents etc.
-    stash = Stash()
+    stash = Stash(config)
 
     # Log listener listens on the client log for incoming events like- trades,
     # location change events.
-    log_listener = ClientLogListener()
+    log_listener = ClientLogListener(config)
     log_listener.start()
 
     # Game controller handles everything that happens in-game. Runs and manages
