@@ -1,35 +1,25 @@
 {
-    "base": {
-        "account_name": "MopedDriverr",
-        "poe_session_id": "c31a47639f74935c1545ea12a9501ee0",
-        "client_log_file_path": "Z:\\Grinding Gear Games\\Path of Exile\\logs\\Client.txt",
-        "league": "Expedition",
-        "license_key": "2ffab37b-4eb5-479f-a977-71489dffc20e"
-    },
-    "stashes": {
-        "dump": [
-            "~price 5 chaos"
-        ],
-        "sell_index": [
-            3,
-            4,
-            5,
-            6,
-            7,
-            8,
-            9,
-            12,
-            21
-        ],
-        "currency": [
-            "$$$"
-        ]
-    },
-    "shortcuts": {
-        "close_all_user_interface": [
-            "Ctrl",
-            "`"
-        ],
-        "task_stop": "ctrl+q"
-    }
+    "account_name": "MopedDriverr",
+    "poe_session_id": "c31a47639f74935c1545ea12a9501ee0",
+    "client_log_file_path": "Z:\\Grinding Gear Games\\Path of Exile\\logs\\Client.txt",
+    "league": "Expedition",
+    "license_key": "2ffab37b-4eb5-479f-a977-71489dffc20e",
+    "dump": [
+        "~price 5 chaos"
+    ],
+    "sell": [
+        "~price 5 chaos",
+        "~price 3 chaos",
+        "~price 2 chaos",
+        "~price 6 chaos",
+        "SELL"
+    ],
+    "currency": [
+        "$$$"
+    ],
+    "close_all_user_interface": [
+        "Ctrl",
+        "`"
+    ],
+    "task_stop": "ctrl+q"
 }
