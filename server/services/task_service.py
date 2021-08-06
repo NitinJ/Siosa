@@ -51,19 +51,16 @@ class TaskService:
         # Currency exchange for getting chaos-exalt ratios and creating currency
         # items. Uses PoeApi object. PoeApi is used for fetching stuff using poe
         # web api restful endpoints.
-        exchange = CurrencyExchange(
-            PoeApi(self.config.get_account_name(),
-                   self.config.get_poe_session_id(),
-                   self.config.get_league()))
+        exchange = CurrencyExchange(PoeApi(self.config))
 
         # Stash object for managing stash, stash-tabs and getting static stash
         # information for the account such as - number of tabs, their contents
         # etc.
-        stash = Stash()
+        stash = Stash(self.config)
 
         # Log listener listens on the client log for incoming events like -
         # trades, location change events.
-        self.log_listener = ClientLogListener()
+        self.log_listener = ClientLogListener(self.config)
         self.log_listener.start()
 
     def get_task(self):
