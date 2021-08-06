@@ -2,6 +2,7 @@ import os
 
 from server.services.config_service import ConfigService
 from server.services.license_service import LicenseService
+from server.services.metadata_service import MetadataService
 from server.services.service_type import ServiceType
 from server.services.task_service import TaskService
 from siosa.config.siosa_config import SiosaConfig
@@ -32,6 +33,8 @@ class ServiceManager:
             self._create_service(ServiceType.CONFIG)
         self.services[ServiceType.LICENSE] = \
             self._create_service(ServiceType.LICENSE)
+        self.services[ServiceType.METADATA] = \
+            self._create_service(ServiceType.METADATA)
 
     def get_service(self, service_type):
         if service_type in self.services:
@@ -51,4 +54,6 @@ class ServiceManager:
             return ConfigService(self.config, _get_config_path())
         elif service_type == ServiceType.LICENSE:
             return LicenseService(self.config)
+        elif service_type == ServiceType.METADATA:
+            return MetadataService(self.config)
         return None

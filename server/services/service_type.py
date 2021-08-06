@@ -5,3 +5,4 @@ class ServiceType(Enum):
     TASK = 'task'
     CONFIG = 'config'
     LICENSE = 'license'
+    METADATA = 'metadata'
