@@ -1,15 +1,15 @@
-import json
 import logging
 import subprocess
 
 import requests
 
-from siosa.config.siosa_config import SiosaConfig
-
 MID_PROC = "wmic csproduct get uuid"
 SERVER = "https://siosa-poe.com"
 REGISTER = "/api/v1/licenses/register"
 VERIFY = "/api/v1/licenses/verify"
+
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
 
 
 def _get_muid():
@@ -21,20 +21,11 @@ def _get_muid():
 
 
 class License:
-    def __init__(self, siosa_config: SiosaConfig):
-        """
-        Args:
-            siosa_config (SiosaConfig):
-        """
-        self.config = siosa_config
-        self.logger = logging.getLogger(__name__)
-        self.logger.setLevel(logging.DEBUG)
-
-    def valid(self, _key=None):
-        self.logger.debug("Validating license")
-        key = self.config.get_license_key() if not _key else _key
+    @staticmethod
+    def valid(key):
+        logger.debug("Validating license")
         if not key:
-            self.logger.info("License key not set !")
+            logger.info("License key not set !")
             return False
 
         muid = _get_muid()
@@ -47,7 +38,8 @@ class License:
             return True
         return False
 
-    def register(self, key):
+    @staticmethod
+    def register(key):
         """
 
         Args:
@@ -67,6 +59,5 @@ class License:
                              json={'license_key': key, "muid": muid})
 
         if resp:
-            self.config.set_license_key(key)
             return True
         return False
