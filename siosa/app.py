@@ -33,7 +33,9 @@ def run():
     # Currency exchange for getting chaos-exalt ratios and creating currency
     # items. Uses PoeApi object. PoeApi is used for fetching stuff using poe
     # web api restful endpoints.
-    exchange = CurrencyExchange(PoeApi(config))
+    exchange = CurrencyExchange(PoeApi(config.get_account_name(),
+                                       config.get_poe_session_id(),
+                                       config.get_league()))
 
     # Stash object for managing stash, stash-tabs and getting static stash
     # information for the account such as - number of tabs, their contents etc.
@@ -58,7 +60,8 @@ def run_trader(gc, log_listener, config):
 
 
 def run_roller(gc):
-    roller_task = RollTask(RollerConfig.create_from_file('roller/config.json'))
+    roller_task = RollTask(
+        RollerConfig.create_from_file('roller/config.json'))
     gc.submit_task(roller_task)
 
 
