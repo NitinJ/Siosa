@@ -11,7 +11,7 @@ from siosa.control.keyboard_shortcut import KeyboardShortcut
 
 
 class GameController:
-    def __init__(self, client_log_listener):
+    def __init__(self, client_log_listener, clean_inventory_on_init=True):
         self.logger = logging.getLogger(__name__)
         self.logger.setLevel(logging.DEBUG)
 
@@ -19,7 +19,7 @@ class GameController:
         self.task_executor = GameTaskExecutor(self.game_state)
 
         self.keyboard_listener = KeyboardShortcut(
-            SiosaConfig().get_task_stop_shortcut(), self._stop_all_tasks)
+            SiosaConfig().get_task_stop_shortcut(), self.stop_all_tasks)
         self.log_listener = client_log_listener
         self.game_state_updaters = [
             PlayerInHideoutUpdater(self.game_state, self.log_listener),
@@ -28,6 +28,7 @@ class GameController:
         # Start threads
         self.task_executor.start()
         self._start_game_state_updaters()
+        self.clean_inventory_on_init = clean_inventory_on_init
         self._initialize()
 
     def _start_game_state_updaters(self):
@@ -37,16 +38,16 @@ class GameController:
 
     def _initialize(self):
         # self.submit_task(FakeInitTask())
-        self.submit_task(InitTask())
+        self.submit_task(InitTask(clean_inventory=self.clean_inventory_on_init))
 
     def submit_task(self, task):
         self.task_executor.submit_task(task)
 
     def stop(self):
         self.logger.info("Stopping game controller")
-        self._stop_all_tasks()
+        self.stop_all_tasks()
         self.task_executor.join()
         self.logger.info("Game controller stopped")
 
-    def _stop_all_tasks(self):
+    def stop_all_tasks(self):
         self.task_executor.stop_all_tasks()
