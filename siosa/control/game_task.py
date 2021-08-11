@@ -9,10 +9,12 @@ from siosa.control.window_controller import WindowController
 
 
 class TaskState(Enum):
+    # Task has been created but hasn't started running yet.
     NOT_STARTED = 0
     RUNNING = 1
-    # Stopped due to an error.
-    STOPPED = 2
+    # Stopping due to an error, or explicit stop call. Cleanup is ran in this
+    # state.
+    STOPPING = 2
     # Completed either successfully or unsuccessfully.
     COMPLETE = 3
 
@@ -27,7 +29,7 @@ def _is_valid_state_transition(state_from, state_to):
         return True
     if state_to == TaskState.NOT_STARTED or state_from == TaskState.COMPLETE:
         return False
-    if state_from == TaskState.STOPPED and state_to != TaskState.COMPLETE:
+    if state_from == TaskState.STOPPING and state_to != TaskState.COMPLETE:
         return False
 
 
@@ -74,7 +76,7 @@ class Task(threading.Thread):
 
     def stop(self):
         self.logger.info("Stopping task: {}".format(self.name))
-        self.set_state(TaskState.STOPPED)
+        self.set_state(TaskState.STOPPING)
 
     def get_state(self):
         return self.state
@@ -131,10 +133,10 @@ class Task(threading.Thread):
                 self.logger.error(
                     "Invalid state transition from: {}, to: {}".format(
                         state_old, state_new))
-                self.set_state(TaskState.STOPPED)
+                self.set_state(TaskState.STOPPING)
                 break
 
-            if state_new in (TaskState.STOPPED, TaskState.COMPLETE):
+            if state_new in (TaskState.STOPPING, TaskState.COMPLETE):
                 break
 
             if state_new == TaskState.RUNNING:
@@ -155,12 +157,12 @@ class Task(threading.Thread):
                         "Step({}) failed in Task({}) err: {}".format(
                             step, self.name, err), stack_info=True,
                         exc_info=True)
-                    self.set_state(TaskState.STOPPED)
+                    self.set_state(TaskState.STOPPING)
                     break
             state_old = state_new
             time.sleep(Task.STEP_EXECUTION_DELAY)
 
-        if self.state == TaskState.STOPPED:
+        if self.state == TaskState.STOPPING:
             self.logger.info("GameTask stopped: {}".format(self.name))
             self._cleanup()
 
