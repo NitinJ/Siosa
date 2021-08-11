@@ -7,8 +7,16 @@ class ConfigService:
         self.config_file_path = config_file_path
 
     def update(self, config):
-        self.config.update(config)
-        return self.config.to_json()
+        error = self.config.update(config)
+        return {
+            "config": self.config.to_json(),
+            "error": error,
+            "valid": self.config.is_valid()
+        }
 
     def get(self):
-        return self.config.to_json()
+        return {
+            "config": self.config.to_json(),
+            "valid": self.config.is_valid(),
+            "status": self.config.get_status()
+        }
