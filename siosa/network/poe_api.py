@@ -28,21 +28,23 @@ class PoeApi(metaclass=Singleton):
     LEAGUES = None
     PROFILE = {}
 
-    def __init__(self, config):
+    def __init__(self, account_name, poe_session_id, league):
         """
         Args:
             config: SiosaConfig
         """
         self.logger = logging.getLogger(__name__)
         self.logger.setLevel('DEBUG')
-        self.config = config
+        self.account_name = account_name
+        self.poe_session_id = poe_session_id
+        self.league = league
         self.stash_metadata = None
         self.stash_metadata_fetch_ts = None
-        self.cookies = {'POESESSID': config.get_poe_session_id()}
+        self.cookies = {'POESESSID': poe_session_id}
         self.headers = {
             'Content-type': 'application/json',
             'Accept': 'text/plain',
-            'POESESSID': config.get_poe_session_id(),
+            'POESESSID': poe_session_id,
             'user-agent': USER_AGENT
         }
 
@@ -52,8 +54,7 @@ class PoeApi(metaclass=Singleton):
                 STASH_METADATA_REFRESH_DELAY:
             return self.stash_metadata
 
-        url = STASH_INFO_API.format(self.config.get_account_name(),
-                                    self.config.get_league())
+        url = STASH_INFO_API.format(self.account_name, self.league)
         resp = requests.get(url, headers=self.headers, cookies=self.cookies)
         if not resp.content:
             return
@@ -69,9 +70,8 @@ class PoeApi(metaclass=Singleton):
         Args:
             index:
         """
-        url = STASH_INFO_API.format(
-            self.config.get_account_name(),
-            self.config.get_league()) + "&tabIndex=" + str(index)
+        url = STASH_INFO_API.format(self.account_name, self.league) \
+              + "&tabIndex=" + str(index)
         resp = requests.get(url, headers=self.headers, cookies=self.cookies)
         if not resp.content:
             return
@@ -243,7 +243,7 @@ class PoeApi(metaclass=Singleton):
         Args:
             url:
         """
-        return url.format(self.config.get_league())
+        return url.format(self.league)
 
     @staticmethod
     def get_characters(account_name):
@@ -265,11 +265,13 @@ class PoeApi(metaclass=Singleton):
         resp = requests.get(url, headers=headers)
         try:
             characters = resp.json()
-            PoeApi.CHARACTERS_FOR_ACCOUNT_NAME[account_name] = {
-                'ts': time.time(),
-                'characters': characters
-            }
-            return characters
+            if 'error' not in characters:
+                PoeApi.CHARACTERS_FOR_ACCOUNT_NAME[account_name] = {
+                    'ts': time.time(),
+                    'characters': characters
+                }
+                return characters
+            return []
         except:
             return []
 
@@ -280,6 +282,7 @@ class PoeApi(metaclass=Singleton):
 
         if not poe_ssid:
             return {}
+
         cookies = {'POESESSID': poe_ssid}
         headers = {
             'Content-type': 'application/json',
