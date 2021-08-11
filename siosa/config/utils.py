@@ -2,29 +2,46 @@ import logging
 import os
 
 from license.license import License
-from siosa.config.metadata import get_required_fields
+from siosa.config.metadata import get_required_fields, get_field_names
 from siosa.network.poe_api import PoeApi
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
 
-def validate_config(config):
-    if not config:
-        return False, ''
-    for field in get_required_fields():
-        logger.debug("Validating field: {}".format(field['name']))
-        if field['name'] not in config.keys():
-            logger.debug(
-                "Required field {} not in config".format(field['name']))
-            return False, field['name']
-        validator = get_validator_for_field(field['name'])
-        if not validator or not validator(config[field['name']], config):
-            logger.debug(
-                "Validation failed for field: {}".format(field['name']))
-            return False, field['name']
-        logger.debug("Validation success for field: {}".format(field['name']))
-    return True, ''
+def validate_fields(config_json, full_config_json):
+    """
+    validates whether given field_name: field_value are correct. Doesn't check
+    whether all required fields are present or not.
+    Args:
+        config_json:
+
+    Returns: An valid_status json with field_name: status, status='valid' if
+    field_value is correct else 'invalid'
+
+    """
+    if not config_json:
+        return {}
+
+    valid_status = config_json.copy()
+    all_field_names = get_field_names()
+    for field_name, field_value in config_json.items():
+        logger.debug("Validating : {}".format(field_name))
+
+        if field_name not in all_field_names:
+            valid_status[field_name] = 'invalid'
+            logger.debug("{} : {}".format(field_name, 'invalid'))
+            continue
+
+        validator = get_validator_for_field(field_name)
+        if not validator or not validator(field_value, full_config_json):
+            valid_status[field_name] = 'invalid'
+            logger.debug("{} : {}".format(field_name, 'invalid'))
+            continue
+
+        logger.debug("{} : {}".format(field_name, 'valid'))
+        valid_status[field_name] = 'valid'
+    return valid_status
 
 
 def get_validator_for_field(field_name: str):
@@ -40,6 +57,9 @@ def get_validator_for_field(field_name: str):
         return validate_license_key
     elif field_name in ("dump", "currency", "sell"):
         return validate_stash_tab_names
+    elif field_name in ("close_all_user_interface", "task_stop"):
+        # TODO: Add an actual validator.
+        return lambda value, json: True
     else:
         return None
 
@@ -74,17 +94,20 @@ def validate_license_key(license_key, config_json):
 
 
 def validate_stash_tab_names(names, config_json):
-    for stash in get_stash_metadata(config_json):
-        if stash['n'].lower() in names:
-            return True
-    return False
+    stashes = [stash['n'].lower() for stash in get_stash_metadata(config_json)]
+    for name in names:
+        if name.lower() not in stashes:
+            return False
+    return True
 
 
 def validate_stash_tab_indexes(indexes, config_json):
-    for stash in get_stash_metadata(config_json):
-        if stash['i'] in indexes:
-            return True
-    return False
+    stash_indexes = \
+        [int(stash['i']) for stash in get_stash_metadata(config_json)]
+    for index in indexes:
+        if int(index) not in stash_indexes:
+            return False
+    return True
 
 
 def get_stash_metadata(config_json):
@@ -93,5 +116,5 @@ def get_stash_metadata(config_json):
     league = config_json.get('league', None)
     if not account_name or not session_id or not league:
         return []
-    poe_api = PoeApi(account_name, session_id, league=league)
+    poe_api = PoeApi(account_name, session_id, league)
     return poe_api.get_stash_metadata(refresh=False).get('tabs', [])

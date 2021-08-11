@@ -51,7 +51,7 @@ FIELDS = [
         "name": "close_all_user_interface",
         "desc": "PathOfExile's shortcut keys to close all interfaces",
         "required": False,
-        "default": "Esc"
+        "default": ["Esc"]
     },
     {
         "name": "task_stop",
@@ -73,3 +73,13 @@ def get_optional_fields():
 def get_metadata():
     return FIELDS
 
+
+def get_field_names():
+    return [field['name'] for field in FIELDS]
+
+
+def get_default_config():
+    default_config = {}
+    for field in FIELDS:
+        default_config[field['name']] = field['default']
+    return default_config
