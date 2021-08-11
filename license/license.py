@@ -3,7 +3,7 @@ import subprocess
 
 import requests
 
-MID_PROC = "wmic csproduct get uuid"
+MID_PROC = "C:\Windows\System32\wbem\WMIC.exe csproduct get uuid"
 SERVER = "https://siosa-poe.com"
 REGISTER = "/api/v1/licenses/register"
 VERIFY = "/api/v1/licenses/verify"
@@ -14,9 +14,12 @@ logger.setLevel(logging.DEBUG)
 
 def _get_muid():
     try:
-        return \
-            subprocess.check_output(MID_PROC).decode().split('\n')[1].strip()
-    except:
+        return subprocess.check_output(
+            MID_PROC,
+            shell=True,
+            stderr=subprocess.STDOUT,
+            stdin=subprocess.PIPE).decode().split('\n')[1].strip()
+    except Exception as e:
         return None
 
 
@@ -30,6 +33,7 @@ class License:
 
         muid = _get_muid()
         if not muid:
+            logger.debug("MUID is none")
             return False
 
         resp = requests.post(SERVER + VERIFY,
@@ -61,3 +65,7 @@ class License:
         if resp:
             return True
         return False
+
+
+if __name__ == "__main__":
+    print(License.valid('2ffab37b-4eb5-479f-a977-71489dffc20e'))
