@@ -25,6 +25,10 @@ class RollerConfig:
         f.close()
         return RollerConfig(data)
 
+    @staticmethod
+    def create_from_json(config_json):
+        return RollerConfig(config_json)
+
     def get_items(self):
         if not self._validated:
             self.validate_config()
