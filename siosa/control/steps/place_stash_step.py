@@ -31,7 +31,7 @@ class PlaceStash(Step):
             self.lf.get(Locations.DECORATIONS_OPEN_BUTTON))
 
         # Sometimes the decorations take time to load.
-        PlaceStash.wait_for_decorations_to_load()
+        self.wait_for_decorations_to_load()
 
         self.kc.keypress_with_modifiers(['ctrl', 'f'])
         time.sleep(PlaceStash.SEARCH_BOX_DELAY)
@@ -51,10 +51,9 @@ class PlaceStash(Step):
         game_state.update({'stash_location': stash_location})
         return StepStatus(True)
 
-    @staticmethod
-    def wait_for_decorations_to_load():
+    def wait_for_decorations_to_load(self):
         ts = time.time()
         tm = TemplateMatcher(Template.from_registry(
             TemplateRegistry.DECORATIONS_UTILITIES_ARROW))
-        while not tm.match(Locations.DECORATIONS_UTILITIES_ARROW):
+        while not tm.match(self.lf.get(Locations.DECORATIONS_UTILITIES_ARROW)):
             time.sleep(0.05)
