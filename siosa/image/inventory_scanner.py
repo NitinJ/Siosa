@@ -26,12 +26,11 @@ class InventoryScanner:
             Inventory.COLUMNS,
             Inventory.BORDER,
             Inventory.BORDER)
-        self.inventory = self.lf.get(Locations.INVENTORY)
         self.tm = TemplateMatcher(
             Template.from_registry(TemplateRegistry.INVENTORY_0_0), debug=debug)
 
     def scan(self):
-        empty_cell_locations = self.tm.match(self.inventory)
+        empty_cell_locations = self.tm.match(self.lf.get(Locations.INVENTORY))
         cells_with_items = \
             self.grid.get_cells_not_in_positions(empty_cell_locations)
         return sorted(cells_with_items, key=(lambda x: x[1]))
