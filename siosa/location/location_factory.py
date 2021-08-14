@@ -107,8 +107,8 @@ class LocationFactory(LocationFactoryBase):
 
     def __init__(self):
         size = pyautogui.size()
-        current = Resolution(size[0], size[1])
-        super().__init__(resolution=current)
+        current_resolution = Resolution(size[0], size[1])
+        super().__init__(resolution=current_resolution)
 
 
 class Locations:
@@ -134,14 +134,19 @@ class Locations:
 
     # Decorations
     DECORATIONS_BANNER = Location(1503, 56, 1674, 81,
+                                  Resolutions.p1080)
+    DECORATIONS_EDIT_HIDEOUT_ARROW = Location(1172, 1043, 1185, 1058,
                                               Resolutions.p1080)
-    DECORATIONS_EDIT_HIDEOUT_ARROW = Location(1172, 1043, 1185, 1058, Resolutions.p1080)
-    DECORATIONS_EDIT_HIDEOUT_DOWN_ARROW = Location(1172, 924, 1187, 937, Resolutions.p1080)
-    DECORATIONS_EDIT_HIDEOUT_BUTTON = Location(1008, 963, 1064, 1035, Resolutions.p1080)
+    DECORATIONS_EDIT_HIDEOUT_DOWN_ARROW = Location(1172, 924, 1187, 937,
+                                                   Resolutions.p1080)
+    DECORATIONS_EDIT_HIDEOUT_BUTTON = Location(1008, 963, 1064, 1035,
+                                               Resolutions.p1080)
     DECORATIONS_OPEN_BUTTON = Location(1095, 960, 1143, 999, Resolutions.p1080)
-    DECORATIONS_STASH_AFTER_SEARCHING = Location(1409, 232, 1498, 322, Resolutions.p1080)
+    DECORATIONS_STASH_AFTER_SEARCHING = Location(1409, 232, 1498, 322,
+                                                 Resolutions.p1080)
     DECORATIONS_CLOSE_BUTTON = Location(1879, 60, 1892, 74, Resolutions.p1080)
-    DECORATIONS_UTILITIES_ARROW = Location(1291, 180, 1318, 212, Resolutions.p1080)
+    DECORATIONS_UTILITIES_ARROW = Location(1291, 180, 1318, 212,
+                                           Resolutions.p1080)
 
     # Stash
     STASH_CLOSE_BUTTON = Location(620, 57, 636, 77, Resolutions.p1080)
@@ -155,8 +160,10 @@ class Locations:
     # Inventory
     INVENTORY = Location(1260, 579, 1915, 861, Resolutions.p1080)
     INVENTORY_0_0 = Location(1273, 590, 1323, 640, Resolutions.p1080)
-    INVENTORY_0_0_WITH_RIGHT_BORDER = Location(1273, 590, 1325, 640, Resolutions.p1080)
-    INVENTORY_0_0_WITH_BOTTOM_BORDER = Location(1273, 590, 1323, 642, Resolutions.p1080)
+    INVENTORY_0_0_WITH_RIGHT_BORDER = Location(1273, 590, 1325, 640,
+                                               Resolutions.p1080)
+    INVENTORY_0_0_WITH_BOTTOM_BORDER = Location(1273, 590, 1323, 642,
+                                                Resolutions.p1080)
     INVENTORY_ROW1 = Location(1273, 590, 1903, 640, Resolutions.p1080)
     INVENTORY_BANNER = Location(1520, 58, 1650, 80, Resolutions.p1080)
 
@@ -165,7 +172,8 @@ class Locations:
 
     # Trade
     TRADE_AWAITING_TRADE_BOX = Location(714, 568, 1203, 601, Resolutions.p1080)
-    TRADE_AWAITING_TRADE_CANCEL_BUTTON = Location(1054, 544, 1176, 572, Resolutions.p1080)
+    TRADE_AWAITING_TRADE_CANCEL_BUTTON = Location(1054, 544, 1176, 572,
+                                                  Resolutions.p1080)
     TRADE_WINDOW_TITLE = Location(541, 78, 713, 114, Resolutions.p1080)
     TRADE_WINDOW_ME = Location(309, 533, 944, 799, Resolutions.p1080)
     TRADE_WINDOW_ME_0_0 = Location(312, 536, 363, 587, Resolutions.p1080)
@@ -173,9 +181,12 @@ class Locations:
     TRADE_WINDOW_OTHER = Location(308, 200, 947, 471, Resolutions.p1080)
     TRADE_WINDOW_OTHER_0_0 = Location(313, 206, 363, 256, Resolutions.p1080)
     TRADE_WINDOW_OTHER_ROW1 = Location(311, 204, 942, 256, Resolutions.p1080)
-    TRADE_WINDOW_OTHER_0_0_COUNT = Location(315, 206, 336, 225, Resolutions.p1080)
-    TRADE_WINDOW_OTHER_SMALL_0_0 = Location(328, 222, 348, 241, Resolutions.p1080)
-    TRADE_WINDOW_MOUSEOVER_WARNING_TEXT = Location(492, 828, 537, 842, Resolutions.p1080)
+    TRADE_WINDOW_OTHER_0_0_COUNT = Location(315, 206, 336, 225,
+                                            Resolutions.p1080)
+    TRADE_WINDOW_OTHER_SMALL_0_0 = Location(328, 222, 348, 241,
+                                            Resolutions.p1080)
+    TRADE_WINDOW_MOUSEOVER_WARNING_TEXT = Location(492, 828, 537, 842,
+                                                   Resolutions.p1080)
     TRADE_ACCEPT_RETRACTED = Location(383, 821, 404, 850, Resolutions.p1080)
     TRADE_ACCEPT_GREEN_AURA = Location(349, 470, 397, 524, Resolutions.p1080)
     TRADE_ACCEPT_GREEN_AURA_ME = Location(299, 509, 347, 541, Resolutions.p1080)
@@ -184,8 +195,8 @@ class Locations:
     TRADE_WINDOW_FULL = Location(284, 75, 969, 869, Resolutions.p1080)
     TRADE_WINDOW_CLOSE_BUTTON = Location(929, 82, 959, 112, Resolutions.p1080)
 
-    PARTY_NOTIFICATIONS_CLOSE_BUTTON = Location(1892, 700, 1900, 727, Resolutions.p1080)
+    PARTY_NOTIFICATIONS_CLOSE_BUTTON = Location(1892, 700, 1900, 727,
+                                                Resolutions.p1080)
     PARTY_NOTIFICATIONS_AREA = Location(1875, 585, 1920, 860, Resolutions.p1080)
 
     PRICE_ITEM_WINDOW_ARROW = Location(157, 251, 189, 283, Resolutions.p1080)
-
