@@ -1,6 +1,7 @@
 import logging
 
 from flask import Flask, request
+from waitress import serve
 
 from server.services.service_manager import ServiceManager, ServiceType
 from siosa.config.metadata import get_metadata
@@ -119,6 +120,7 @@ def get_stashes():
 
     return {"status": True, "stashes": metadata_service.get_stashes()}
 
+
 # ##############################################################################
 # License
 @app.route("/license/register", methods=['POST'])
@@ -147,4 +149,4 @@ def get_license():
 
 
 if __name__ == "__main__":
-    app.run()
+    serve(app, port=55149, threads=2)
