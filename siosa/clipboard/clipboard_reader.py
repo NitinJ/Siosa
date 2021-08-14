@@ -37,7 +37,8 @@ class ClipboardReader(metaclass=Singleton):
         while True:
             try:
                 win32clipboard.OpenClipboard()
-                data = win32clipboard.GetClipboardData()
+                data = win32clipboard.GetClipboardData(
+                    win32clipboard.CF_UNICODETEXT)
                 win32clipboard.CloseClipboard()
                 return data
             except RuntimeError as e:
