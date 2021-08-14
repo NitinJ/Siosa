@@ -79,6 +79,7 @@ class Task(threading.Thread):
         self.set_state(TaskState.STOPPING)
 
     def get_state(self):
+        self.logger.debug("State : {}".format(self.state))
         return self.state
 
     @synchronized
