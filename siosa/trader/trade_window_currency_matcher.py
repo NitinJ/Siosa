@@ -1,6 +1,7 @@
 import numpy as np
 
 from siosa.image.reusable_template_matcher import ReusableTemplateMatcher
+from siosa.location.in_game_location import InGameLocation
 
 
 class TradeWindowCurrencyMatcher(ReusableTemplateMatcher):
@@ -8,7 +9,7 @@ class TradeWindowCurrencyMatcher(ReusableTemplateMatcher):
     Removes the green channel from the image before matching. Template used
     should also not have the green channel.
     """
-    def __init__(self, location, debug=False, scale=1.0):
+    def __init__(self, location: InGameLocation, debug=False, scale=1.0):
         """
         Args:
             location:

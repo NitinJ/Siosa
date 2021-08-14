@@ -1,8 +1,9 @@
 from siosa.image.template_matcher import TemplateMatcher
+from siosa.location.in_game_location import InGameLocation
 
 
 class ReusableTemplateMatcher(TemplateMatcher):
-    def __init__(self, location, confidence=0.75, debug=False, scale=1.0):
+    def __init__(self, location: InGameLocation, confidence=0.75, debug=False, scale=1.0):
         """
         Args:
             location:

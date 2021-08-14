@@ -9,6 +9,7 @@ import pyautogui
 from PIL import Image
 
 from siosa.control.window_controller import WindowController
+from siosa.location.in_game_location import InGameLocation
 
 
 class TemplateMatcher:
@@ -74,7 +75,7 @@ class TemplateMatcher:
     def clear_image_cache(self):
         self.image_cache = {}
 
-    def match(self, location, reuse=False):
+    def match(self, location: InGameLocation, reuse=False):
         """Matches the template on a given screen location. :param location: The
         location of the screen to match template with. :param reuse: Whether to
         reuse an already taken image or not.
