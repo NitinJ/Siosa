@@ -91,7 +91,8 @@ class TemplateMatcher:
             self._check_if_poe_is_in_foreground()
 
         # Params for the part of the screen to capture.
-        screen_location = TemplateMatcher._get_grab_params(location)
+        screen_location = TemplateMatcher._get_grab_params(
+            location, self.wc.get_mss_monitor())
         image_bytes_bgr, image_bytes_gray = \
             self.get_image(screen_location, reuse)
 
@@ -135,13 +136,13 @@ class TemplateMatcher:
         return points
 
     @staticmethod
-    def _get_grab_params(location):
+    def _get_grab_params(location, monitor):
         """
         Args:
             location:
         """
         return {
-            "mon": "2",
+            "mon": str(monitor),
             "top": location.y1,
             "left": location.x1,
             "width": location.x2 - location.x1,

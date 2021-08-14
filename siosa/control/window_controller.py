@@ -1,8 +1,10 @@
 # -*-coding:utf8-*-
 import time
 
+import mss
 import pywinauto as pwa
 from win32gui import GetWindowText, GetForegroundWindow
+from win32api import MonitorFromWindow, GetMonitorInfo, EnumDisplayMonitors
 from siosa.common.singleton import Singleton
 
 
@@ -16,6 +18,32 @@ class WindowController(metaclass=Singleton):
         if not self.app.is_process_running():
             raise Exception("Path of Exile is not running")
         self.app_dialog = self.app.window()
+
+        monitor = MonitorFromWindow(self.app_dialog.handle)
+        monitor_info = GetMonitorInfo(monitor)
+        self.monitor_dimensions = monitor_info['Monitor']
+        self.is_primary_monitor = monitor_info['Flags']
+
+        self.mss_monitor = \
+            WindowController._get_mss_monitor(self.monitor_dimensions)
+
+    def get_mss_monitor(self):
+        return self.mss_monitor
+
+    @staticmethod
+    def _get_mss_monitor(monitor_dimensions):
+        monitors = mss.mss().monitors
+        for i, monitor in enumerate(monitors[0:]):
+            if not i:
+                # Real monitor list start from 1. 0 has dimensions for all the
+                # monitors combined.
+                continue
+            if monitor_dimensions[0] == monitor['left'] and \
+                    monitor_dimensions[1] == monitor['top'] and \
+                    monitor_dimensions[2] == monitor['width'] and \
+                    monitor_dimensions[3] == monitor['height']:
+                return i
+        return 1
 
     def move_to_poe(self):
         self.app_dialog.set_focus()
