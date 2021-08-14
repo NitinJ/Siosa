@@ -79,7 +79,7 @@ class Affix:
         fractured = False
 
         name, tier, type = Affix._get_details(affix_details)
-        crafted = (name is 'Upgraded')
+        crafted = (name == 'Upgraded')
         affix_str_lines = []
         for affix_line in affix_arr[1:]:
             affix_line = affix_line.replace(" Unscalable Value", "")
