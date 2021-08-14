@@ -52,10 +52,10 @@ class LocateStashStep(Step):
             # "guild stash"
             gs = points_gs[0]
 
-            # Find the stash point farther from guild stash.
-            points_s.sort(
-                reverse=True,
-                key=lambda x: (x[0] - gs[0]) ** 2 + (x[1] - gs[1]) ** 2)
+            points_s = [point for point in points_s if point[1] != gs[1]]
+            if not points_s:
+                # There are no stash points. only guild stash exists.
+                return StepStatus(False)
             point = points_s[0]
             stash_location = self.lf.create(
                 point[0], point[1], point[0], point[1])

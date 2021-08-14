@@ -3,6 +3,7 @@ import logging
 import pyautogui
 
 from siosa.common.singleton import Singleton
+from siosa.control.window_controller import WindowController
 from siosa.location.in_game_location import InGameLocation
 from siosa.location.location import Location
 from siosa.location.resolution import Resolutions, Resolution
@@ -106,9 +107,13 @@ class LocationFactory(LocationFactoryBase):
     """
 
     def __init__(self):
-        size = pyautogui.size()
+        wc = WindowController()
+        dim = wc.get_poe_monitor_dimensions()
+        size = (dim[2], dim[3])
         current_resolution = Resolution(size[0], size[1])
         super().__init__(resolution=current_resolution)
+        self.logger.debug("Location on monitor: {}, monitor_info: {}".format(
+            wc.get_mss_monitor(), dim))
 
 
 class Locations:
