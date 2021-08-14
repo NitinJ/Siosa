@@ -51,7 +51,7 @@ class TradeStateUpdater:
                 TemplateRegistry.TRADE_WINDOW_OTHER_SMALL_0_0),
             scale=TradeStateUpdater.SCALE)
         self.full_trading_tm = ReusableTemplateMatcher(
-            Locations.TRADE_WINDOW_FULL,
+            self.lf.get(Locations.TRADE_WINDOW_FULL),
             scale=TradeStateUpdater.SCALE)
 
         # Templates
