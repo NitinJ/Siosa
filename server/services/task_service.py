@@ -78,6 +78,7 @@ class TaskService:
             return {"task": t.value, "state": 1}
         elif self.gc_task:
             # GC task
+            self.logger.debug("Getting task state.")
             return {"task": t.value, "state": self.gc_task.get_state().value}
         else:
             return {"task": None}
