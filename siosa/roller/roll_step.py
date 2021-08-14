@@ -1,3 +1,4 @@
+import time
 from enum import Enum
 
 from siosa.control.game_step import Step, StepStatus
@@ -35,9 +36,10 @@ class RollStep(Step):
         crafter = CrafterFactory.get_crafter(self.item, self.crafting_type)
 
         for _ in range(self.max_rolls):
+            time.sleep(0.1)
             in_game_item = self.roll_controller.read_item()
             if not in_game_item:
-                return StepStatus(False, Error.ITEM_NOT_FOUND)
+                return self._on_failure(Error.ITEM_NOT_FOUND)
 
             done, next_currency = crafter.done(in_game_item)
             self.logger.debug(
@@ -50,6 +52,7 @@ class RollStep(Step):
                 return self._on_failure(Error.UNKNOWN)
 
             try:
+                self.logger.debug("Using currency")
                 self.roll_controller.use_currency_on_item(next_currency)
             except:
                 self.logger.error(
