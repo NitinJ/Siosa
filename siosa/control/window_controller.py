@@ -20,12 +20,16 @@ class WindowController(metaclass=Singleton):
         self.app_dialog = self.app.window()
 
         monitor = MonitorFromWindow(self.app_dialog.handle)
+        # Monitor info is x1, y1, x2, y2
         monitor_info = GetMonitorInfo(monitor)
         self.monitor_dimensions = monitor_info['Monitor']
-        self.is_primary_monitor = monitor_info['Flags']
-
         self.mss_monitor = \
             WindowController._get_mss_monitor(self.monitor_dimensions)
+        self.monitor_dimensions = (
+            self.monitor_dimensions[0], self.monitor_dimensions[1],
+            self.monitor_dimensions[2] - self.monitor_dimensions[0],
+            self.monitor_dimensions[3] - self.monitor_dimensions[1])
+        self.is_primary_monitor = monitor_info['Flags']
 
     def get_poe_monitor_dimensions(self):
         return self.monitor_dimensions
