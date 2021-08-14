@@ -51,7 +51,7 @@ FIELDS = [
         "name": "close_all_user_interface",
         "desc": "PathOfExile's shortcut keys to close all interfaces",
         "required": False,
-        "default": ["Esc"]
+        "default": ["Ctrl", "`"]
     },
     {
         "name": "task_stop",
