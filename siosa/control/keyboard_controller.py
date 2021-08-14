@@ -37,10 +37,11 @@ class KeyboardController:
         """
         key = key.lower()
         if key not in self.held_modifier_keys.keys():
-            return
+            return False
         sleep(self.key_press_delay)
         pyautogui.keyUp(key)
         self.held_modifier_keys.pop(key)
+        return True
 
     def keypress(self, key):
         """
