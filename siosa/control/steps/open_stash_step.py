@@ -3,6 +3,7 @@ import time
 
 from siosa.control.game_state import GameState
 from siosa.control.game_step import Step, StepStatus
+from siosa.control.steps.locate_stash_step import LocateStashStep
 from siosa.control.steps.place_stash_step import PlaceStash
 from siosa.control.window_controller import WindowController
 from siosa.image.template import Template
@@ -12,7 +13,7 @@ from siosa.location.location_factory import Locations
 
 
 class OpenStash(Step):
-    STASH_OPEN_WAIT_TIME = 2
+    STASH_OPEN_WAIT_TIME = 5
 
     def __init__(self):
         Step.__init__(self)
@@ -36,21 +37,21 @@ class OpenStash(Step):
                 game_state.update({'stash_open': True})
             return StepStatus(True)
 
-        points = self.stash_text_tm.match(self.lf.get(Locations.SCREEN_FULL))
-        if points:
-            points = points[0]
-            self.logger.debug("Stash tab found@ {}".format(points))
-            stash_location = self.lf.create(points[0], points[1], points[0],
-                                            points[1])
-            self.mc.click_at_location(stash_location)
-            game_state.update({'stash_open': True})
-            game_state.update({
-                'stash_location': self.lf.get(Locations.SCREEN_CENTER)
-            })
-            return StepStatus(True)
+        result = LocateStashStep().execute(game_state)
+        if result.success:
+            gs = game_state.get()
+            self.logger.debug("Stash tab found!. Opening")
+            self.mc.click_at_location(gs['stash_location'])
+            # Stash might take some time to open.
+            if self._wait_for_stash_to_open():
+                # Stash open.
+                game_state.update({
+                    'stash_open': True,
+                    'stash_location': self.lf.get(Locations.SCREEN_CENTER)
+                })
+                return StepStatus(True)
 
         self.logger.debug("Stash tab not found!. Trying center of screen.")
-
         self.mc.click_at_location(self.lf.get(Locations.SCREEN_CENTER))
         # Stash might take some time to open.
         if self._wait_for_stash_to_open():

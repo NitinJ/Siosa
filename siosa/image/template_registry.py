@@ -5,6 +5,7 @@ class TemplateRegistry:
     INVENTORY_0_0 = ("sct-tmp-INVENTORY_0_0.png", (1920, 1080))
     INVENTORY = ("sct-tmp-INVENTORY.png", (1920, 1080))
     STASH = ("sct-tmp-STASH.png", (1920, 1080))
+    GUILD_STASH = ("sct-tmp-GUILD_STASH.png", (1920, 1080))
     STASH_BANNER = ("sct-tmp-STASH_BANNER.png", (1920, 1080))
     NORMAL_STASH_0_0 = ("sct-tmp-STASH_NORMAL_0_0.png", (1920, 1080))
     QUAD_STASH_0_0 = ("sct-tmp-STASH_QUAD_0_0.png", (1920, 1080))

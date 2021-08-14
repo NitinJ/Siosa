@@ -4,6 +4,8 @@ from siosa.control.game_step import Step, StepStatus
 from siosa.image.template import Template
 from siosa.image.template_matcher import TemplateMatcher
 from siosa.image.template_registry import TemplateRegistry
+from siosa.image.thresholding_template_matcher import \
+    ThresholdingTemplateMatcher
 from siosa.location.location_factory import LocationFactory, Locations
 
 
@@ -24,13 +26,39 @@ class LocateStashStep(Step):
             # Location already known.
             return StepStatus(True)
 
-        tm = TemplateMatcher(Template.from_registry(TemplateRegistry.STASH))
-        lf = LocationFactory()
-        points = tm.match(lf.get(Locations.SCREEN_FULL))
-        if points:
-            points = points[0]
-            self.logger.debug("Stash tab found@ {}".format(points))
-            stash_location = lf.create(points[0], points[1], points[0],
-                                       points[1])
+        tm = ThresholdingTemplateMatcher(
+            self.lf.get(Locations.SCREEN_FULL),
+            debug=False)
+        points_s = \
+            tm.match_template(Template.from_registry(TemplateRegistry.STASH))
+        points_gs = tm.match_template(
+            Template.from_registry(TemplateRegistry.GUILD_STASH))
+
+        if not points_s:
+            # Not found.
+            return StepStatus(False)
+
+        if points_s and not points_gs:
+            # Stash tab found but guild stash not found.
+            point = points_s[0]
+            self.logger.debug("Guild stash tab not found & Stash tab "
+                              "found@ {}".format(point))
+            stash_location = self.lf.create(
+                point[0], point[1], point[0], point[1])
             game_state.update({'stash_location': stash_location})
+
+        if points_s and points_gs:
+            # Both are found. We need to check whether stash is from
+            # "guild stash"
+            gs = points_gs[0]
+
+            # Find the stash point farther from guild stash.
+            points_s.sort(
+                reverse=True,
+                key=lambda x: (x[0] - gs[0]) ** 2 + (x[1] - gs[1]) ** 2)
+            point = points_s[0]
+            stash_location = self.lf.create(
+                point[0], point[1], point[0], point[1])
+            game_state.update({'stash_location': stash_location})
+
         return StepStatus(True)
