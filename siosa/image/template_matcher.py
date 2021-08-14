@@ -12,20 +12,17 @@ from siosa.control.window_controller import WindowController
 
 
 class TemplateMatcher:
-    def __init__(self, template, confidence=0.75, debug=False,
-                 confirm_foreground=False, scale=1.0):
+    def __init__(self, template, confidence=0.75, debug=False, scale=1.0):
         """
         Args:
             template:
             confidence:
             debug:
-            confirm_foreground:
             scale:
         """
         self.logger = logging.getLogger(__name__)
         self.logger.setLevel(logging.DEBUG)
         self.wc = WindowController()
-        self.confirm_foreground = confirm_foreground
         self.debug = debug
         self.confidence = confidence
         self.template = template
@@ -90,7 +87,7 @@ class TemplateMatcher:
             The positions (relative to the location) of matches with template.
         """
         ts1 = time.time()
-        if self.confirm_foreground:
+        if self.debug:
             self._check_if_poe_is_in_foreground()
 
         # Params for the part of the screen to capture.

@@ -8,17 +8,15 @@ class TradeWindowCurrencyMatcher(ReusableTemplateMatcher):
     Removes the green channel from the image before matching. Template used
     should also not have the green channel.
     """
-    def __init__(self, location, debug=False, confirm_foreground=True, scale=1.0):
+    def __init__(self, location, debug=False, scale=1.0):
         """
         Args:
             location:
             debug:
-            confirm_foreground:
             scale:
         """
         ReusableTemplateMatcher.__init__(self, location, confidence=0.88,
                                          debug=debug,
-                                         confirm_foreground=confirm_foreground,
                                          scale=scale)
 
     def get_image(self, screen_location, reuse):

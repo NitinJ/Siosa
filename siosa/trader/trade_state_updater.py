@@ -45,13 +45,13 @@ class TradeStateUpdater:
         self.awaiting_tm = TemplateMatcher(
             Template.from_registry(
                 TemplateRegistry.AWAITING_TRADE_CANCEL_BUTTON),
-            confirm_foreground=True, scale=TradeStateUpdater.SCALE)
+            scale=TradeStateUpdater.SCALE)
         self.trading_tm_other = TemplateMatcher(
             Template.from_registry(
                 TemplateRegistry.TRADE_WINDOW_OTHER_SMALL_0_0),
-            confirm_foreground=True, scale=TradeStateUpdater.SCALE)
+            scale=TradeStateUpdater.SCALE)
         self.full_trading_tm = ReusableTemplateMatcher(
-            Locations.TRADE_WINDOW_FULL, confirm_foreground=True,
+            Locations.TRADE_WINDOW_FULL,
             scale=TradeStateUpdater.SCALE)
 
         # Templates
