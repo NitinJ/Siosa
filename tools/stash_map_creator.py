@@ -22,8 +22,8 @@ def get_template(stash_type):
         stash_type:
     """
     if stash_type == 'normal':
-        return Template.from_registry(TemplateRegistry.NORMAL_STASH_0_0)
-    return Template.from_registry(TemplateRegistry.QUAD_STASH_0_0)
+        return TemplateRegistry.NORMAL_STASH_0_0.get()
+    return TemplateRegistry.QUAD_STASH_0_0.get()
 
 
 def get_grid(stash_type):
@@ -52,10 +52,10 @@ def get_data(stash_type):
     pyautogui.confirm(
         text='Press OK to verify template({}) on location({})'.format(
             template,
-            match_location.name),
+            match_location),
         title='Grab template',
         buttons=['OK'])
-    tm = TemplateMatcher(template, debug=True, confirm_foreground=False)
+    tm = TemplateMatcher(template, debug=True)
 
     # Points are relative to the match location.
     points = tm.match(match_location)
@@ -94,6 +94,8 @@ if __name__ == "__main__":
     logger.setLevel(logging.DEBUG)
     stash_type = 'normal'
     data = get_data(stash_type)
+
+    print(data)
 
     file_path = get_file_path(stash_type)
     with open(file_path, "w+") as outfile:
