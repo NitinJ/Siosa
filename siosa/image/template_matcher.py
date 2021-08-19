@@ -74,16 +74,24 @@ class TemplateMatcher:
         Returns:
 
         """
-        height_factor = self.scale * \
-                        (self.template.resolution.h / image_resolution.h)
-        width_factor = self.scale * \
-                       (self.template.resolution.w / image_resolution.w)
-        new_w = int(image_width * width_factor)
-        new_h = int(image_height * height_factor)
+        if self.template.resolution.equals(image_resolution):
+            return image_bytes
+
+        self.logger.debug(
+            "Image resolution: {}x{}, "
+            "template resolution: {}x{}".format(
+                image_resolution.w,
+                image_resolution.h,
+                self.template.resolution.w,
+                self.template.resolution.h))
+
+        # Keep aspect ratio same.
+        new_h = round(image_height * self.scale * (
+                self.template.resolution.h / image_resolution.h))
+        new_w = round(new_h * (image_width / image_height))
 
         if new_w != image_width or new_h != image_height:
-            self.logger.debug("New image: wf:{}, hf:{}".format(
-                width_factor, height_factor))
+            self.logger.debug("New image: w:{}, h:{}".format(new_w, new_h))
 
         return cv2.resize(image_bytes, (new_w, new_h),
                           interpolation=cv2.INTER_AREA)
@@ -149,5 +157,6 @@ if __name__ == "__main__":
              "funcName)s() ] %(message)s "
     logging.basicConfig(level=logging.INFO, format=FORMAT)
     tm = TemplateMatcher(
-        TemplateRegistry.NORMAL_STASH_0_0.get(), debug=True, threshold=0.75, scale=0.5)
-    print(tm.match(LocationFactory().get(Locations.STASH_TAB)))
+        TemplateRegistry.TRADE_ACCEPT_GREEN_AURA.get(),
+        debug=False, threshold=0.75)
+    print(tm.match(LocationFactory().get(Locations.TRADE_ACCEPT_GREEN_AURA_BOX)))
