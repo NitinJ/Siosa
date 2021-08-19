@@ -44,6 +44,10 @@ class TradeStateUpdater:
             TemplateRegistry.AWAITING_TRADE_CANCEL_BUTTON.get())
         self.trading_tm_other = TemplateMatcher(
             TemplateRegistry.TRADE_WINDOW_OTHER_SMALL_0_0.get())
+        self.trade_green_aura_tm = TemplateMatcher(
+            TemplateRegistry.TRADE_ACCEPT_GREEN_AURA.get())
+
+        # Reusable matchers
         self.full_trading_tm = ReusableTemplateMatcher(
             self.lf.get(Locations.TRADE_WINDOW_FULL))
 
@@ -121,7 +125,8 @@ class TradeStateUpdater:
         state_other = 'NOT_OFFERED'
         if self.full_trading_tm.match_exists(self.trade_accept_retracted):
             state_other = 'RETRACTED'
-        elif self.full_trading_tm.match_exists(self.trade_green_aura):
+        elif self.trade_green_aura_tm.match_exists(
+                self.lf.get(Locations.TRADE_ACCEPT_GREEN_AURA_BOX)):
             state_other = 'ACCEPTED'
         else:
             state_other = 'OFFERED' if self._has_other_player_offered() else \

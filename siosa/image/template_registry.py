@@ -4,6 +4,7 @@ import os
 from cv2 import cv2
 
 from siosa.common.util import parent
+from siosa.image.accept_aura_template import AcceptAuraTemplate
 from siosa.image.template import Template
 from siosa.image.thresholding_template import ThresholdingTemplate
 from siosa.image.trade_currency_template import TradeCurrencyTemplate
@@ -40,9 +41,11 @@ class TemplateWrapper:
     def get(self):
         if self.template:
             return self.template
+        file_path = _get_template_file_path(self.name)
+        logger.debug("Template file path: {}".format(file_path))
         self.template = self.template_class(
             self.name,
-            _get_template_file_path(self.name),
+            file_path,
             Resolution(*self.resolution))
         return self.template
 
@@ -86,9 +89,7 @@ class TemplateRegistry:
     TRADE_ACCEPT_RETRACTED = TemplateWrapper(
         "sct-tmp-TRADE_ACCEPT_RETRACTED.png", (1920, 1080))
     TRADE_ACCEPT_GREEN_AURA = TemplateWrapper(
-        "sct-tmp-TRADE_ACCEPT_GREEN_AURA.png", (1920, 1080))
-    TRADE_ACCEPT_GREEN_AURA_ME = TemplateWrapper(
-        "sct-tmp-TRADE_ACCEPT_GREEN_AURA_ME.png", (1920, 1080))
+        "sct-tmp-TRADE_ACCEPT_GREEN_AURA.png", (1920, 1080), template_class=AcceptAuraTemplate)
     CANCEL_TRADE_ACCEPT_BUTTON = TemplateWrapper(
         "sct-tmp-TRADE_CANCEL_ACCEPT_BUTTON.png", (1920, 1080))
     TRADE_WINDOW_CLOSE_BUTTON = TemplateWrapper(

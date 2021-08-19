@@ -128,6 +128,8 @@ class Locations:
                                                    Resolutions.p1080)
     TRADE_ACCEPT_RETRACTED = Location(383, 821, 404, 850, Resolutions.p1080)
     TRADE_ACCEPT_GREEN_AURA = Location(349, 470, 397, 524, Resolutions.p1080)
+    TRADE_ACCEPT_GREEN_AURA_BOX = Location(786, 451, 956, 492, Resolutions.p1080)
+
     TRADE_ACCEPT_GREEN_AURA_ME = Location(299, 509, 347, 541, Resolutions.p1080)
     TRADE_CANCEL_ACCEPT_BUTTON = Location(307, 821, 448, 849, Resolutions.p1080)
     TRADE_ACCEPT_BUTTON = Location(307, 821, 448, 849, Resolutions.p1080)
