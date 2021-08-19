@@ -6,6 +6,7 @@ from siosa.control.mouse_controller import MouseController
 from siosa.data.currency_exchange import CurrencyExchange
 from siosa.data.poe_item import ItemType
 from siosa.image.grid import Grid
+from siosa.image.reusable_template_matcher import ReusableTemplateMatcher
 from siosa.image.template import Template
 from siosa.image.template_matcher import TemplateMatcher
 from siosa.image.template_registry import TemplateRegistry
@@ -13,8 +14,6 @@ from siosa.location.location_factory import Locations, LocationFactory
 from siosa.network.poe_api import PoeApi
 from siosa.trader.currency_checker import CurrencyChecker
 from siosa.trader.trade_request import TradeRequest
-from siosa.trader.trade_window_currency_matcher import \
-    TradeWindowCurrencyMatcher
 from siosa.trader.verify_result import VerifyResult
 
 
@@ -38,7 +37,7 @@ class TradeVerifier:
         self.logger.setLevel(logging.DEBUG)
 
         self.lf = LocationFactory()
-        self.mc = MouseController()
+        self.mc = MouseController(self.lf)
         self.clipboard = PoeClipboard()
         self.currency_cheker = CurrencyChecker(trade_request.currency)
 
@@ -50,12 +49,13 @@ class TradeVerifier:
             TradeVerifier.BORDER,
             TradeVerifier.BORDER)
         self.trading_tm_other = TemplateMatcher(
-            Template.from_registry(
-                TemplateRegistry.TRADE_WINDOW_OTHER_SMALL_0_0),
-            debug=False)
-        self.trade_window_currency_matcher = TradeWindowCurrencyMatcher(
+            TemplateRegistry.TRADE_WINDOW_OTHER_SMALL_0_0.get(),
+            threshold=0.75,
+            debug=True)
+        self.trade_window_currency_matcher = ReusableTemplateMatcher(
             self.lf.get(Locations.TRADE_WINDOW_OTHER),
-            debug=False, scale=TradeVerifier.SCALE)
+            threshold=0.80,
+            debug=True)
 
     def _get_cells_with_items(self):
         cells_with_items = self.grid_other.get_cells_not_in_positions(
@@ -101,7 +101,7 @@ class TradeVerifier:
         self.logger.debug(
             "Got {} items from trade: {}".format(len(items), items))
         self.logger.debug("Currency stacks present: {}".format(currency_stacks))
-        self.mc.move_mouse(self.lf.get(Locations.SCREEN_NOOP_POSITION))
+        self.mc.move_mouse(self.lf.get(Locations.TRADE_ACCEPT_BUTTON))
 
         totals = self._get_currency_totals(items)
         res = VerifyResult(self.currency_cheker.get_diffs(totals), totals)
@@ -152,9 +152,8 @@ class TradeVerifier:
         for key in currency_stacks:
             currency_name = key[0]
             stack_size = key[1]
-            template = Template.from_registry(
-                TemplateRegistry.get_template_for_currency_stack(
-                    currency_name, stack_size), scale=TradeVerifier.SCALE)
+            template = TemplateRegistry.get_template_for_currency_stack(
+                    currency_name, stack_size).get()
             matched_positions = \
                 self.trade_window_currency_matcher.match_template(template)
 
@@ -174,10 +173,11 @@ class TradeVerifier:
 if __name__ == "__main__":
     FORMAT = "%(created)f - %(thread)d: [%(filename)s:%(lineno)s - %(funcName)s() ] %(message)s"
     logging.basicConfig(format=FORMAT, level=logging.ERROR)
+    lf = LocationFactory()
     exchange = CurrencyExchange(
-        PoeApi("MopedDriverr", "2561bcd7ed51683282115e110e6ea1f3"))
+        PoeApi("MopedDriverr", "0dfdc62a6d647095161d19e802961ef3", "Expedition"))
     trade_info = TradeRequest("Pew", "pew", {
         'type': 'chaos',
-        'amount': 85.0
+        'amount': 20.0
     }, 'pew', 'pew', (0, 0), time.time())
     print(TradeVerifier(trade_info).verify())

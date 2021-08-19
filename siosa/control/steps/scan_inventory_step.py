@@ -1,16 +1,22 @@
 import logging
+import os
 from enum import Enum
 
 from siosa.clipboard.poe_clipboard import PoeClipboard
+from siosa.common.util import parent
+from siosa.config.siosa_config import SiosaConfig
 from siosa.control.console_controller import Commands
+from siosa.control.game_state import GameState
 from siosa.control.game_step import Step, StepStatus
+from siosa.data.currency_exchange import CurrencyExchange
 from siosa.data.inventory import Inventory
 from siosa.data.stash import Stash
 from siosa.image.inventory_scanner import InventoryScanner
 from siosa.image.template import Template
 from siosa.image.template_matcher import TemplateMatcher
 from siosa.image.template_registry import TemplateRegistry
-from siosa.location.location_factory import Locations
+from siosa.location.location_factory import Locations, LocationFactory
+from siosa.network.poe_api import PoeApi
 
 
 class Error(Enum):
@@ -26,10 +32,10 @@ class ScanInventory(Step):
         self.clipboard = PoeClipboard()
         self.inventory_scanner = InventoryScanner()
         self.inventory_0_0 = self.lf.get(Locations.INVENTORY_0_0)
-        self.party_notification_tm = TemplateMatcher(Template.from_registry(
-            TemplateRegistry.PARTY_NOTIFICATIONS_CLOSE_BUTTON))
-        self.inventory_banner_tm = TemplateMatcher(Template.from_registry(
-            TemplateRegistry.INVENTORY_BANNER))
+        self.party_notification_tm = TemplateMatcher(
+            TemplateRegistry.PARTY_NOTIFICATIONS_CLOSE_BUTTON.get())
+        self.inventory_banner_tm = TemplateMatcher(
+            TemplateRegistry.INVENTORY_BANNER.get())
         self.stash = Stash()
         self.items = []
 
@@ -116,3 +122,19 @@ class ScanInventory(Step):
     def _is_inventory_open(self):
         return len(self.inventory_banner_tm.match(self.lf.get(
             Locations.INVENTORY_BANNER))) > 0
+
+if __name__ == "__main__":
+    FORMAT = "%(created)f - %(thread)d: [%(filename)s:%(lineno)s - %(funcName)s() ] %(message)s"
+    logging.basicConfig(format=FORMAT, level=logging.ERROR)
+
+    lf = LocationFactory()
+    exchange = CurrencyExchange(
+        PoeApi("MopedDriverr", "0dfdc62a6d647095161d19e802961ef3",
+               "Expedition"))
+    config_file_path = os.path.join(parent(parent(parent(__file__))), "config.json")
+    print(config_file_path)
+    config = SiosaConfig.create_from_file(config_file_path)
+    stash = Stash(config)
+
+    gs = GameState()
+    print(ScanInventory().execute(gs))

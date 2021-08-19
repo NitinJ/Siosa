@@ -1,12 +1,11 @@
 import logging
 
+from siosa.control.game_state import GameState
 from siosa.control.game_step import Step, StepStatus
-from siosa.image.template import Template
-from siosa.image.template_matcher import TemplateMatcher
+from siosa.control.window_controller import WindowController
+from siosa.image.reusable_template_matcher import ReusableTemplateMatcher
 from siosa.image.template_registry import TemplateRegistry
-from siosa.image.thresholding_template_matcher import \
-    ThresholdingTemplateMatcher
-from siosa.location.location_factory import LocationFactory, Locations
+from siosa.location.location_factory import Locations
 
 
 class LocateStashStep(Step):
@@ -26,13 +25,9 @@ class LocateStashStep(Step):
             # Location already known.
             return StepStatus(True)
 
-        tm = ThresholdingTemplateMatcher(
-            self.lf.get(Locations.SCREEN_FULL),
-            debug=False)
-        points_s = \
-            tm.match_template(Template.from_registry(TemplateRegistry.STASH))
-        points_gs = tm.match_template(
-            Template.from_registry(TemplateRegistry.GUILD_STASH))
+        tm = ReusableTemplateMatcher(self.lf.get(Locations.SCREEN_FULL))
+        points_s = tm.match_template(TemplateRegistry.STASH.get())
+        points_gs = tm.match_template(TemplateRegistry.GUILD_STASH.get())
 
         if not points_s:
             # Not found.
@@ -62,3 +57,16 @@ class LocateStashStep(Step):
             game_state.update({'stash_location': stash_location})
 
         return StepStatus(True)
+
+
+if __name__ == "__main__":
+    FORMAT = "%(created)f - %(thread)d: [%(filename)s:%(lineno)s - %(funcName)s() ] %(message)s"
+    logging.basicConfig(format=FORMAT)
+
+    s = LocateStashStep()
+    gs = GameState()
+
+    wc = WindowController()
+    wc.move_to_poe()
+
+    print(s.execute(gs))

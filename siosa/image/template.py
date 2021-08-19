@@ -1,13 +1,8 @@
 import logging
-import os
 
 import cv2.cv2 as cv2
-import mss
-import mss.tools
-import numpy as np
-from PIL import Image
 
-from siosa.common.util import parent
+from siosa.image.utils import normalize
 from siosa.location.location_factory import LocationFactory
 from siosa.location.resolution import Resolution
 
@@ -16,182 +11,45 @@ logger.setLevel(logging.DEBUG)
 
 
 class Template:
-    def __init__(self, template_file_name, resolution, scale=1.0):
+    def __init__(self, template_name, template_file_path, resolution: Resolution):
         """
         Args:
-            template_file_name: Name of the template image file.
-            resolution: Resolution in which the template file has been created.
-            scale: Scale factor to scale the template image (> 0)
+            template_file_path: Path of the template image file.
         """
-        self.template_file_name = template_file_name
+        self.template_name = template_name
+        self.template_file_path = template_file_path
         self.resolution = resolution
-        self.scale = scale
-        assert self.scale > 0
-        self.resized_template = self._get_resized_template()
-        self.template_gray = cv2.cvtColor(self.resized_template,
-                                          cv2.COLOR_BGR2GRAY)
+        self.lf = LocationFactory()
+
+        template_image = cv2.imread(self.template_file_path)
+        self.template = self._process_template(template_image)
+
+    def _process_template(self, template_image):
+        return self.process_image(template_image)
+
+    def process_image(self, image):
+        """
+        Processes the image to be matched against the template.
+        Args:
+            image:
+
+        Returns: Gray scale normalized image.
+
+        """
+        return cv2.cvtColor(normalize(image), cv2.COLOR_RGB2GRAY)
 
     def get_dimensions(self):
         """Returns: Returns the dimensions of the template in 1080p resolution
         and not in the current resolution.
         """
-        template = cv2.imread(
-            Template._get_template_file_path(self.template_file_name))
-        return [int(template.shape[1] * self.scale),
-                int(template.shape[0] * self.scale)]
+        h, w = self.template.shape
+        return [w, h]
 
-    def get_template_name(self):
-        return self.template_file_name
-
-    def _get_resized_template(self):
-        """Returns the template image resized to the current_key_set screen
-        resolution. :returns: The resized template.
+    def get(self, scale=1.0):
+        """Returns the template image scaled by the given factor.
         """
-        template = cv2.imread(
-            Template._get_template_file_path(self.template_file_name))
-        lf = LocationFactory()
-        dim = (int(template.shape[1] * (
-                    lf.resolution.w / self.resolution.w) * self.scale),
-               int(template.shape[0] * (
-                           lf.resolution.h / self.resolution.h) * self.scale))
-
-        # Resize template to the current resolution.
-        return cv2.resize(template, dim, interpolation=cv2.INTER_AREA)
-
-    def get(self):
-        """Returns the template image resized to the current screen resolution.
-        :returns: The resized template.
-        """
-        return self.resized_template, self.template_gray
-
-    @staticmethod
-    def create(name, location, overwrite=False, debug=False):
-        """Creates a template with a given name by capturing screen at the given
-        location. :param name: Name of the file, in which template image will be
-        stored. :param location: Screen location to capture and create template
-        from. :param overwrite: Whether to overwrite the template file if it
-        already
-
-            exists.
-
-        Args:
-            name:
-            location:
-            overwrite:
-            debug:
-
-        Returns:
-            The full template file path
-        """
-        sct = mss.mss()
-        image_location = Template._get_grab_params(location)
-        output_file_path = Template._get_template_file_path(
-            "sct-tmp-{}.png".format(name))
-
-        if os.path.isfile(output_file_path):
-            logger.info(
-                'Template already exists at {}'.format(output_file_path))
-            if not overwrite:
-                return output_file_path
-
-        image = sct.grab(image_location)
-        image_bytes_rgb = Image.frombytes(
-            'RGB',
-            (image_location['width'], image_location['height']),
-            image.rgb)
-
-        if debug:
-            cv2.imshow('Template', np.array(image_bytes_rgb))
-            cv2.waitKey(0)
-            cv2.destroyAllWindows()
-
-        image_bytes_bgr = cv2.cvtColor(
-            np.array(image_bytes_rgb), cv2.COLOR_RGB2BGR)
-        cv2.imwrite(output_file_path, image_bytes_bgr)
-        logger.debug('Created template at: {}'.format(output_file_path))
-        return output_file_path
-
-    @staticmethod
-    def create_from_file(name, input_file_path, overwrite=False, debug=False):
-        """Creates a template with a given name from the image present at the
-        given file system location. :param name: Name of the file, in which
-        template image will be stored. :param input_file_path: File system path
-        of the image to create template :param from.: :param overwrite: Whether
-        to overwrite the template file if it already
-
-            exists.
-
-        Args:
-            name:
-            input_file_path:
-            overwrite:
-            debug:
-
-        Returns:
-            The full template file path
-        """
-        if not os.path.isfile(input_file_path):
-            logger.info(
-                'No input file exists at {}'.format(input_file_path))
-            return None
-
-        output_file_path = Template._get_template_file_path(
-            "sct-tmp-{}.png".format(name))
-
-        if os.path.isfile(output_file_path):
-            logger.info(
-                'Template already exists at {}'.format(output_file_path))
-            if not overwrite:
-                return output_file_path
-
-        image = cv2.imread(input_file_path)
-        image_bytes_bgr = cv2.cvtColor(
-            np.array(image), cv2.COLOR_RGB2BGR)
-        cv2.imwrite(output_file_path, image_bytes_bgr)
-
-        if debug:
-            cv2.imshow('Template', np.array(image_bytes_bgr))
-            cv2.waitKey(0)
-            cv2.destroyAllWindows()
-
-        logger.debug('Created template at: {}'.format(output_file_path))
-        return output_file_path
-
-    @staticmethod
-    def from_registry(template_registry, scale=1.0):
-        """
-        Args:
-            template_registry:
-            scale:
-        """
-        return Template(
-            template_registry[0],
-            Resolution(template_registry[1][0], template_registry[1][1]),
-            scale=scale)
-
-    @staticmethod
-    def _get_grab_params(location):
-        """
-        Args:
-            location:
-        """
-        return {
-            "top": location.y1,
-            "left": location.x1,
-            "width": location.x2 - location.x1,
-            "height": location.y2 - location.y1
-        }
-
-    @staticmethod
-    def _get_template_file_path(name):
-        """Returns the template output file path given name of the template.
-        :param name: Name of the template
-
-        Args:
-            name:
-
-        Returns:
-            Full file path of the template file.
-        """
-        siosa_base = parent(parent(__file__))
-        return os.path.join(siosa_base, "resources/templates/{}".format(name))
+        w, h = self.get_dimensions()
+        height_new = int(h * scale)
+        width_new = int(w * height_new / h)
+        return cv2.resize(self.template, (width_new, height_new),
+                          interpolation=cv2.INTER_AREA)

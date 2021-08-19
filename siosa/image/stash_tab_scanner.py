@@ -34,9 +34,9 @@ class StashTabScanner:
             self.stash_tab.cell_border_x,
             self.stash_tab.cell_border_y)
 
-        registry = TemplateRegistry.QUAD_STASH_0_0 if \
+        template = TemplateRegistry.QUAD_STASH_0_0 if \
             self.stash_tab.is_quad else TemplateRegistry.NORMAL_STASH_0_0
-        self.tm = TemplateMatcher(Template.from_registry(registry), debug=debug)
+        self.tm = TemplateMatcher(template.get(), debug=debug, threshold=0.75)
 
     def get_item_cells(self):
         """Returns: Cells at which items are present."""
@@ -92,6 +92,8 @@ class StashTabScanner:
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO,
                         format="[%(filename)s:%(lineno)s - %(funcName)s() ] %(message)s")
+
+
     class StashTabFake:
         def __init__(self, is_quad, size, cell_border):
             self.is_quad = is_quad

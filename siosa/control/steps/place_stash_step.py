@@ -1,7 +1,6 @@
 import time
 
 from siosa.control.game_step import Step, StepStatus
-from siosa.image.template import Template
 from siosa.image.template_matcher import TemplateMatcher
 from siosa.image.template_registry import TemplateRegistry
 from siosa.location.location_factory import Locations
@@ -31,7 +30,8 @@ class PlaceStash(Step):
             self.lf.get(Locations.DECORATIONS_OPEN_BUTTON))
 
         # Sometimes the decorations take time to load.
-        self.wait_for_decorations_to_load()
+        if not self.wait_for_decorations_to_load():
+            return StepStatus(False)
 
         self.kc.keypress_with_modifiers(['ctrl', 'f'])
         time.sleep(PlaceStash.SEARCH_BOX_DELAY)
@@ -53,7 +53,9 @@ class PlaceStash(Step):
 
     def wait_for_decorations_to_load(self):
         ts = time.time()
-        tm = TemplateMatcher(Template.from_registry(
-            TemplateRegistry.DECORATIONS_UTILITIES_ARROW))
-        while not tm.match(self.lf.get(Locations.DECORATIONS_UTILITIES_ARROW)):
+        tm = TemplateMatcher(TemplateRegistry.DECORATIONS_UTILITIES_ARROW.get())
+        while not tm.match_exists(
+                self.lf.get(Locations.DECORATIONS_UTILITIES_ARROW)):
             time.sleep(0.05)
+            if time.time() - ts > PlaceStash.DECORATIONS_LOAD_TIME:
+                return False

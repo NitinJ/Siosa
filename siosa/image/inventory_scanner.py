@@ -26,11 +26,27 @@ class InventoryScanner:
             Inventory.COLUMNS,
             Inventory.BORDER,
             Inventory.BORDER)
-        self.tm = TemplateMatcher(
-            Template.from_registry(TemplateRegistry.INVENTORY_0_0), debug=debug)
+        self.tm = TemplateMatcher(TemplateRegistry.INVENTORY_0_0.get(),
+                                  debug=False, threshold=0.75)
 
     def scan(self):
+        cells_with_items = {}
+        for r in range(0, Inventory.ROWS):
+            for c in range(0, Inventory.COLUMNS):
+                cells_with_items[(r, c)] = 1
+
         empty_cell_locations = self.tm.match(self.lf.get(Locations.INVENTORY))
-        cells_with_items = \
-            self.grid.get_cells_not_in_positions(empty_cell_locations)
+        for location in empty_cell_locations:
+            # Locations are wrt. the matched area (Locations.INVENTORY)
+            # We need to translate these to get on screen locations.
+            base = self.lf.get(Locations.INVENTORY)
+            location = (location[0] + base.x1, location[1] + base.y1)
+            cell = Inventory.get_cell(location)
+            if cell in cells_with_items:
+                cells_with_items.pop(cell)
         return sorted(cells_with_items, key=(lambda x: x[1]))
+
+
+if __name__ == "__main__":
+    iscanner = InventoryScanner()
+    print(iscanner.scan())

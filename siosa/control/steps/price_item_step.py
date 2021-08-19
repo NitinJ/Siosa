@@ -40,9 +40,7 @@ class PriceItem(Step):
         self.price_note = PriceItem._get_price_note(currency_stack)
         self.poe_clipboard = PoeClipboard()
         self.tm_arrow = \
-            TemplateMatcher(
-                Template.from_registry(
-                    TemplateRegistry.PRICE_ITEM_WINDOW_ARROW))
+            TemplateMatcher(TemplateRegistry.PRICE_ITEM_WINDOW_ARROW.get())
 
     @staticmethod
     def _get_price_note(currency_stack):
