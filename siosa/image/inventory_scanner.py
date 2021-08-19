@@ -48,5 +48,8 @@ class InventoryScanner:
 
 
 if __name__ == "__main__":
+    FORMAT = "%(created)f - %(thread)d: [%(filename)s:%(lineno)s - %(" \
+             "funcName)s() ] %(message)s "
+    logging.basicConfig(level=logging.INFO, format=FORMAT)
     iscanner = InventoryScanner()
     print(iscanner.scan())
