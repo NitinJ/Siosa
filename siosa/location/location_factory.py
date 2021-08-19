@@ -1,7 +1,5 @@
 import logging
 
-import pyautogui
-
 from siosa.common.singleton import Singleton
 from siosa.control.window_controller import WindowController
 from siosa.location.in_game_location import InGameLocation
@@ -18,102 +16,38 @@ class LocationFactoryBase(metaclass=Singleton):
         self.logger = logging.getLogger(__name__)
         self.logger.setLevel(logging.DEBUG)
         self.resolution = resolution
-
         self.logger.debug("Created with resolution : {}".format(
             str(self.resolution)))
 
     def get(self, location: Location) -> InGameLocation:
-        """
-        Args:
-            location (Location):
-        """
-        return self._get_in_game_location(location)
+        return InGameLocation(
+            location.x1, location.y1, location.x2, location.y2,
+            location.resolution).get_scaled_for_resolution(self.resolution)
 
     def create(self, x1, y1, x2, y2) -> InGameLocation:
-        """Creates an in game location from a given set of bounding box
-        co-ordinates. Returns: The InGameLocation
-
-        Args:
-            x1:
-            y1:
-            x2:
-            y2:
-        """
-        return self._get_in_game_location(
-            Location(x1, y1, x2, y2, self.resolution))
-
-    def _get_in_game_location(self, location):
-        # Scales the given location to the location factory's resolution.
-        """
-        Args:
-            location:
-        """
-        scaled_location = LocationFactoryBase._scale_to_resolution(
-            location, self.resolution)
-        return InGameLocation(scaled_location.x1, scaled_location.y1,
-                              scaled_location.x2, scaled_location.y2,
-                              LocationFactoryBase._get_unique_name(location))
-
-    @staticmethod
-    def _get_unique_name(location):
-        """Returns the unique name for a given location by using it's
-        coordinates in 1080p resolution. :param location: The location for which
-        the unique name is required.
-
-        Returns: The unique name for a location
-
-        Args:
-            location:
-        """
-        scaled_location_p1080 = LocationFactoryBase._scale_to_resolution(
-            location,
-            Resolutions.p1080)
-        return "{}.{}.{}.{}.{}.{}".format(
-            location.resolution.w,
-            location.resolution.h,
-            scaled_location_p1080.x1,
-            scaled_location_p1080.y1,
-            scaled_location_p1080.x2,
-            scaled_location_p1080.y2)
-
-    @staticmethod
-    def _scale_to_resolution(location, resolution):
-        """Scales a given location to a given resolution. :param location:
-        Location to scale to a given resolution . :param resolution: The
-        resolution to scale the given location to.
-
-        Args:
-            location:
-            resolution:
-
-        Returns:
-            Scaled location
-        """
-        w_ratio = resolution.w / location.resolution.w
-        h_ratio = resolution.h / location.resolution.h
-        return Location(
-            int(location.x1 * w_ratio),
-            int(location.y1 * h_ratio),
-            int(location.x2 * w_ratio),
-            int(location.y2 * h_ratio),
-            resolution,
-            location.name)
+        return InGameLocation(x1, y1, x2, y2, self.resolution)
 
 
 class LocationFactory(LocationFactoryBase):
-    """Location factory should be used for getting locations across the app. No
+    """
+    Location factory should be used for getting locations across the app. No
     location should be used directly as those might not be for the current
     resolution.
     """
 
-    def __init__(self):
-        wc = WindowController()
-        dim = wc.get_poe_monitor_dimensions()
-        size = (dim[2], dim[3])
-        current_resolution = Resolution(size[0], size[1])
-        super().__init__(resolution=current_resolution)
-        self.logger.debug("Location on monitor: {}, monitor_info: {}".format(
-            wc.get_mss_monitor(), dim))
+    def __init__(self, resolution=None):
+        self.logger = logging.getLogger(__name__)
+        self.logger.setLevel(logging.DEBUG)
+
+        if not resolution:
+            wc = WindowController()
+            dim = wc.get_poe_monitor_dimensions()
+            self.logger.debug("Monitor number: {}, monitor_info: {}".format(
+                wc.get_mss_monitor(), dim))
+            size = (dim[2], dim[3])
+            resolution = Resolution(size[0], size[1])
+
+        super().__init__(resolution=resolution)
 
 
 class Locations:
@@ -164,7 +98,7 @@ class Locations:
 
     # Inventory
     INVENTORY = Location(1260, 579, 1915, 861, Resolutions.p1080)
-    INVENTORY_0_0 = Location(1273, 590, 1323, 640, Resolutions.p1080)
+    INVENTORY_0_0 = Location(1287, 603, 1311, 627, Resolutions.p1080)
     INVENTORY_0_0_WITH_RIGHT_BORDER = Location(1273, 590, 1325, 640,
                                                Resolutions.p1080)
     INVENTORY_0_0_WITH_BOTTOM_BORDER = Location(1273, 590, 1323, 642,

@@ -1,15 +1,19 @@
+from fractions import Fraction
+
+
 class Resolution:
     def __init__(self, w, h):
-        """
-        Args:
-            w:
-            h:
-        """
         self.w = w
         self.h = h
 
+    def aspect_ratio(self):
+        return Fraction(self.w, self.h)
+
     def __str__(self):
         return "{}x{}".format(self.w, self.h)
+
+    def equals(self, other):
+        return other.w == self.w and other.h == self.h
 
 
 class Resolutions:
