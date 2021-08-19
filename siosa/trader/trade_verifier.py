@@ -51,11 +51,11 @@ class TradeVerifier:
         self.trading_tm_other = TemplateMatcher(
             TemplateRegistry.TRADE_WINDOW_OTHER_SMALL_0_0.get(),
             threshold=0.75,
-            debug=True)
+            debug=False)
         self.trade_window_currency_matcher = ReusableTemplateMatcher(
             self.lf.get(Locations.TRADE_WINDOW_OTHER),
             threshold=0.80,
-            debug=True)
+            debug=False)
 
     def _get_cells_with_items(self):
         cells_with_items = self.grid_other.get_cells_not_in_positions(
