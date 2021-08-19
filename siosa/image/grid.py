@@ -28,10 +28,23 @@ class Grid:
         self.lf = LocationFactory()
         self.grid = self.lf.get(grid_location)
         self.cell00 = self.lf.get(cell_0_0_location)
+
+        self.width = self.grid.get_width()
+        self.height = self.grid.get_height()
         self.rows = rows
         self.cols = columns
         self.border_x = border_x
         self.border_y = border_y
+        self.cell_bounds = self._get_cells_bounds()
+
+    def _get_cells_bounds(self):
+        cells = {}
+        for i in range(0, self.rows):
+            for j in range(0, self.cols):
+                w = self.width // self.cols
+                h = self.height // self.rows
+                cells[(i, j)] = ((j * w, (j + 1) * w), (i * h, (i + 1) * h))
+        return cells
 
     def get_cells_in_positions(self, positions):
         """Returns cells in the grid for the given positions. :param positions:
@@ -43,14 +56,24 @@ class Grid:
         Returns:
             A list of cells at the given positions.
         """
-        return self._get_cells_for_positions(positions)
+        cells = []
+        for p in positions:
+            x = p[0]
+            y = p[1]
+            for cell, bounds in self.cell_bounds.items():
+                bounds_x = bounds[0]
+                bounds_y = bounds[1]
+                if bounds_x[0] <= x <= bounds_x[1] and \
+                        bounds_y[0] <= y <= bounds_y[1]:
+                    cells.append(cell)
+        return cells
 
     def get_cells_not_in_positions(self, positions):
         """
         Args:
             positions:
         """
-        cells = self._get_cells_for_positions(positions)
+        cells = self.get_cells_in_positions(positions)
         item_positions = {}
         for i in range(0, self.rows):
             for j in range(0, self.cols):
@@ -75,23 +98,6 @@ class Grid:
         x2 = self.cell00.x2 + j * (self.cell00.get_width() + self.border_x)
         y2 = self.cell00.y2 + i * (self.cell00.get_height() + self.border_y)
         return self.lf.create(x1, y1, x2, y2)
-
-    def _get_cells_for_positions(self, positions):
-        """
-        Args:
-            positions:
-        """
-        offset_x, offset_y = \
-            (self.cell00.x1 - self.grid.x1, self.cell00.y1 - self.grid.y1)
-        width = self.cell00.get_width() + 2*self.border_x
-        height = self.cell00.get_height() + 2*self.border_y
-        ret = [
-            (abs(p[1] - offset_y) // height, abs(p[0] - offset_x) // width)
-            for p in positions]
-        # positions might contain close positions that map to the same cell.
-        # This can cause ret to contain duplicate values, so remove duplicates
-        # by converting to a set and back.
-        return list(set(ret))
 
     def _is_in_bounds(self, cell):
         """
