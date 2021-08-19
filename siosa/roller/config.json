@@ -1,20 +1,24 @@
 {
     "items": [
-        {
-            "base_name": "conjurer boots",
-            "inventory_position": [
-                0,
-                0
-            ],
-            "crafting_type": "alteration",
+       {
+            "base_name": "two-toned boots",
+            "inventory_position": [0, 0],
+            "crafting_type": "chaos",
             "item_options": [
                 {
-                    "rarity": "magic",
+                    "rarity": "rare",
                     "prefixes": [
                         {
                             "name": "",
-                            "tier": 8,
+                            "tier": 2,
                             "hint": "movement"
+                        }
+                    ],
+                    "suffixes": [
+                        {
+                            "name": "",
+                            "tier": 2,
+                            "hint": "resistance"
                         }
                     ]
                 }
