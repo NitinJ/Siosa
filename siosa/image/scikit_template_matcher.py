@@ -3,6 +3,7 @@ import time
 
 import matplotlib.pyplot as plt
 import numpy as np
+from cv2 import cv2
 from skimage.feature import match_template, peak_local_max
 
 
@@ -10,9 +11,11 @@ def plot(image, template, result, all_matches=None):
     if all_matches is None:
         all_matches = []
 
-    x, y = np.unravel_index(np.argmax(result), result.shape)
-    ymin, xmin = np.unravel_index(np.argmin(result), result.shape)
-    template_width, template_height = template.shape
+    res = np.unravel_index(np.argmax(result), result.shape)
+    x, y = res[:2]
+    res = np.unravel_index(np.argmin(result), result.shape)
+    ymin, xmin = res[:2]
+    template_width, template_height = template.shape[:2]
 
     fig = plt.figure('Debug', figsize=(12, 12), dpi=80)
     ax1 = plt.subplot(2, 2, 1)
@@ -95,5 +98,4 @@ class ScikitTemplateMatcher:
         return all_matches
 
     def _find_all(self, result):
-        return [(y, x) for (x, y) in peak_local_max(
-            result, threshold_abs=self.threshold, exclude_border=2)]
+        return [(r[1], r[0]) for r in peak_local_max(result, threshold_abs=self.threshold, exclude_border=2)]
