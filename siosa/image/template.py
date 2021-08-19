@@ -42,7 +42,7 @@ class Template:
         """Returns: Returns the dimensions of the template in 1080p resolution
         and not in the current resolution.
         """
-        h, w = self.template.shape
+        h, w = self.template.shape[:2]
         return [w, h]
 
     def get(self, scale=1.0):
@@ -50,6 +50,6 @@ class Template:
         """
         w, h = self.get_dimensions()
         height_new = int(h * scale)
-        width_new = int(w * height_new / h)
+        width_new = int(w * height_new / h )
         return cv2.resize(self.template, (width_new, height_new),
                           interpolation=cv2.INTER_AREA)
