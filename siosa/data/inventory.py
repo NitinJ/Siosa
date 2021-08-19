@@ -1,7 +1,14 @@
+import json
+import os
+
 from siosa.clipboard.poe_clipboard import PoeClipboard
+from siosa.common.util import parent
 from siosa.control.mouse_controller import MouseController
 from siosa.image.grid import Grid
+from siosa.location.in_game_location import InGameLocation
+from siosa.location.location import Location
 from siosa.location.location_factory import LocationFactory, Locations
+from siosa.location.resolution import Resolutions
 
 
 class Inventory:
@@ -10,6 +17,8 @@ class Inventory:
     BORDER = 2
     ROWS = 5
     COLUMNS = 12
+
+    _inventory_cell_location_map = {}
 
     @staticmethod
     def is_in_bounds(p):
@@ -27,26 +36,68 @@ class Inventory:
             1] < Inventory.COLUMNS
 
     @staticmethod
-    def get_location(p):
+    def _get_path(filename):
+        """
+        Args:
+            filename:
+        """
+        siosa_base = parent(parent(__file__))
+        return os.path.join(siosa_base,
+                            "resources/inventory/{}".format(filename))
+
+    @staticmethod
+    def _get_inventory_cell_location_map():
+        if Inventory._inventory_cell_location_map:
+            return Inventory._inventory_cell_location_map
+
+        lf = LocationFactory()
+        filename = 'inventory.json'
+        filepath = Inventory._get_path(filename)
+        data = json.load(open(filepath, 'r'))
+        ret = {}
+        for key, location in data.items():
+            cell = tuple(int(i) for i in key.split(","))
+            # TODO: Take resolution as input from the file itself.
+            location = Location(location[0],
+                                location[1],
+                                location[0],
+                                location[1],
+                                Resolutions.p1080)
+            ret[cell] = lf.get(location)
+        Inventory._inventory_cell_location_map = ret
+        return Inventory._inventory_cell_location_map
+
+    @staticmethod
+    def get_location(cell):
         """Returns the absolute position for a given inventory cell on the
-        screen. :param p: The cell
+        screen. :param cell: The cell
 
         Args:
-            p:
+            cell:
 
         Returns:
             Absolute position of the cell center on the screen.
         """
-        lf = LocationFactory()
-        inventory_0_0 = lf.get(Locations.INVENTORY_0_0)
-        x, y = inventory_0_0.get_center()
+        cell = tuple(cell)
+        return Inventory._get_inventory_cell_location_map()[cell]
 
-        size_x = inventory_0_0.get_width() + Inventory.BORDER
-        size_y = inventory_0_0.get_height() + Inventory.BORDER
+    @staticmethod
+    def get_cell(location):
+        if not isinstance(location, InGameLocation):
+            location = LocationFactory().create(
+                location[0], location[1], location[0], location[1])
 
-        x2 = x + p[1] * size_x
-        y2 = y + p[0] * size_y
-        return lf.create(x2, y2, x2, y2)
+        cell_location_map = Inventory._get_inventory_cell_location_map()
+        def distance(item):
+            loc = item[1]
+            loc_center = loc.get_center()
+            location_center = location.get_center()
+            return (loc_center[0] - location_center[0]) ** 2 + \
+                   (loc_center[1] - location_center[1]) ** 2
+
+        # Sort the cell locations wrt. distance from location and return the
+        # cell.
+        return sorted(cell_location_map.items(), key=distance)[0][0]
 
     @staticmethod
     def get_location_for_placing_item(item, p):
