@@ -38,7 +38,7 @@ class BaseItems:
         for k,v in data.items():
             if "Metadata" not in k:
                 continue
-            BaseItems._items[v['name']] = {
+            BaseItems._items[v['name'].lower()] = {
                 'inventory_height' : v['inventory_height'],
                 'inventory_width' : v['inventory_width']
             }
