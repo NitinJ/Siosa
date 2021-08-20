@@ -8,9 +8,7 @@ class MetadataService:
         self.config = siosa_config
 
     def get_stashes(self):
-        if self.config.is_valid():
-            return utils.get_stash_metadata(self.config.to_json())
-        return []
+        return utils.get_stash_metadata(self.config.to_json())
 
     def get_leagues(self):
         return PoeApi.get_leagues()
