@@ -16,6 +16,7 @@ from siosa.image.scikit_template_matcher import ScikitTemplateMatcher
 from siosa.image.template import Template
 from siosa.image.template_matcher import TemplateMatcher
 from siosa.image.template_registry import TemplateRegistry
+from siosa.location.in_game_location import InGameLocation
 from siosa.location.location_factory import LocationFactory, Locations
 from siosa.location.resolution import Resolution
 from skimage.io import imread, imshow
@@ -144,18 +145,53 @@ def from_poe():
     scikit(get_image(location), template)
 
 
+class ImageTm(TemplateMatcher):
+    def __init__(self, image, template):
+        self.image = image
+        super().__init__(template, threshold=0.75, debug=True)
+
+    def get_image(self, location: InGameLocation, reuse):
+        """
+        Args:
+            location:
+            reuse:
+        """
+        # Params for the part of the screen to capture.
+        key = str(location)
+        if reuse and key in self.image_cache.keys():
+            self.logger.info(
+                "Screen location image found in cache. Reusing.")
+            return self.image_cache[key]
+
+        image_rgb = self.image
+        width = location.get_width()
+        height = location.get_height()
+
+        # Resize image down to the resolution of the template and save the
+        # processed image in cache.
+        image_rgb = self._resize_image(
+            np.array(image_rgb), location.resolution, width, height)
+
+        self.image_cache[key] = self.template.process_image(image_rgb)
+        return self.image_cache[key]
+
+
 def from_file():
     image_path = 'images/accepting_trade.png'
     lf = LocationFactory(resolution=Resolution(2560, 1440))
-    location = lf.get(Locations.TRADE_WINDOW_FULL)
+    # lf = LocationFactory(resolution=Resolution(3440, 1440))
+
+    location = lf.get(Locations.TRADE_ACCEPT_GREEN_AURA_BOX)
     template = TemplateRegistry.TRADE_ACCEPT_GREEN_AURA.get()
     image = get_image_from_file(image_path, location)
-    # scikit(image, template.get()[1])
-    res = ScikitTemplateMatcher(debug=True, threshold=0.75).match(image, template.get())
-    # tm = TemplateMatcher(template, debug=True, threshold=0.75, scale=0.5)
-    # res = tm.match(location)
-    print(res)
 
+    # res = ScikitTemplateMatcher(debug=True, threshold=0.75).match(image, template.get())
+    # print(res)
+
+    image = crop_image(cv2.imread(image_path), location)
+    tm = ImageTm(image, template)
+    res = tm.match(location)
+    print(res)
 
 # from_poe()
 from_file()
