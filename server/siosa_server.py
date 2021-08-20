@@ -6,8 +6,7 @@ from waitress import serve
 from server.services.service_manager import ServiceManager, ServiceType
 from siosa.config.metadata import get_metadata
 
-FORMAT = "%(created)f - %(thread)d: [%(filename)s:%(lineno)s - %(funcName)s() " \
-         "] %(message)s "
+FORMAT = "%(created)f - %(thread)d: [%(filename)s:%(lineno)s - %(funcName)s()] %(message)s "
 logging.basicConfig(
     level=logging.INFO,
     format=FORMAT,
