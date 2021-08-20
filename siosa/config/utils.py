@@ -92,6 +92,8 @@ def validate_license_key(license_key, config_json):
 
 
 def validate_stash_tab_names(names, config_json):
+    if not names:
+        return False
     stashes = [stash['n'].lower() for stash in get_stash_metadata(config_json)]
     for name in names:
         if name.lower() not in stashes:
@@ -100,6 +102,8 @@ def validate_stash_tab_names(names, config_json):
 
 
 def validate_stash_tab_indexes(indexes, config_json):
+    if not indexes:
+        return False
     stash_indexes = \
         [int(stash['i']) for stash in get_stash_metadata(config_json)]
     for index in indexes:

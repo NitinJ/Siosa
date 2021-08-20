@@ -7,14 +7,11 @@ from server.services.service_manager import ServiceManager, ServiceType
 from siosa.config.metadata import get_metadata
 
 FORMAT = "%(created)f - %(thread)d: [%(filename)s:%(lineno)s - %(funcName)s()] %(message)s "
-logging.basicConfig(
-    level=logging.INFO,
-    format=FORMAT,
-    handlers={
-        logging.FileHandler('siosa-server.log', encoding='utf-8'),
-        logging.StreamHandler()
-    }
-)
+handlers = {
+    logging.FileHandler('siosa-server.log', encoding='utf-8'),
+    logging.StreamHandler()
+}
+logging.basicConfig(level=logging.INFO, format=FORMAT, handlers=handlers)
 
 app = Flask(__name__)
 
@@ -71,6 +68,7 @@ def stop_task():
         return {"status": False}
 
     return {"status": True, "details": task_service.stop_all_tasks()}
+
 
 # ##############################################################################
 # Config

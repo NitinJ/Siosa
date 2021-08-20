@@ -56,8 +56,6 @@ class TradeStateUpdater:
             TemplateRegistry.TRADE_WINDOW_CLOSE_BUTTON.get()
         self.trade_accept_retracted = \
             TemplateRegistry.TRADE_ACCEPT_RETRACTED.get()
-        self.trade_green_aura = \
-            TemplateRegistry.TRADE_ACCEPT_GREEN_AURA.get()
         self.trade_cancel_accept_button = \
             TemplateRegistry.CANCEL_TRADE_ACCEPT_BUTTON.get()
         self.trade_me_empty_text = \

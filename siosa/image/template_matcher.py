@@ -19,7 +19,7 @@ def _transform_points(points, res_from, res_to):
 
 
 class TemplateMatcher:
-    def __init__(self, template, threshold=0.80, debug=False, scale=1.0):
+    def __init__(self, template, threshold=0.75, debug=False, scale=1.0):
         """
         Args:
             template:
@@ -157,6 +157,6 @@ if __name__ == "__main__":
              "funcName)s() ] %(message)s "
     logging.basicConfig(level=logging.INFO, format=FORMAT)
     tm = TemplateMatcher(
-        TemplateRegistry.TRADE_ACCEPT_GREEN_AURA.get(),
-        debug=False, threshold=0.75)
-    print(tm.match(LocationFactory().get(Locations.TRADE_ACCEPT_GREEN_AURA_BOX)))
+        TemplateRegistry.DECORATIONS_EDIT_BUTTON.get(),
+        debug=True, threshold=0.75)
+    print(tm.match(LocationFactory().get(Locations.DECORATIONS_EDIT_BOX)))

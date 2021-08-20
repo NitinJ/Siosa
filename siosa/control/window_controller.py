@@ -13,7 +13,8 @@ class WindowController(metaclass=Singleton):
         self.app = pwa.application.Application()
 
         # TODO: What if it's not the first window ?
-        self.app.connect(title_re='Path of Exile', found_index=0)
+        self.app.connect(title='Path of Exile',
+                         class_name='POEWindowClass', found_index=0)
 
         if not self.app.is_process_running():
             raise Exception("Path of Exile is not running")

@@ -48,9 +48,11 @@ class InvitePlayerToHideoutStep(Step):
                                   "player({}) to enter hideout".format(
                     self.player_account_name))
                 return False
+            self.logger.debug("Players in hideout: {}".format(
+                self.game_state.get()['players_in_hideout']))
             if self.player_account_name in self.game_state.get()[
                 'players_in_hideout']:
                 self.logger.debug("player({}) has entered hideout".format(
                     self.player_account_name))
                 return True
-            time.sleep(0.01)
+            time.sleep(0.1)

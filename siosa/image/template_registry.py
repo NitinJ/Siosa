@@ -55,7 +55,6 @@ class TemplateRegistry:
     template file name and the resolution at which template was created.
     """
     INVENTORY_0_0 = TemplateWrapper("sct-tmp-INVENTORY_0_0.png", (1920, 1080))
-    INVENTORY = TemplateWrapper("sct-tmp-INVENTORY.png", (1920, 1080))
     STASH = TemplateWrapper("sct-tmp-STASH.png", (1920, 1080),
                             template_class=ThresholdingTemplate)
     GUILD_STASH = TemplateWrapper("sct-tmp-GUILD_STASH.png", (1920, 1080),
@@ -64,26 +63,10 @@ class TemplateRegistry:
     NORMAL_STASH_0_0 = TemplateWrapper("sct-tmp-STASH_NORMAL_0_0.png",
                                        (1920, 1080))
     QUAD_STASH_0_0 = TemplateWrapper("sct-tmp-STASH_QUAD_0_0.png", (1920, 1080))
-    STASH_CLOSE_BUTTON = TemplateWrapper("sct-tmp-STASH_CLOSE_BUTTON.png",
-                                         (1920, 1080))
-    DECORATIONS_BANNER = TemplateWrapper("sct-tmp-DECORATIONS_BANNER.png",
-                                         (1920, 1080))
-    AWAITING_TRADE_BOX = TemplateWrapper("sct-tmp-TRADE_AWAITING_TRADE_BOX.png",
-                                         (1920, 1080))
     AWAITING_TRADE_CANCEL_BUTTON = TemplateWrapper(
         "sct-tmp-TRADE_AWAITING_TRADE_CANCEL_BUTTON.png", (1920, 1080))
-    TRADE_WINDOW_TITLE = TemplateWrapper("sct-tmp-TRADE_WINDOW_TITLE.png",
-                                         (1920, 1080))
-    TRADE_WINDOW_ME = TemplateWrapper("sct-tmp-TRADE_WINDOW_ME.png",
-                                      (1920, 1080))
-    TRADE_WINDOW_ME_0_0 = TemplateWrapper("sct-tmp-TRADE_WINDOW_ME_0_0.png",
-                                          (1920, 1080))
     TRADE_WINDOW_ME_EMPTY_TEXT = TemplateWrapper(
         "sct-tmp-TRADE_WINDOW_ME_EMPTY_TEXT.png", (1920, 1080))
-    TRADE_WINDOW_OTHER = TemplateWrapper("sct-tmp-TRADE_WINDOW_OTHER.png",
-                                         (1920, 1080))
-    TRADE_WINDOW_OTHER_0_0 = TemplateWrapper(
-        "sct-tmp-TRADE_WINDOW_OTHER_0_0.png", (1920, 1080))
     TRADE_WINDOW_OTHER_SMALL_0_0 = TemplateWrapper(
         "sct-tmp-TRADE_WINDOW_OTHER_SMALL_0_0.png", (1920, 1080))
     TRADE_ACCEPT_RETRACTED = TemplateWrapper(
@@ -98,6 +81,10 @@ class TemplateRegistry:
         "sct-tmp-PARTY_NOTIFICATIONS_CLOSE_BUTTON.png", (1920, 1080))
     DECORATIONS_UTILITIES_ARROW = TemplateWrapper(
         "sct-tmp-DECORATIONS_UTILITIES_ARROW.png", (1920, 1080))
+    DECORATIONS_EDIT_BUTTON =  TemplateWrapper(
+        "sct-tmp-DECORATIONS_EDIT_BUTTON.png", (1920, 1080))
+    EDITING_BANNER =  TemplateWrapper(
+        "sct-tmp-EDITING_BANNER.png", (1920, 1080))
     INVENTORY_BANNER = TemplateWrapper("sct-tmp-INVENTORY_BANNER.png",
                                        (1920, 1080))
     DROP = TemplateWrapper("sct-tmp-DROP.png", (1920, 1080))
