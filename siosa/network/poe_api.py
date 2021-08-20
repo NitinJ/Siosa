@@ -57,8 +57,12 @@ class PoeApi(metaclass=Singleton):
         url = STASH_INFO_API.format(self.account_name, self.league)
         resp = requests.get(url, headers=self.headers, cookies=self.cookies)
         if not resp.content:
-            return
+            return {}
+
         data = json.loads(resp.content)
+        if 'error' in data or 'tabs' not in data:
+            return {}
+
         self.stash_metadata = data
         self.stash_metadata_fetch_ts = time.time()
         self.logger.debug("Got stash metadata. Number of tabs: {}".format(
