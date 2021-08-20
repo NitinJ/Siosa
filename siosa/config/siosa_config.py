@@ -65,20 +65,23 @@ class SiosaConfig(metaclass=Singleton):
         # ones.
         new_fields, old_fields = self._segregate_fields(config_json)
 
-        # Validate all new fields.
+        # Get valid state for new and old fields. Old fields will only have
+        # valid values.
         valid_status_new_fields = validate_fields(new_fields, self.config_json)
         valid_status_old_fields = {k: self.valid_state[k] for k in old_fields}
 
         # Get only the valid new fields.
+        fields_updated = False
         for field_name, field_value in new_fields.items():
             if field_name in valid_status_new_fields and \
                     valid_status_new_fields[field_name] == 'valid':
+                fields_updated = True
                 self.config_json[field_name] = field_value
                 self.valid_state[field_name] = 'valid'
 
-        if self.is_valid():
-            self.logger.info(
-                "Updated config: {}".format(str(self.config_json)))
+        # If we added any valid values to config_json then write it to file.
+        if fields_updated:
+            self.logger.info("Updated config: {}".format(str(self.config_json)))
             self.write_config()
 
         valid_status_old_fields.update(valid_status_new_fields)

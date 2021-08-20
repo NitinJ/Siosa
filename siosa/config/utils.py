@@ -26,8 +26,6 @@ def validate_fields(config_json, full_config_json):
     valid_status = config_json.copy()
     all_field_names = get_field_names()
     for field_name, field_value in config_json.items():
-        logger.debug("Validating : {}".format(field_name))
-
         if field_name not in all_field_names:
             valid_status[field_name] = 'invalid'
             logger.debug("{} : {}".format(field_name, 'invalid'))
