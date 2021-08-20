@@ -1,5 +1,6 @@
 import logging
 import os
+import time
 from enum import Enum
 
 from siosa.clipboard.poe_clipboard import PoeClipboard
@@ -118,10 +119,13 @@ class ScanInventory(Step):
     def close_all_party_notifications(self):
         for pos in self.get_party_notification_close_button_locations():
             self.mc.click_at_location(pos)
+        # Sleep because mouse takes some time to go to the last pos and click.
+        time.sleep(self.mc.mouse_move_duration)
 
     def _is_inventory_open(self):
         return len(self.inventory_banner_tm.match(self.lf.get(
             Locations.INVENTORY_BANNER))) > 0
+
 
 if __name__ == "__main__":
     FORMAT = "%(created)f - %(thread)d: [%(filename)s:%(lineno)s - %(funcName)s() ] %(message)s"
@@ -131,7 +135,8 @@ if __name__ == "__main__":
     exchange = CurrencyExchange(
         PoeApi("MopedDriverr", "0dfdc62a6d647095161d19e802961ef3",
                "Expedition"))
-    config_file_path = os.path.join(parent(parent(parent(__file__))), "config.json")
+    config_file_path = os.path.join(parent(parent(parent(__file__))),
+                                    "config.json")
     print(config_file_path)
     config = SiosaConfig.create_from_file(config_file_path)
     stash = Stash(config)
