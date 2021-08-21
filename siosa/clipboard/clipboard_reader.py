@@ -46,7 +46,7 @@ class ClipboardReader(metaclass=Singleton):
                     "Error while reading clipboard: {}".format(str(e)))
                 if ClipboardReader.FORMAT_ERROR in str(e):
                     raise ClipboardDataFormatException()
-            time.sleep(0.05)
+            time.sleep(0.1)
 
     def _write_internal(self, data):
         while True:
@@ -59,4 +59,4 @@ class ClipboardReader(metaclass=Singleton):
             except Exception as e:
                 self.logger.error(
                     "Error while writing to clipboard: {}".format(str(e)))
-            time.sleep(0.01)
+            time.sleep(0.1)
