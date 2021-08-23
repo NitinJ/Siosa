@@ -42,9 +42,10 @@ class ClientLogListener(threading.Thread):
                 for log_filter in self.filters:
                     filter_output = log_filter(line)
                     if filter_output['pass']:
-                        queue = filter_output['queue']
-                        self.logger.debug("Adding queue event for line from client log. {}".format(line))
-                        queue.put(filter_output['data'])
+                        self.logger.debug(
+                            "Adding queue event({}) for client log line: {}"
+                                .format(log_filter, line))
+                        filter_output['queue'].put(filter_output['data'])
             time.sleep(ClientLogListener.SLEEP_DURATION)
 
     def read_unread_lines(self):
