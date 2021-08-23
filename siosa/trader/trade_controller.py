@@ -63,7 +63,11 @@ class TradeController(StoppableThread):
                 "Valid" if trade_info else "Invalid"))
             if not trade_info:
                 return
-            self.trade_blacklist.add(trade_request.trader)
+
+            # Blacklist the trader for 15 minutes to avoid scams, and repeated
+            # trades.
+            self.trade_blacklist.add(trade_request.trader, duration=15*60)
+
             self._start_new_trade(trade_info)
         time.sleep(TradeController.QUEUE_LISTEN_DELAY)
 
