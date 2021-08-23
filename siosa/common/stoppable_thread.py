@@ -23,6 +23,7 @@ class StoppableThread(threading.Thread):
         super(StoppableThread,self).join(*args, **kwargs)
 
     def run(self):
+        self.logger.info("Starting thread : {}".format(self.__class__))
         while not self._stop_event.is_set():
             self.run_once()
 
