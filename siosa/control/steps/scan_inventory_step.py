@@ -74,7 +74,11 @@ class ScanInventory(Step):
                 item, stash_tab))
 
             # Mark the cells which this item occupies.
-            ScanInventory._mark_item_cells(p, item, item_cells)
+            # TODO: Fix the marking of cells. Sometimes there are items
+            # which have empty spaces in their frame so we read the item
+            # incorrectly and mark inventory cells wrong.
+            # ScanInventory._mark_item_cells(p, item, item_cells)
+
             self.items.append({
                 'item': item,
                 'position': p,
