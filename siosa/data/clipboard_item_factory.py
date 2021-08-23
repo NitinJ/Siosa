@@ -46,7 +46,7 @@ class ClipboardItemFactory:
             "Got rarity({}), type({}) from clipboard".format(rarity, type))
 
         # TODO: Handle other rarities like divination card, gem etc.
-        if rarity == 'currency':
+        if rarity == ItemRarity.CURRENCY:
             return self._create_currency_item(type, data_sections)
         else:
             return self._create_general_item(type, rarity, data_sections)
@@ -125,13 +125,16 @@ class ClipboardItemFactory:
             'rarity': rarity,
             'name': self._get_name(rarity, identified, data_sections),
             'type_line': self._get_type_line(rarity, identified, data_sections),
-            'base_type': self._get_base_type(rarity, affixes, identified, data_sections),
+            'base_type': self._get_base_type(rarity, affixes, identified,
+                                             data_sections),
             'ilvl': self._get_item_level(data_sections),
             'corrupted': self._get_corrupted(data_sections),
             'identified': not self._get_unidentified(data_sections),
             'note': self._get_note(data_sections),
             'explicit_mods': [affix.str_val for affix in affixes],
             'n_prefixes': self._get_num_prefixes(affixes),
+            'stack_size': self._get_stack_size(data_sections),
+            'max_stack_size': self._get_max_stack_size(data_sections),
             'n_suffixes': self._get_num_suffixes(affixes),
             'influences': self._get_influences(data_sections),
             'synthesized': self._get_is_synthesized(data_sections)
@@ -147,7 +150,6 @@ class ClipboardItemFactory:
         """
         self.logger.debug("Creating general item")
         try:
-            # TODO: Use these affix objects to create more metadata for item.
             affixes = self._parse_affixes(
                 self._get_all_mods(rarity, data_sections))
         except:
@@ -160,6 +162,7 @@ class ClipboardItemFactory:
             item = self._create_map_item(info, data_sections)
         else:
             item = Item(item_info=info, affixes=affixes, item_type=type)
+
         self.logger.debug("Created item [{}]".format(str(item)))
         return item
 
@@ -199,11 +202,11 @@ class ClipboardItemFactory:
         if not len(data_sections) or not data_sections[0]:
             return ItemType.UNKNOWN
         rarity = self._get_rarity(data_sections)
-        if rarity == "currency":
+        if rarity == ItemRarity.CURRENCY:
             return self._get_currency_item_type(data_sections)
-        elif rarity == "divination Card":
+        elif rarity == ItemRarity.DIVINATION_CARD:
             return ItemType.DIVINATION_CARD
-        elif rarity == "gem":
+        elif rarity == ItemRarity.GEM:
             return ItemType.GEM
         else:
             return self._get_item_type(data_sections)
@@ -223,8 +226,8 @@ class ClipboardItemFactory:
             return ItemType.DELVE_FOSSIL
         elif self._is_delve_resonator(data_sections):
             return ItemType.DELVE_RESONATOR
-        # elif self._is_essence(data_sections):
-        #     return ItemType.ESSENCE
+        elif self._is_essence(data_sections):
+            return ItemType.ESSENCE
         elif self._is_splinter(data_sections):
             return ItemType.SPLINTER
         elif self._is_simulacrum_splinter(data_sections):
@@ -261,7 +264,7 @@ class ClipboardItemFactory:
             rarity:
             data_sections:
         """
-        if rarity == 'normal':
+        if rarity == ItemRarity.NORMAL:
             return []
         for section in data_sections:
             for section_line in section:
@@ -378,7 +381,7 @@ class ClipboardItemFactory:
             rarity:
         """
         try:
-            return rarity == 'normal' and \
+            return rarity == ItemRarity.NORMAL and \
                    data_sections[2][
                        0] == "Can be used in a personal Map Device." and \
                    len(data_sections[2]) == 1
@@ -392,7 +395,7 @@ class ClipboardItemFactory:
             rarity:
         """
         try:
-            return rarity == 'normal' and \
+            return rarity == ItemRarity.NORMAL and \
                    data_sections[0][1].endswith("Scarab") and \
                    data_sections[3][0].find(
                        "Can be used in a personal Map Device to add modifiers to a Map.") > -1
@@ -490,7 +493,11 @@ class ClipboardItemFactory:
         Args:
             sections:
         """
-        return sections[0][1].split("Rarity: ")[1].strip().lower()
+        rarity_str = sections[0][1].split("Rarity: ")[1].strip()
+        try:
+            return ItemRarity(rarity_str)
+        except:
+            return ItemRarity.UNKNOWN
 
     def _get_name(self, rarity, identified, sections):
         """
@@ -499,9 +506,9 @@ class ClipboardItemFactory:
             identified:
             sections:
         """
-        if rarity in ('normal', 'magic'):
+        if rarity in (ItemRarity.NORMAL, ItemRarity.MAGIC):
             return ""
-        elif rarity in ('rare', 'unique') and identified:
+        elif rarity in (ItemRarity.RARE, ItemRarity.UNIQUE) and identified:
             return sections[0][2]
         return ""
 
@@ -513,7 +520,7 @@ class ClipboardItemFactory:
             sections:
         """
         try:
-            if rarity in ('rare', 'unique') and identified:
+            if rarity in (ItemRarity.RARE, ItemRarity.UNIQUE) and identified:
                 return sections[0][3]
             return sections[0][2]
         except Exception as e:
@@ -530,16 +537,16 @@ class ClipboardItemFactory:
         """
         base_type = None
         try:
-            if rarity == 'normal':
+            if rarity == ItemRarity.NORMAL:
                 base_type = sections[0][2]
-            elif rarity == 'magic':
+            elif rarity == ItemRarity.MAGIC:
                 base_type = sections[0][2]
                 base_type = base_type.split(" of ")[0]
                 if self._get_num_prefixes(affixes) > 0:
                     base_type = " ".join(base_type.split(" ")[1:])
-            elif rarity in ('rare', 'unique') and identified:
+            elif rarity in (ItemRarity.RARE, ItemRarity.UNIQUE) and identified:
                 base_type = sections[0][3]
-            else :
+            else:
                 base_type = sections[0][2]
 
             if self._get_is_synthesized(sections):
@@ -577,7 +584,8 @@ class ClipboardItemFactory:
                                 ",", ""))
         except Exception as e:
             self.logger.error(e)
-            return ''
+            return 1
+        return 1
 
     def _get_max_stack_size(self, sections):
         """
@@ -593,7 +601,8 @@ class ClipboardItemFactory:
                                 ",", ""))
         except Exception as e:
             self.logger.error(e)
-            return ''
+            return 1
+        return 1
 
     def _get_corrupted(self, sections):
         """

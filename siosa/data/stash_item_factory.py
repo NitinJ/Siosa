@@ -11,14 +11,14 @@ from siosa.network.poe_api import PoeApi
 STASH_CURRENCY_KEYS = ["stackSize", "maxStackSize"]
 STASH_ITEM_KEYS = []
 
-FRAMETYPE_TO_RARITY = {
-    0: 'Normal',
-    1: 'Magic',
-    2: 'Rare',
-    3: 'Unique',
-    4: 'Gem',
-    5: 'Currency',
-    6: 'Divination Card'
+FRAME_TYPE_TO_RARITY = {
+    0: ItemRarity.NORMAL,
+    1: ItemRarity.MAGIC,
+    2: ItemRarity.RARE,
+    3: ItemRarity.UNIQUE,
+    4: ItemRarity.GEM,
+    5: ItemRarity.CURRENCY,
+    6: ItemRarity.DIVINATION_CARD
 }
 GEM_QUALITY_REGEX = "\+(\d*)\%"
 
@@ -86,10 +86,14 @@ class StashItemFactory:
             return ItemType.CURRENCY
         elif data['frameType'] == 4:
             return ItemType.GEM
-        elif self._get_property(data, "Map Tier"):
+        elif self._is_map(data):
             return ItemType.MAP
         else:
+            # TODO: Add support for more ItemTypes.
             return ItemType.ITEM
+
+    def _is_map(self, item_data):
+        return self._get_property(item_data, "Map Tier") is not None
 
     def _get(self, obj, key, fallback):
         """
@@ -106,18 +110,24 @@ class StashItemFactory:
             item_data:
         """
         frametype = self._get(item_data, 'frameType', 0)
-        return self._get(FRAMETYPE_TO_RARITY, frametype, 'Normal')
+        return self._get(FRAME_TYPE_TO_RARITY, frametype, 'Normal')
 
     def _get_item_info(self, item_data):
         return {
             'rarity': self._get_rarity_of_stash_item(item_data),
-            'name': self._get(item_data, 'name', ''),
             'type_line': self._get(item_data, 'typeLine', ''),
-            'ilvl': self._get(item_data, 'ilvl', ''),
+            'base_type': self._get(item_data, 'baseType', ''),
+            'name': self._get(item_data, 'name', ''),
+            'identified': not self._get(item_data, 'identified', ''),
             'corrupted': self._get(item_data, 'corrupted', ''),
-            'unidentified': self._get(item_data, 'identified', ''),
-            'note': self._get(item_data, 'note', ''),
+            'ilvl': self._get(item_data, 'ilvl', ''),
+            'explicit_mods': self._get(item_data, 'explicitMods', []),
             'influences': self._get(item_data, 'influences', {}),
+            'stack_size': self._get(item_data, 'stackSize', 1),
+            'max_stack_size': self._get(item_data, 'maxStackSize', 1),
+            'note': self._get(item_data, 'note', ''),
+            'w': self._get(item_data, 'w', 1),
+            'h': self._get(item_data, 'h', 1)
         }
 
     def _get_property(self, item_data, property):

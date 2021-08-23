@@ -79,14 +79,23 @@ class Item(object):
             'implicit_mods': '',
             'explicit_mods': '',
             'influences': '',
-            'stack_size': '',
-            'max_stack_size': '',
+            'stack_size': 1,
+            'max_stack_size': 1,
             'note': '',
             'w': None,
             'h': None
         }
         self.item_info.update(item_info)
         self._update_dimensions()
+
+    def get_max_stack_size(self):
+        return self.item_info['max_stack_size']
+
+    def get_stack_size(self):
+        return self.item_info['stack_size']
+
+    def is_stackable(self):
+        return self.item_info['max_stack_size'] > 1
 
     def _update_dimensions(self):
         dim = BaseItems.get_item_dimensions(self.item_info['base_type'])
@@ -99,7 +108,7 @@ class Item(object):
             w:
             h:
         """
-        if w <= 0 or h <=0:
+        if w <= 0 or h <= 0:
             return
         self.item_info.update({
             'w': w,
@@ -146,6 +155,19 @@ class Item(object):
             return self.item_info['type_line']
         else:
             return self.item_info['name']
+
+    def is_same_kind(self, other):
+        def get_item_info_for_comparison(item):
+            item_info = item.item_info.copy()
+            del item_info['ilvl']
+            del item_info['note']
+            del item_info['stack_size']
+            del item_info['implicit_mods']
+            del item_info['explicit_mods']
+            return item_info
+        return self.type == other.type and \
+               str(get_item_info_for_comparison(self)) == \
+               str(get_item_info_for_comparison(other))
 
     def __str__(self):
         return "Item type: {}, item_info: {}".format(self.type, str(self.item_info))
