@@ -33,6 +33,15 @@ class BaseItems:
         return data['inventory_width'], data['inventory_height']
 
     @staticmethod
+    def get(item_name):
+        item_name = item_name.strip().lower()
+        if not BaseItems._items:
+            BaseItems._preprocess()
+        if item_name not in BaseItems._items.keys():
+            return None
+        return BaseItems._items[item_name]
+
+    @staticmethod
     def _preprocess():
         data = json.load(open(BaseItems._get_path(BaseItems.FILE_NAME), 'r'))
         for k,v in data.items():
@@ -40,9 +49,10 @@ class BaseItems:
                 continue
             BaseItems._items[v['name'].lower()] = {
                 'inventory_height' : v['inventory_height'],
-                'inventory_width' : v['inventory_width']
+                'inventory_width' : v['inventory_width'],
+                'item_class': v['item_class']
             }
 
 
 if __name__ == "__main__":
-    print(BaseItems.get_item_dimensions("Contract: Tunnels"))
+    print(BaseItems.get("Contract: Tunnels"))
