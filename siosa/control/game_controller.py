@@ -47,6 +47,9 @@ class GameController:
         self.logger.info("Stopping game controller")
         self.stop_all_tasks()
         self.task_executor.join()
+        for updater in self.game_state_updaters:
+            self.logger.debug("Stopping game state updater: {}".format(updater))
+            updater.stop()
         self.logger.info("Game controller stopped")
 
     def stop_all_tasks(self):
