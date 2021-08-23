@@ -4,6 +4,8 @@ import time
 from siosa.control.console_controller import Commands
 from siosa.control.game_step import Step, StepStatus
 from siosa.dfa.dfa_asyncio import DfaAsyncio
+from siosa.image.template_matcher import TemplateMatcher
+from siosa.image.template_registry import TemplateRegistry
 
 from siosa.location.location_factory import LocationFactory, Locations
 from siosa.trader.trade_info import TradeInfo
@@ -33,6 +35,12 @@ class TradeStep(Step):
         self.lf = LocationFactory()
         self.state_updater = None
         self.log_listener = log_listener
+
+        # Template matchers.
+        self.inventory_tm = \
+            TemplateMatcher(TemplateRegistry.INVENTORY_BANNER.get())
+        self.trade_window_tm = \
+            TemplateMatcher(TemplateRegistry.TRADE_WINDOW_CLOSE_BUTTON.get())
 
         # Current trade state, end states and dfa initialization.
         self.state = TradeState(States.NOT_STARTED)
@@ -153,7 +161,13 @@ class TradeStep(Step):
 
     async def accept(self):
         self.logger.debug("Accepting trade")
-        self.mc.click_at_location(self.lf.get(Locations.TRADE_ACCEPT_BUTTON))
+        # Check if trade window is open. Window can be closed if the player
+        # cancelled the trade while we were calculating the state to be
+        # accepted.
+        if self.trade_window_tm.match_exists(
+                self.lf.get(Locations.TRADE_WINDOW_FULL)):
+            self.mc.click_at_location(
+                self.lf.get(Locations.TRADE_ACCEPT_BUTTON))
 
     async def send_trade_request(self):
         self.logger.debug("Sending trade request to {}".format(self.trader))
@@ -162,6 +176,13 @@ class TradeStep(Step):
 
     async def offer(self):
         self.logger.debug("Offering item to trade")
+
+        # Check if inventory is open. Inventory can be closed if the player
+        # cancelled the trade.
+        if not self.inventory_tm.match_exists(
+                self.lf.get(Locations.INVENTORY_PANE)):
+            return
+
         self.mc.move_mouse(self.lf.get(Locations.INVENTORY_0_0))
         self.kc.hold_modifier('Ctrl')
         self.mc.click()
