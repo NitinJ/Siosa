@@ -60,7 +60,7 @@ class Task(threading.Thread):
         self._last_step_execution_status = None
 
         # TODO: Move priorities to a different file and incorporate
-        #  comparison logic there.
+        # comparison logic there.
         self.priority = priority
 
         self.state = TaskState.NOT_STARTED

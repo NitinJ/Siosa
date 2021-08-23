@@ -10,7 +10,7 @@ class Error(Enum):
 
 
 class InvitePlayerToHideoutStep(Step):
-    PLAYER_ENTRY_WAIT_TIME = 30
+    PLAYER_ENTRY_WAIT_TIME = 20
 
     def __init__(self, player_account_name, msg=None):
         """
@@ -48,10 +48,10 @@ class InvitePlayerToHideoutStep(Step):
                                   "player({}) to enter hideout".format(
                     self.player_account_name))
                 return False
-            self.logger.debug("Players in hideout: {}".format(
-                self.game_state.get()['players_in_hideout']))
-            if self.player_account_name in self.game_state.get()[
-                'players_in_hideout']:
+            players_in_hideout = self.game_state.get()['players_in_hideout']
+            self.logger.debug("Players in hideout : {}".format(
+                players_in_hideout))
+            if self.player_account_name in players_in_hideout:
                 self.logger.debug("player({}) has entered hideout".format(
                     self.player_account_name))
                 return True
