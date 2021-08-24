@@ -66,6 +66,7 @@ class Item(object):
             item_info = {}
         self.type = item_type
         self.affixes = affixes
+        self.item_class = 'Unknown'
 
         # Item info.
         self.item_info = {
@@ -87,6 +88,7 @@ class Item(object):
         }
         self.item_info.update(item_info)
         self._update_dimensions()
+        self._update_item_class()
 
     def get_max_stack_size(self):
         return self.item_info['max_stack_size']
@@ -97,10 +99,17 @@ class Item(object):
     def is_stackable(self):
         return self.item_info['max_stack_size'] > 1
 
+    def _update_item_class(self):
+        data = BaseItems.get(self.item_info['base_type'])
+        if not data:
+            return
+        self.item_class = data['item_class']
+
     def _update_dimensions(self):
-        dim = BaseItems.get_item_dimensions(self.item_info['base_type'])
-        if dim:
-            self.set_dimensions(dim[0], dim[1])
+        data = BaseItems.get(self.item_info['base_type'])
+        if not data:
+            return
+        self.set_dimensions(data['inventory_width'], data['inventory_height'])
 
     def set_dimensions(self, w, h):
         """
