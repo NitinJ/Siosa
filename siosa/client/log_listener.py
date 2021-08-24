@@ -24,11 +24,17 @@ class ClientLogListener(threading.Thread):
         self.name = name
         self.config = config
         self.last_read_ptr = None
+
+        # TODO: Add support for multiple clients listening to a single queue
+        # Currently if a client consumes from a queue, other clients will not
+        # get the event. Probably create multiple queues each time a client
+        # requests a queue.
         self.trade_event_queue = queue.Queue(ClientLogListener.MAX_QUEUE_SIZE)
         self.hideout_event_queue = queue.Queue(ClientLogListener.MAX_QUEUE_SIZE)
         self.location_change_event_queue = queue.Queue(ClientLogListener.MAX_QUEUE_SIZE)
         self.trade_status_event_queue = queue.Queue(
             ClientLogListener.MAX_QUEUE_SIZE)
+
         self.filters = [
             self.trade_event_filter,
             self.hideout_event_filter,
