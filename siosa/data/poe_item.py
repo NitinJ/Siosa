@@ -100,13 +100,13 @@ class Item(object):
         return self.item_info['max_stack_size'] > 1
 
     def _update_item_class(self):
-        data = BaseItems.get(self.item_info['base_type'])
+        data = BaseItems.get(self.item_info['type_line'])
         if not data:
             return
         self.item_class = data['item_class']
 
     def _update_dimensions(self):
-        data = BaseItems.get(self.item_info['base_type'])
+        data = BaseItems.get(self.item_info['type_line'])
         if not data:
             return
         self.set_dimensions(data['inventory_width'], data['inventory_height'])
