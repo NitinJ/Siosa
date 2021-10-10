@@ -1,5 +1,3 @@
-import cv2.cv2 as cv2
-
 from siosa.common.decorations import override
 from siosa.image.template import Template
 from siosa.image.utils import threshold

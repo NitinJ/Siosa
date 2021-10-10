@@ -42,4 +42,9 @@ def normalize(img):
 
 
 def grayscale(img):
-    return cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
+    return cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+
+
+def invert(img):
+    return cv2.bitwise_not(img)
+
