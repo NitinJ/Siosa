@@ -108,5 +108,7 @@ class Locations:
     TRADE_ACCEPT_GREEN_AURA_BOX = Location(786, 451, 956, 492, Resolutions.p1080)
     TRADE_ACCEPT_BUTTON = Location(307, 821, 448, 849, Resolutions.p1080)
     TRADE_WINDOW_FULL = Location(284, 75, 969, 869, Resolutions.p1080)
+    VENDOR_TRADE_WINDOW_FULL = Location(290, 95, 962, 849, Resolutions.p1080)
+    VENDOR_TRADE_ACCEPT_BUTTON = Location(304, 802, 450, 836, Resolutions.p1080)
 
     PARTY_NOTIFICATIONS_AREA = Location(1875, 585, 1920, 860, Resolutions.p1080)
