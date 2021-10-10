@@ -1,5 +1,6 @@
 from siosa.clipboard.clipboard_reader import ClipboardReader
 from siosa.data.clipboard_item_factory import ClipboardItemFactory
+from siosa.data.currency_exchange import CurrencyExchange
 from siosa.data.stash_item_factory import StashItemFactory
 from siosa.network.poe_api import PoeApi
 
@@ -21,7 +22,9 @@ class PoeItemFactory:
 
 
 if __name__ == "__main__":
-    PoeApi('MopedDriverr', 'c31a47639f74935c1545ea12a9501ee0', 'Expedition')
+    exchange = CurrencyExchange(
+        PoeApi("MopedDriverr", "0dfdc62a6d647095161d19e802961ef3",
+               "Expedition"))
     data = ClipboardReader().get_clipboard_data()
     factory = PoeItemFactory()
     item = factory.get_item(data)
