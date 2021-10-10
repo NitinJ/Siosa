@@ -1,14 +1,28 @@
+from siosa.data.poe_item import Item, ItemType
 from siosa.data.stash import StashTab
 
 
-class StashItem:
-    def __init__(self, item, stash_tab: StashTab, position):
+class StashItem(Item):
+    def __init__(self,
+                 item_info,
+                 affixes,
+                 stash_tab: StashTab, position, item_type=ItemType.UNKNOWN):
         """
         Args:
-            item:
+            item_info:
+            affixes:
             stash_tab (StashTab):
             position:
+            item_type:
         """
-        self.item = item
+        Item.__init__(self, item_info, affixes, item_type=item_type)
         self.stash_tab = stash_tab
         self.position = position
+
+    @staticmethod
+    def create_from(item, stash_tab: StashTab, position):
+        if not item or not stash_tab or not position:
+            return None
+        return StashItem(
+            item.item_info,
+            item.affixes, stash_tab, position, item_type=item.type)
