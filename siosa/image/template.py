@@ -2,7 +2,7 @@ import logging
 
 import cv2.cv2 as cv2
 
-from siosa.image.utils import normalize
+from siosa.image.utils import grayscale
 from siosa.location.location_factory import LocationFactory
 from siosa.location.resolution import Resolution
 
@@ -11,7 +11,8 @@ logger.setLevel(logging.DEBUG)
 
 
 class Template:
-    def __init__(self, template_name, template_file_path, resolution: Resolution):
+    def __init__(self, template_name, template_file_path,
+                 resolution: Resolution):
         """
         Args:
             template_file_path: Path of the template image file.
@@ -29,14 +30,15 @@ class Template:
 
     def process_image(self, image):
         """
-        Processes the image to be matched against the template.
+        Processes an image to be matched against the template. This should be
+        the image that is to be matched against the template image stored.
         Args:
             image:
 
         Returns: Gray scale normalized image.
 
         """
-        return cv2.cvtColor(normalize(image), cv2.COLOR_RGB2GRAY)
+        return grayscale(image)
 
     def get_dimensions(self):
         """Returns: Returns the dimensions of the template in 1080p resolution
@@ -50,6 +52,8 @@ class Template:
         """
         w, h = self.get_dimensions()
         height_new = int(h * scale)
-        width_new = int(w * height_new / h )
+        width_new = int(w * height_new / h)
+
+        # No need to process template here as it's already stored processed.
         return cv2.resize(self.template, (width_new, height_new),
                           interpolation=cv2.INTER_AREA)
