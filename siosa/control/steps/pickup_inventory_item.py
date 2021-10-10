@@ -1,12 +1,8 @@
-import time
 from enum import Enum
 
 from siosa.clipboard.poe_clipboard import PoeClipboard
 from siosa.control.game_step import Step, StepStatus
-from siosa.control.steps.change_stash_tab_step import ChangeStashTab
 from siosa.data.inventory import Inventory
-from siosa.data.poe_item_factory import PoeItemFactory
-from siosa.data.stash_item import StashItem
 from siosa.location.location_factory import Locations
 
 
@@ -18,10 +14,6 @@ class Error(Enum):
 
 class PickupInventoryItem(Step):
     def __init__(self, inventory_location):
-        """
-        Args:
-            stash_item (StashItem):
-        """
         Step.__init__(self)
         self.inventory_location = inventory_location
         self.clipboard = PoeClipboard()
