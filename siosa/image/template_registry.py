@@ -59,6 +59,8 @@ class TemplateRegistry:
                             template_class=ThresholdingTemplate)
     GUILD_STASH = TemplateWrapper("sct-tmp-GUILD_STASH.png", (1920, 1080),
                                   template_class=ThresholdingTemplate)
+    TANE = TemplateWrapper("sct-tmp-TANE.png", (1920, 1080),
+                            template_class=ThresholdingTemplate)
     STASH_BANNER = TemplateWrapper("sct-tmp-STASH_BANNER.png", (1920, 1080))
     NORMAL_STASH_0_0 = TemplateWrapper("sct-tmp-STASH_NORMAL_0_0.png",
                                        (1920, 1080))
@@ -72,7 +74,8 @@ class TemplateRegistry:
     TRADE_ACCEPT_RETRACTED = TemplateWrapper(
         "sct-tmp-TRADE_ACCEPT_RETRACTED.png", (1920, 1080))
     TRADE_ACCEPT_GREEN_AURA = TemplateWrapper(
-        "sct-tmp-TRADE_ACCEPT_GREEN_AURA.png", (1920, 1080), template_class=AcceptAuraTemplate)
+        "sct-tmp-TRADE_ACCEPT_GREEN_AURA.png", (1920, 1080),
+        template_class=AcceptAuraTemplate)
     CANCEL_TRADE_ACCEPT_BUTTON = TemplateWrapper(
         "sct-tmp-TRADE_CANCEL_ACCEPT_BUTTON.png", (1920, 1080))
     TRADE_WINDOW_CLOSE_BUTTON = TemplateWrapper(
