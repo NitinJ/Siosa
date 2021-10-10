@@ -4,11 +4,36 @@ import os
 from siosa.clipboard.poe_clipboard import PoeClipboard
 from siosa.common.util import parent
 from siosa.control.mouse_controller import MouseController
+from siosa.data.poe_item import Item
 from siosa.image.grid import Grid
 from siosa.location.in_game_location import InGameLocation
 from siosa.location.location import Location
 from siosa.location.location_factory import LocationFactory, Locations
 from siosa.location.resolution import Resolutions
+
+
+def _get_item_dimensions(item):
+    w, h = item.get_dimensions()
+    if not w:
+        w = 2
+    if not h:
+        h = 3
+    return w, h
+
+
+def _update_item_stack_size(item, size):
+    assert size <= item.item_info['max_stack_size']
+    item.item_info['stack_size'] = size
+
+
+def _get_path(filename):
+    """
+    Args:
+        filename:
+    """
+    siosa_base = parent(parent(__file__))
+    return os.path.join(siosa_base,
+                        "resources/inventory/{}".format(filename))
 
 
 class Inventory:
@@ -19,6 +44,113 @@ class Inventory:
     COLUMNS = 12
 
     _inventory_cell_location_map = {}
+
+    def __init__(self, item_cell_map=None):
+        if item_cell_map is None:
+            item_cell_map = {}
+        self.items = item_cell_map.values()
+
+        self.item_positions = {}
+        self.grid = [[0 for i in range(Inventory.COLUMNS)]
+                     for j in range(Inventory.ROWS)]
+        for position, item in item_cell_map.items():
+            self.item_positions[position] = 1
+            self._mark_occupied(position, item)
+
+    def add_item(self, item: Item):
+        if not item:
+            return False
+
+        item, updates = self._add_item_to_stacks(item)
+        if not item:
+            # Item can be completely added inventory item stacks. Apply updates.
+            for update in updates:
+                _update_item_stack_size(update[0], update[1])
+            return True
+
+        cell = self._find_cell_for_item(item)
+        if not cell:
+            # Couldn't find a cell to put item into.
+            return False
+
+        # Found a cell for item. Apply updates.
+        for update in updates:
+            _update_item_stack_size(update[0], update[1])
+
+        self.item_positions[cell] = 1
+        self._mark_occupied(cell, item)
+        self.items.append(item)
+        return True
+
+    def _mark_occupied(self, cell, item):
+        w, h = _get_item_dimensions(item)
+        cell_to = (cell[0] + h - 1, cell[1] + w - 1)
+        for r in range(cell[0], cell_to[0] + 1):
+            for c in range(cell[1], cell_to[1] + 1):
+                self.grid[r][c] = 1
+
+    def _find_cell_for_item(self, item):
+        w, h = _get_item_dimensions(item)
+        for c in range(0, Inventory.COLUMNS):
+            for r in range(0, Inventory.ROWS):
+                cell = (r, c)
+                cell_to = (r + h - 1, c + w - 1)
+                if self._is_empty_and_in_bounds(cell, cell_to):
+                    return cell
+        return None
+
+    def _is_empty_and_in_bounds(self, c1, c2):
+        for r in range(c1[0], c2[0] + 1):
+            for c in range(c1[1], c2[1] + 1):
+                if not Inventory.is_in_bounds((r, c)):
+                    return False
+                if self.grid[r][c]:
+                    return False
+        return True
+
+    def _add_item_to_stacks(self, item):
+        """
+        Adds an item to the inventory keeping track of item stacking.
+        Args:
+            item:
+
+        Returns: Returns the final item to be added to the inventory and updates
+        to existing item stacks. Doesn't apply updates. Updates are tuples of
+        item: new_stack_size
+
+        """
+        updates = []
+        if not item.is_stackable():
+            return item, updates
+
+        stack_size = item.get_stack_size()
+
+        # Find item stacks in inventory which can fit this item and put stacks
+        # into those inventory items.
+        for inv_item in self.items:
+            if inv_item.is_same_kind(item) and inv_item.is_stackable():
+                inv_item_stack_size = inv_item.get_stack_size()
+                inv_item_max_stack_size = inv_item.get_max_stack_size()
+
+                if inv_item_stack_size == inv_item_max_stack_size:
+                    continue
+
+                stack_size_to_be_added = \
+                    min(inv_item_max_stack_size - inv_item_stack_size,
+                        stack_size)
+
+                # Update inventory item stack size.
+                updates.append((
+                    inv_item, inv_item_stack_size + stack_size_to_be_added))
+
+                stack_size = stack_size - stack_size_to_be_added
+                if stack_size == 0:
+                    # Item completely added to inv item stacks.
+                    return None, updates
+
+        assert stack_size > 0
+        updates.append((item, stack_size))
+        return item, updates
 
     @staticmethod
     def is_in_bounds(p):
@@ -36,23 +168,13 @@ class Inventory:
             1] < Inventory.COLUMNS
 
     @staticmethod
-    def _get_path(filename):
-        """
-        Args:
-            filename:
-        """
-        siosa_base = parent(parent(__file__))
-        return os.path.join(siosa_base,
-                            "resources/inventory/{}".format(filename))
-
-    @staticmethod
     def _get_inventory_cell_location_map():
         if Inventory._inventory_cell_location_map:
             return Inventory._inventory_cell_location_map
 
         lf = LocationFactory()
         filename = 'inventory.json'
-        filepath = Inventory._get_path(filename)
+        filepath = _get_path(filename)
         data = json.load(open(filepath, 'r'))
         ret = {}
         for key, location in data.items():
@@ -68,7 +190,7 @@ class Inventory:
         return Inventory._inventory_cell_location_map
 
     @staticmethod
-    def get_location(cell):
+    def get_location(cell) -> InGameLocation:
         """Returns the absolute position for a given inventory cell on the
         screen. :param cell: The cell
 
