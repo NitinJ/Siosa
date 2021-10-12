@@ -171,5 +171,6 @@ class TradeController(StoppableThread):
                     item_at_location.get_trade_name().lower() == \
                     trade_request.item_name.lower():
                 # Use y,x for position instead of x,y as x:Left, y:Top
-                return StashItem(item_at_location, stash_tab, (y, x))
+                return StashItem.create_from(
+                    item_at_location, stash_tab, (y, x))
         return None

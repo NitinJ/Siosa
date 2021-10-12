@@ -110,5 +110,6 @@ class Locations:
     TRADE_WINDOW_FULL = Location(284, 75, 969, 869, Resolutions.p1080)
     VENDOR_TRADE_WINDOW_FULL = Location(290, 95, 962, 849, Resolutions.p1080)
     VENDOR_TRADE_ACCEPT_BUTTON = Location(304, 802, 450, 836, Resolutions.p1080)
+    VENDOR_TRADE_CANCEL_BUTTON = Location(880, 820, 880, 820, Resolutions.p1080)
 
     PARTY_NOTIFICATIONS_AREA = Location(1875, 585, 1920, 860, Resolutions.p1080)
