@@ -48,7 +48,7 @@ class Inventory:
     def __init__(self, item_cell_map=None):
         if item_cell_map is None:
             item_cell_map = {}
-        self.items = item_cell_map.values()
+        self.items = list(item_cell_map.values())
 
         self.item_positions = {}
         self.grid = [[0 for i in range(Inventory.COLUMNS)]
