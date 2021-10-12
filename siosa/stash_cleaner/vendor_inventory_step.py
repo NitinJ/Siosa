@@ -61,8 +61,6 @@ class VendorInventory(Step):
         if not self.inventory.items:
             return StepStatus(True)
 
-
-
         # Find tane.
         points = self.tm_tane.match(self.lf.get(Locations.SCREEN_FULL))
         if not points:
@@ -84,8 +82,8 @@ class VendorInventory(Step):
         self.kc.unhold_modifier('ctrl')
         self.mc.click_at_location(
             self.lf.get(Locations.VENDOR_TRADE_ACCEPT_BUTTON))
-        # self.mc.click_at_location(
-        #     self.lf.get(Locations.VENDOR_TRADE_CANCEL_BUTTON))
+        # Wait for trade window close animation.
+        time.sleep(0.2)
         return StepStatus(True)
 
 

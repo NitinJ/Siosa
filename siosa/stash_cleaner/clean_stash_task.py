@@ -12,6 +12,7 @@ from siosa.control.steps.open_stash_step import OpenStash
 from siosa.control.steps.scan_inventory_step import ScanInventory
 from siosa.data.stash import Stash
 from siosa.data.stash_item import StashItem
+from siosa.data.stash_tab import StashTabType
 from siosa.image.inventory_scanner import InventoryScanner
 from siosa.location.location_factory import LocationFactory
 from siosa.stash_cleaner.recipies.full_set_recipe import FullSetRecipe
@@ -25,8 +26,9 @@ class CleanStashTask(Task):
         """
         Args: stash_index to clean
         """
-        Task.__init__(self, 10, name='CleanStashTask')
+        Task.__init__(self, 6, name='CleanStashTask', stop_on_step_failure=True)
         self.stash_index = stash_index
+        self.stash_tab = Stash().get_stash_tab_by_index(self.stash_index)
         self.recipes = [get_gem_recipe(), get_flask_recipe(), FullSetRecipe(),
                         get_vendor_recipe(), get_deposit_recipe()]
         self.logger = logging.getLogger(__name__)
@@ -36,12 +38,11 @@ class CleanStashTask(Task):
         self.mc = MouseController(self.lf)
 
     def _get_items(self):
-        stash_tab = Stash().get_stash_tab_by_index(self.stash_index)
-        cells = stash_tab.get_item_cells_ingame()
+        cells = self.stash_tab.get_item_cells_ingame()
         stash_items = [
             StashItem.create_from(
-                stash_tab.get_item_at_location(cell[1], cell[0]),
-                stash_tab,
+                self.stash_tab.get_item_at_location(cell[1], cell[0]),
+                self.stash_tab,
                 (cell[0], cell[1])
             ) for cell in cells.keys()]
         return [item for item in stash_items if item]
@@ -63,10 +64,11 @@ class CleanStashTask(Task):
         inventory = InventoryScanner().get_inventory(callback=deposit)
 
     def get_steps(self):
+        if self.stash_tab.get_type() != StashTabType.UNKNOWN:
+            return
         yield OpenStash()
         yield ChangeStashTab(self.stash_index)
         items = self._get_items()
-
         for recipe in self.recipes:
             self.logger.debug("Running recipe: {}".format(recipe))
             inventories = recipe.get_recipe_items(items)
@@ -75,9 +77,6 @@ class CleanStashTask(Task):
                 if recipe.vendor:
                     yield CloseAllWindows()
                     yield VendorInventory(inventory)
-                    # Wait for close animation
-                    time.sleep(0.2)
-
                     yield OpenStash()
                     self._deposit_inventory()
                 else:

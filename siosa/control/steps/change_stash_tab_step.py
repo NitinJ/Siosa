@@ -1,10 +1,11 @@
 import logging
+from enum import Enum
 
 from siosa.control.game_step import Step, StepStatus
 from siosa.location.location_factory import Locations
 
 
-class Error:
+class Error(Enum):
     STASH_NOT_OPEN = 0
 
 

@@ -44,11 +44,13 @@ class Task(threading.Thread):
     """
     STEP_EXECUTION_DELAY = 0.1
 
-    def __init__(self, priority, name='GameTask'):
+    def __init__(self, priority, name='GameTask', stop_on_step_failure=False):
         """
         Args:
             priority:
             name:
+            stop_on_step_failure: Whether to fail the task on any step failure.
+            If this isn't set, task needs to handle the failures itself.
         """
         threading.Thread.__init__(self, name=name)
         self.logger = logging.getLogger(name)
@@ -58,6 +60,7 @@ class Task(threading.Thread):
         # Game state is provided at task runtime.
         self.game_state = None
         self._last_step_execution_status = None
+        self.stop_on_step_failure = stop_on_step_failure
 
         # TODO: Move priorities to a different file and incorporate
         # comparison logic there.
@@ -151,7 +154,12 @@ class Task(threading.Thread):
                     if not self._last_step_execution_status.success:
                         self.logger.error(
                             "Step: {} failed with status: {}".format(
-                                step, self._last_step_execution_status.info))
+                                step, self._last_step_execution_status))
+                        if self.stop_on_step_failure:
+                            self.logger.info(
+                                "Stopping task: {}".format(self.name))
+                            self.set_state(TaskState.STOPPING)
+                            break
 
                 except Exception as err:
                     self.logger.warning(
