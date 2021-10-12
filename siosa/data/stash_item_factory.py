@@ -120,7 +120,7 @@ class StashItemFactory:
             'name': self._get(item_data, 'name', ''),
             'identified': not self._get(item_data, 'identified', ''),
             'corrupted': self._get(item_data, 'corrupted', ''),
-            'ilvl': self._get(item_data, 'ilvl', ''),
+            'ilvl': self._get(item_data, 'ilvl', 0),
             'explicit_mods': self._get(item_data, 'explicitMods', []),
             'influences': self._get(item_data, 'influences', {}),
             'stack_size': self._get(item_data, 'stackSize', 1),
