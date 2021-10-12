@@ -40,7 +40,7 @@ class InventoryScanner:
         self.lf = LocationFactory()
         self.debug = debug
 
-    def get_empty_cells_using_contours(self):
+    def _get_empty_cells_using_contours(self):
         image_original = grab_screenshot(self.lf.get(Locations.INVENTORY))
         image = process_inventory_image(image_original)
         contours, hierarchy = cv2.findContours(
@@ -63,7 +63,7 @@ class InventoryScanner:
 
         return emtpy_cells
 
-    def get_inventory(self):
+    def get_inventory(self, callback=None):
         """
         Returns: An inventory object representing the current inventory.
         """
@@ -82,6 +82,9 @@ class InventoryScanner:
 
             # Mark the cells which this item occupies.
             InventoryScanner._mark_item_cells(p, item, item_cells)
+
+            if callback:
+                callback()
         return Inventory(cell_item_map)
 
     def scan(self):
@@ -93,7 +96,7 @@ class InventoryScanner:
             for c in range(0, Inventory.COLUMNS):
                 cells_with_items[(r, c)] = 1
 
-        empty_cell_locations = self.get_empty_cells_using_contours()
+        empty_cell_locations = self._get_empty_cells_using_contours()
         for location in empty_cell_locations:
             # Locations are wrt. the matched area (Locations.INVENTORY)
             # We need to translate these to get on screen locations.
