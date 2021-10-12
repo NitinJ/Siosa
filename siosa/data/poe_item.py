@@ -3,6 +3,15 @@ from enum import Enum
 from siosa.data.ggpk.base_items import BaseItems
 
 
+class ItemInfluences(Enum):
+    SHAPER = 'shaper'
+    ELDER = 'elder'
+    CRUSADER = 'crusader'
+    WARLORD = 'warlord'
+    HUNTER = 'hunter'
+    REDEEMER = 'redeemer'
+
+
 class ItemRarity(Enum):
     UNKNOWN = 'Unknown'
     CURRENCY = 'Currency'
@@ -53,7 +62,8 @@ class ItemType(Enum):
 
 
 class Item(object):
-    def __init__(self, item_info=None, affixes=None, item_type=ItemType.UNKNOWN):
+    def __init__(self, item_info=None, affixes=None,
+                 item_type=ItemType.UNKNOWN):
         # Internal type.
         """
         Args:
@@ -76,10 +86,10 @@ class Item(object):
             'name': '',
             'identified': '',
             'corrupted': '',
-            'ilvl': '',
+            'ilvl': 0,
             'implicit_mods': '',
             'explicit_mods': '',
-            'influences': '',
+            'influences': {},
             'stack_size': 1,
             'max_stack_size': 1,
             'note': '',
@@ -89,6 +99,69 @@ class Item(object):
         self.item_info.update(item_info)
         self._update_dimensions()
         self._update_item_class()
+
+    def is_flask(self):
+        return self.item_class in [
+            "AbstractHybridFlask", "AbstractLifeFlask",
+            "AbstractManaFlask", "AbstractUtilityFlask"]
+
+    def is_gem(self):
+        return self.type == ItemType.GEM
+
+    def get_level(self):
+        return int(self.item_info['ilvl'])
+
+    def is_identified(self):
+        if self.item_info['identified']:
+            return True
+        return False
+
+    def is_influenced(self):
+        return len(self.item_info['influences']) > 0
+
+    def has_influence(self, influence: ItemInfluences):
+        return influence in self.item_info['influences']
+
+    def is_two_handed_weapon(self):
+        return self.item_class in ["AbstractBow", "AbstractStaff",
+                                   "AbstractWarstaff", "AbstractTwoHandMace",
+                                   "AbstractTwoHandSword", "AbstractTwoHandAxe"]
+
+    def is_one_handed_weapon(self):
+        return self.item_class in ["AbstractRuneDagger", "AbstractSceptre",
+                                   "AbstractWand", "AbstractDagger",
+                                   "AbstractOneHandAxe",
+                                   "AbstractOneHandSword",
+                                   "AbstractOneHandMace",
+                                   "AbstractOneHandSwordThrusting",
+                                   "AbstractClaw"]
+
+    def is_shield(self):
+        return self.item_class == "AbstractShield"
+
+    def is_helmet(self):
+        return self.item_class == "AbstractHelmet"
+
+    def is_body_armour(self):
+        return self.item_class == "AbstractBodyArmour"
+
+    def is_gloves(self):
+        return self.item_class == "AbstractGloves"
+
+    def is_boots(self):
+        return self.item_class == "AbstractBoots"
+
+    def is_belt(self):
+        return self.item_class == "AbstractBelt"
+
+    def is_amulet(self):
+        return self.item_class == "AbstractAmulet"
+
+    def is_ring(self):
+        return self.item_class == "AbstractRing"
+
+    def is_quiver(self):
+        return self.item_class == "AbstractQuiver"
 
     def get_max_stack_size(self):
         return self.item_info['max_stack_size']
@@ -100,13 +173,17 @@ class Item(object):
         return self.item_info['max_stack_size'] > 1
 
     def _update_item_class(self):
-        data = BaseItems.get(self.item_info['type_line'])
+        key = self.item_info['base_type'] if \
+            self.item_info['base_type'] else self.item_info['type_line']
+        data = BaseItems.get(key)
         if not data:
             return
         self.item_class = data['item_class']
 
     def _update_dimensions(self):
-        data = BaseItems.get(self.item_info['type_line'])
+        key = self.item_info['base_type'] if \
+            self.item_info['base_type'] else self.item_info['type_line']
+        data = BaseItems.get(key)
         if not data:
             return
         self.set_dimensions(data['inventory_width'], data['inventory_height'])
@@ -159,7 +236,8 @@ class Item(object):
 
     def get_trade_name(self):
         if self.item_info['name'] and self.item_info['type_line']:
-            return "{} {}".format(self.item_info['name'], self.item_info['type_line'])
+            return "{} {}".format(self.item_info['name'],
+                                  self.item_info['type_line'])
         elif self.item_info['type_line']:
             return self.item_info['type_line']
         else:
@@ -174,12 +252,15 @@ class Item(object):
             del item_info['implicit_mods']
             del item_info['explicit_mods']
             return item_info
+
         return self.type == other.type and \
                str(get_item_info_for_comparison(self)) == \
                str(get_item_info_for_comparison(other))
 
     def __str__(self):
-        return "Item type: {}, item_info: {}".format(self.type, str(self.item_info))
+        return "Item type: {}, item_info: {}".format(self.type,
+                                                     str(self.item_info))
 
     def __eq__(self, other):
-        return self.type == other.type and str(self.item_info) == str(other.item_info)
+        return self.type == other.type and str(self.item_info) == str(
+            other.item_info)

@@ -12,14 +12,6 @@ from siosa.network.poe_api import PoeApi
 LINE_FEED = '\r\n'
 NEW_LINE = '\n'
 SECTION_SEPARATOR = '--------' + LINE_FEED
-INFLUENCES = [
-    'Shaper',
-    'Elder',
-    'Crusader',
-    'Warlord',
-    'Hunter',
-    'Redeemer',
-]
 # TODO: Move to common place between stash and clipboard item factories.
 GEM_QUALITY_REGEX = "\+(\d*)\%"
 
@@ -642,18 +634,25 @@ class ClipboardItemFactory:
         Args:
             sections:
         """
+        all_influences_str = [i.value for i in ItemInfluences]
+
+        # Map of ItemInfluence enum to bool
         influences = {}
+
         for section in sections:
             influence_section = False
             for line in section:
                 influence_section = sum(
                     [line.find(influence) > -1 for influence in
-                     INFLUENCES]) != 0
+                     all_influences_str]) != 0
             if not influence_section:
                 continue
             for line in section:
-                for influence in INFLUENCES:
-                    if line.find(influence) == 0:
-                        influences[influence] = True
+                for influence_str in all_influences_str:
+                    if line.find(influence_str) == 0:
+                        try:
+                            influences[ItemInfluences(influence_str)] = True
+                        except:
+                            pass
             return influences
         return influences
