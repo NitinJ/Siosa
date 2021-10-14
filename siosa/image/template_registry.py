@@ -68,7 +68,8 @@ class TemplateRegistry:
     AWAITING_TRADE_CANCEL_BUTTON = TemplateWrapper(
         "sct-tmp-TRADE_AWAITING_TRADE_CANCEL_BUTTON.png", (1920, 1080))
     TRADE_WINDOW_ME_EMPTY_TEXT = TemplateWrapper(
-        "sct-tmp-TRADE_WINDOW_ME_EMPTY_TEXT.png", (1920, 1080))
+        "sct-tmp-TRADE_WINDOW_ME_EMPTY_TEXT.png", (1920, 1080),
+        template_class=ThresholdingTemplate)
     TRADE_WINDOW_OTHER_SMALL_0_0 = TemplateWrapper(
         "sct-tmp-TRADE_WINDOW_OTHER_SMALL_0_0.png", (1920, 1080))
     TRADE_ACCEPT_RETRACTED = TemplateWrapper(
