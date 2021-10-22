@@ -3,11 +3,10 @@ import time
 
 import matplotlib.pyplot as plt
 import numpy as np
-from cv2 import cv2
 from skimage.feature import match_template, peak_local_max
 
 
-def plot(image, template, result, all_matches=None):
+def plot(image, template, result, all_matches=None, name=''):
     if all_matches is None:
         all_matches = []
 
@@ -23,7 +22,7 @@ def plot(image, template, result, all_matches=None):
     ax3 = plt.subplot(2, 2, 3)
     ax4 = plt.subplot(2, 2, 4, sharex=ax3, sharey=ax3)
 
-    # Tempalte image
+    # Template image
     ax1.imshow(template, cmap=plt.cm.gray)
     ax1.set_axis_off()
     ax1.set_title('template')
@@ -90,11 +89,12 @@ class ScikitTemplateMatcher:
                                 mode='edge')
         all_matches = self._find_all(result)
         if self.debug:
-            plot(image, template_image, result, all_matches)
-
+            plot(image, template_image, result, all_matches, name)
+        peak_intensity = int(result.max() * 1000 ) / 1000
         self.logger.debug(
-            "TemplateMatcher:{}, time: {}ms, npoints: {}".format(
-                name, int((time.time() - ts1) * 1000), len(all_matches)))
+            "TemplateMatcher:{}, time: {}ms, npoints: {}, max_match: {}".format(
+                name, int((time.time() - ts1) * 1000), len(all_matches),
+                peak_intensity))
         return all_matches
 
     def _find_all(self, result):
