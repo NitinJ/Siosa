@@ -157,6 +157,6 @@ if __name__ == "__main__":
              "funcName)s() ] %(message)s "
     logging.basicConfig(level=logging.INFO, format=FORMAT)
     tm = TemplateMatcher(
-        TemplateRegistry.DECORATIONS_EDIT_BUTTON.get(),
+        TemplateRegistry.INVENTORY_0_0.get(),
         debug=True, threshold=0.75)
-    print(tm.match(LocationFactory().get(Locations.DECORATIONS_EDIT_BOX)))
+    print(tm.match(LocationFactory().get(Locations.INVENTORY)))
