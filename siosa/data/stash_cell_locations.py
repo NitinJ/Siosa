@@ -18,15 +18,21 @@ class StashCellLocation:
         return os.path.join(siosa_base, "resources/stash/{}".format(filename))
 
     @staticmethod
+    def _get_stash_map_file_path(is_quad):
+        lf = LocationFactory()
+        stash_type = 'quad' if is_quad else 'normal'
+        filename = '{}_{}.json'.format(stash_type, lf.base_resolution)
+        return StashCellLocation._get_path(filename)
+
+    @staticmethod
     def _get_stash_cell_location_map(is_quad):
         """
         Args:
             is_quad:
         """
         lf = LocationFactory()
-        filename = 'quad.json' if is_quad else 'normal.json'
-        filepath = StashCellLocation._get_path(filename)
-        data = json.load(open(filepath, 'r'))
+        data = json.load(
+            open(StashCellLocation._get_stash_map_file_path(is_quad), 'r'))
         ret = {}
         for key, location in data.items():
             cell = tuple(int(i) for i in key.split(","))

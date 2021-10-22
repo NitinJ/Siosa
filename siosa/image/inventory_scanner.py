@@ -2,6 +2,7 @@ import logging
 import os
 from pprint import pprint
 
+import numpy as np
 from cv2 import cv2
 
 from siosa.common.util import parent
@@ -12,6 +13,7 @@ from siosa.data.currency_exchange import CurrencyExchange
 from siosa.data.inventory import Inventory
 from siosa.data.stash import Stash
 from siosa.image.utils import grayscale, invert, grab_screenshot
+from siosa.location.in_game_location import InGameLocation
 from siosa.location.location_factory import LocationFactory, Locations
 from siosa.network.poe_api import PoeApi
 
@@ -29,39 +31,77 @@ class InventoryScanner:
     # fraction as contour area might be slightly smaller
     INVENTORY_CELL_AREA = 2000
 
-    def __init__(self, debug=False):
+    def __init__(self, inventory_image=None, debug=False):
         """
         Args:
+            inventory_image: Image of the inventory to work off of
             debug:
         """
         self.logger = logging.getLogger(__name__)
         self.logger.setLevel('DEBUG')
         self.cc = ConsoleController()
         self.lf = LocationFactory()
+        self.inventory_image = inventory_image
         self.debug = debug
 
-    def _get_empty_cells_using_contours(self):
-        image_original = grab_screenshot(self.lf.get(Locations.INVENTORY))
+    def get_contour_area_range(self, contours):
+        # TODO: Get a better method to remove bad contours. This barely
+        # works.
+        arr = np.array([cv2.contourArea(contour) for contour in contours if
+                        cv2.contourArea(
+                            contour) > InventoryScanner.INVENTORY_CELL_AREA])
+        mean = np.mean(arr)
+        standard_deviation = np.std(arr)
+        distance_from_mean = abs(arr - mean)
+        max_deviations = 2
+        not_outlier = distance_from_mean < max_deviations * standard_deviation
+        no_outliers = arr[not_outlier]
+        return min(no_outliers), max(no_outliers)
+
+    def _validate_contour_area(self, area):
+        return
+
+    def get_empty_cell_locations(self) -> [InGameLocation]:
+        """
+        Uses contours to find in game locations of empty inventory cells.
+        Returns: In game locations of empty inventory cells.
+        """
+        image_original = self.inventory_image if \
+            self.inventory_image is not None else \
+            grab_screenshot(self.lf.get(Locations.INVENTORY))
         image = process_inventory_image(image_original)
         contours, hierarchy = cv2.findContours(
             image, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
 
-        emtpy_cells = []
+        min_area, max_area = self.get_contour_area_range(contours)
+        # Locations of empty inventory cells wrt. Locations.INVENTORY.
+        empty_cell_locations = []
         for c in contours:
-            if cv2.contourArea(c) > InventoryScanner.INVENTORY_CELL_AREA:
+            if min_area <= cv2.contourArea(c) <= max_area:
                 x, y, w, h = cv2.boundingRect(c)
                 center = (x + w // 2, y + h // 2)
                 if self.debug:
                     image = cv2.rectangle(
                         image_original, center, center, (0, 255, 0), 6)
-                emtpy_cells.append(center)
+                empty_cell_locations.append(center)
 
         if self.debug:
+            cv2.namedWindow("Contours", cv2.WINDOW_NORMAL)
             cv2.imshow('Contours', image)
             cv2.waitKey(0)
             cv2.destroyAllWindows()
 
-        return emtpy_cells
+        # Locations are wrt. the matched area (Locations.INVENTORY)
+        # We need to translate these to get on screen locations from (0, 0) and
+        # then get the InGameLocation from location factory.
+        base = self.lf.get(Locations.INVENTORY)
+        in_game_locations = []
+        for location in empty_cell_locations:
+            location = (location[0] + base.x1, location[1] + base.y1)
+            in_game_locations.append(
+                self.lf.create(
+                    location[0], location[1], location[0], location[1]))
+        return in_game_locations
 
     def get_inventory(self, callback=None):
         """
@@ -96,12 +136,8 @@ class InventoryScanner:
             for c in range(0, Inventory.COLUMNS):
                 cells_with_items[(r, c)] = 1
 
-        empty_cell_locations = self._get_empty_cells_using_contours()
+        empty_cell_locations = self.get_empty_cell_locations()
         for location in empty_cell_locations:
-            # Locations are wrt. the matched area (Locations.INVENTORY)
-            # We need to translate these to get on screen locations.
-            base = self.lf.get(Locations.INVENTORY)
-            location = (location[0] + base.x1, location[1] + base.y1)
             cell = Inventory.get_cell(location)
             if cell in cells_with_items:
                 cells_with_items.pop(cell)

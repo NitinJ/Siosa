@@ -168,24 +168,23 @@ class Inventory:
             1] < Inventory.COLUMNS
 
     @staticmethod
+    def _get_inventory_map_file_path():
+        lf = LocationFactory()
+        filename = 'inventory_{}.json'.format(lf.base_resolution)
+        return _get_path(filename)
+
+    @staticmethod
     def _get_inventory_cell_location_map():
         if Inventory._inventory_cell_location_map:
             return Inventory._inventory_cell_location_map
 
         lf = LocationFactory()
-        filename = 'inventory.json'
-        filepath = _get_path(filename)
-        data = json.load(open(filepath, 'r'))
+        data = json.load(open(Inventory._get_inventory_map_file_path(), 'r'))
         ret = {}
         for key, location in data.items():
             cell = tuple(int(i) for i in key.split(","))
-            # TODO: Take resolution as input from the file itself.
-            location = Location(location[0],
-                                location[1],
-                                location[0],
-                                location[1],
-                                Resolutions.p1080)
-            ret[cell] = lf.get(location)
+            ret[cell] = \
+                lf.create(location[0], location[1], location[0], location[1])
         Inventory._inventory_cell_location_map = ret
         return Inventory._inventory_cell_location_map
 

@@ -1,6 +1,7 @@
 import logging
 
 from cv2 import cv2
+import numpy as np
 
 from siosa.data.stash_cell_locations import StashCellLocation
 from siosa.image.grid import Grid
@@ -22,7 +23,7 @@ class StashTabScanner:
     open in game.
     """
 
-    def __init__(self, stash_tab, debug=False):
+    def __init__(self, stash_tab, stash_image=None, debug=False):
         """
         Args:
             stash_tab:
@@ -36,6 +37,7 @@ class StashTabScanner:
             else Locations.STASH_NORMAL_0_0
         self.min_contour_area = 500 if self.stash_tab.is_quad else 2000
         self.debug = debug
+        self.stash_image = stash_image
         self.grid = Grid(
             Locations.STASH_TAB,
             self.cell_0_0,
@@ -44,15 +46,32 @@ class StashTabScanner:
             self.stash_tab.cell_border_x,
             self.stash_tab.cell_border_y)
 
-    def _get_empty_cells_using_contours(self):
-        image_original = grab_screenshot(self.lf.get(Locations.STASH_TAB))
+    def get_contour_area_range(self, contours):
+        # TODO: Get a better method to remove bad contours. This barely
+        # works.
+        arr = np.array([cv2.contourArea(contour) for contour in contours if
+                        cv2.contourArea(
+                            contour) > self.min_contour_area])
+        mean = np.mean(arr)
+        standard_deviation = np.std(arr)
+        distance_from_mean = abs(arr - mean)
+        max_deviations = 5
+        not_outlier = distance_from_mean < max_deviations * standard_deviation
+        no_outliers = arr[not_outlier]
+        return min(no_outliers), max(no_outliers)
+
+    def get_empty_cell_locations(self):
+        image_original = self.stash_image if \
+            self.stash_image is not None else \
+            grab_screenshot(self.lf.get(Locations.STASH_TAB))
         image = process_inventory_image(image_original)
         contours, hierarchy = cv2.findContours(
             image, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
 
+        min_area, max_area = self.get_contour_area_range(contours)
         emtpy_cells = []
         for c in contours:
-            if cv2.contourArea(c) > self.min_contour_area:
+            if min_area <= cv2.contourArea(c) <= max_area:
                 x, y, w, h = cv2.boundingRect(c)
                 center = (x + w // 2, y + h // 2)
                 if self.debug:
@@ -61,6 +80,7 @@ class StashTabScanner:
                 emtpy_cells.append(center)
 
         if self.debug:
+            cv2.namedWindow("Contours", cv2.WINDOW_NORMAL)
             cv2.imshow('Contours', image)
             cv2.waitKey(0)
             cv2.destroyAllWindows()
@@ -70,7 +90,7 @@ class StashTabScanner:
     def get_item_cells(self):
         """Returns: Cells at which items are present."""
         return self.grid.get_cells_not_in_positions(
-            self._get_empty_cells_using_contours())
+            self.get_empty_cell_locations())
 
     def is_empty(self, cell):
         """
@@ -80,7 +100,7 @@ class StashTabScanner:
         self.logger.debug(
             "Checking if cell ({}, {}) is empty".format(cell[0], cell[1]))
         empty_cells = self.grid.get_cells_in_positions(
-            self._get_empty_cells_using_contours())
+            self.get_empty_cell_locations())
         if cell in empty_cells:
             self.logger.debug("Cell({}, {}) is empty".format(cell[0], cell[1]))
             return True
