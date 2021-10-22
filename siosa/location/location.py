@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from copy import copy
-from fractions import Fraction
 
 from siosa.location.resolution import Resolution
 
@@ -29,9 +28,6 @@ class Location:
 
     def get_height(self):
         return self.y2 - self.y1
-
-    def aspect_ratio(self):
-        return Fraction(self.get_width(), self.get_height())
 
     def equals(self, other):
         return str(other) == str(self)
