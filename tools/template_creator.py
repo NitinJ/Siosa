@@ -24,11 +24,10 @@ def grab_template(name, template_location):
 
 
 if __name__ == "__main__":
-    locations = [
-        ('STASH_BANNER', Locations.STASH_BANNER)
-    ]
-    for location in locations:
-        grab_template(location[0], location[1])
-
-    # Template.create_from_file("STASH", "C:\\Users\\322\\Desktop\\Path of exile\\stash.png", overwrite=True)
-    # Template.create_from_file("GUILD_STASH", "C:\\Users\\322\\Desktop\\Path of exile\\guild_stash.png", overwrite=True, debug=True)
+    # locations = [
+    #     ('INVENTORY_0_0', lf.get(Locations.INVENTORY_0_0))
+    # ]
+    # for location in locations:
+    #     grab_template(location[0], location[1])
+    TemplateRegistry.create_from_file(
+        "TANE", "C:\\Users\\322\\Desktop\\Path of exile\\tane.png", overwrite=True)

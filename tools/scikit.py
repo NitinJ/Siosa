@@ -177,12 +177,12 @@ class ImageTm(TemplateMatcher):
 
 
 def from_file():
-    image_path = 'images/accepting_trade.png'
-    lf = LocationFactory(resolution=Resolution(2560, 1440))
-    # lf = LocationFactory(resolution=Resolution(3440, 1440))
+    image_path = 'images/TRADE_WINDOW_ME_EMPTY_TEXT.png'
+    # lf = LocationFactory(resolution=Resolution(1920, 1080))
+    lf = LocationFactory(resolution=Resolution(3440, 1440))
 
-    location = lf.get(Locations.TRADE_ACCEPT_GREEN_AURA_BOX)
-    template = TemplateRegistry.TRADE_ACCEPT_GREEN_AURA.get()
+    location = lf.get(Locations.SCREEN_FULL)
+    template = TemplateRegistry.TRADE_WINDOW_ME_EMPTY_TEXT.get()
     image = get_image_from_file(image_path, location)
 
     # res = ScikitTemplateMatcher(debug=True, threshold=0.75).match(image, template.get())

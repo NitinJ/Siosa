@@ -2,13 +2,23 @@ import logging
 
 import cv2
 import mss
+import numpy
 import numpy as np
 import pyautogui
 import pytesseract
 from PIL import Image
 from pytesseract import Output
+import matplotlib.pyplot as plt
+from skimage import morphology
+import numpy as np
+import skimage
 
+from siosa.image.template import Template
+from siosa.image.template_registry import TemplateRegistry
+from siosa.location.location import Location
 from siosa.location.location_factory import LocationFactory, Locations
+from siosa.location.resolution import Resolutions
+from imutils.perspective import four_point_transform
 
 lf = LocationFactory()
 
@@ -18,44 +28,76 @@ logging.basicConfig(format=FORMAT)
 
 # get grayscale image
 def get_grayscale(image):
+    """
+    Args:
+        image:
+    """
     return cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 
 
 # noise removal
 def remove_noise(image):
+    """
+    Args:
+        image:
+    """
     return cv2.medianBlur(image, 5)
 
 
 # thresholding
 def thresholding(image):
+    """
+    Args:
+        image:
+    """
     return cv2.threshold(image, 0, 255, cv2.THRESH_OTSU)[1]
 
 
 # dilation
 def dilate(image):
+    """
+    Args:
+        image:
+    """
     kernel = np.ones((5, 5), np.uint8)
     return cv2.dilate(image, kernel, iterations=1)
 
 
 # erosion
 def erode(image):
+    """
+    Args:
+        image:
+    """
     kernel = np.ones((5, 5), np.uint8)
     return cv2.erode(image, kernel, iterations=1)
 
 
 # opening - erosion followed by dilation
 def opening(image):
+    """
+    Args:
+        image:
+    """
     kernel = np.ones((5, 5), np.uint8)
     return cv2.morphologyEx(image, cv2.MORPH_OPEN, kernel)
 
 
 # canny edge detection
 def canny(image):
+    """
+    Args:
+        image:
+    """
     return cv2.Canny(image, 100, 200)
 
 
 # skew correction
 def deskew(image):
+    """
+    Args:
+        image:
+    """
     coords = np.column_stack(np.where(image > 0))
     angle = cv2.minAreaRect(coords)[-1]
     if angle < -45:
@@ -72,15 +114,29 @@ def deskew(image):
 
 # template matching
 def match_template(image, template):
+    """
+    Args:
+        image:
+        template:
+    """
     return cv2.matchTemplate(image, template, cv2.TM_CCOEFF_NORMED)
 
 
 def show_image(image, name='image'):
+    """
+    Args:
+        image:
+        name:
+    """
     cv2.imshow(name, image)
     cv2.waitKey(0)
 
 
 def get_image(location):
+    """
+    Args:
+        location:
+    """
     screen_location = {
         "top": location.y1,
         "left": location.x1,
@@ -100,189 +156,208 @@ def get_image(location):
 
 class OCR:
     @staticmethod
-    def clahe(img, clip_limit=2.0, grid_size=(8, 8)):
+    def clahe(img, clip_limit=0.1, grid_size=(1, 1)):
+        """
+        Args:
+            img:
+            clip_limit:
+            grid_size:
+        """
         clahe = cv2.createCLAHE(clipLimit=clip_limit, tileGridSize=grid_size)
         return clahe.apply(img)
 
     @staticmethod
-    def getFilteredImage(src):
+    def getFilteredImage0(src):
+        """
+        Args:
+            src:
+        """
         srcH, srcW = src.shape[:2]
-        src = cv2.resize(src, (int(srcW * 1.5), int(srcH * 1.5)))
 
+        blured1 = cv2.medianBlur(src, 51)
+        show_image(blured1)
+
+        blured2 = cv2.medianBlur(src, 3)
+        show_image(blured2)
+
+        divided = np.ma.divide(blured1, blured2).data
+        normed = np.uint8(255 * divided / divided.max())
+        th, threshed = cv2.threshold(normed, 98, 255, cv2.THRESH_OTSU)
+
+        show_image(threshed)
+        return threshed
+
+    @staticmethod
+    def getFilteredImage(src):
+        """
+        Args:
+            src:
+        """
+        srcH, srcW = src.shape[:2]
+        src = cv2.resize(src, (int(srcW * 1.2), int(srcH * 1.2)))
+
+        hsv = cv2.cvtColor(src.copy(), cv2.COLOR_BGR2HSV)
         # HSV thresholding to get rid of as much background as possible
         hsv = cv2.cvtColor(src.copy(), cv2.COLOR_BGR2HSV)
-        # show_image(hsv)
+
+        # show_image(hsv, 'hsv')
+
         # Original
         lower_blue = np.array([0, 0, 97])
-        upper_blue = np.array([250, 20, 255])
-
-        # Best
-        # lower_blue = np.array([0, 0, 97])
-        # upper_blue = np.array([0, 0, 255])
+        upper_blue = np.array([220, 20, 255])
 
         mask = cv2.inRange(hsv, lower_blue, upper_blue)
         result = cv2.bitwise_and(src, src, mask=mask)
+
+        # show_image(result, 'result')
+
         b, g, r = cv2.split(result)
-        g = OCR.clahe(g, 5, (5, 5))
+
+        # show_image(g)
+        g = OCR.clahe(g)
         inverse = cv2.bitwise_not(g)
+
+        show_image(inverse, 'inverse')
         return inverse
 
+    @staticmethod
+    def getFilteredImage2(src):
+        """
+        Args:
+            src:
+        """
+        image = OCR.getFilteredImage(src)
+
+        # Find contours and remove small noise
+        cnts = cv2.findContours(image, cv2.RETR_EXTERNAL,
+                                cv2.CHAIN_APPROX_SIMPLE)
+        cnts = cnts[0] if len(cnts) == 2 else cnts[1]
+        for c in cnts:
+            area = cv2.contourArea(c)
+            if area < 10:
+                cv2.drawContours(image, [c], -1, 0, -1)
+
+        show_image(image, 'Final result')
+        return image
+
+    def remove_small_objects(img, min_size=100):
+        """
+        Args:
+            min_size:
+        """
+        kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (1, 2))
+        opening = cv2.morphologyEx(img, cv2.MORPH_OPEN, kernel)
+
+        result = 255 - opening
+        cv2.imshow('thresh', img)
+        cv2.imshow('opening', opening)
+        cv2.imshow('result', result)
+        return result
 
     @staticmethod
-    def labexpt(img):
-        # -----Converting image to LAB Color model-----------------------------------
-        lab = cv2.cvtColor(img, cv2.COLOR_BGR2LAB)
-        # cv2.imshow("lab", lab)
+    def getFilteredImage3(img):
+        """
+        Args:
+            img:
+        """
+        mask = np.zeros(img.shape, np.uint8)
+        sx = 18
+        sy = 18
 
-        # -----Splitting the LAB image to different channels-------------------------
-        l, a, b = cv2.split(lab)
-        # cv2.imshow('l_channel', l)
-        # cv2.imshow('a_channel', a)
-        # cv2.imshow('b_channel', b)
+        w = 52
+        h = 52
 
-        # -----Applying CLAHE to L-channel-------------------------------------------
-        clahe = cv2.createCLAHE(clipLimit=3.0, tileGridSize=(8, 8))
-        cl = clahe.apply(l)
-        # cv2.imshow('CLAHE output', cl)
+        for i in range(0, 12):
+            for j in range(0, 5):
+                xi = sx + i*w
+                yi = sy + j*h
+                mask[yi:yi + sx, xi:xi + sy] = img[yi:yi + sx, xi:xi + sy]
 
-        # -----Merge the CLAHE enhanced L-channel with the a and b channel-----------
-        limg = cv2.merge((cl, a, b))
-        # cv2.imshow('limg', limg)
-
-        # -----Converting image from LAB Color model to RGB model--------------------
-        final = cv2.cvtColor(limg, cv2.COLOR_LAB2BGR)
-        # cv2.imshow('final', final)
-        return final
+        show_image(mask, "MASK")
+        return mask
 
     @staticmethod
-    def getFilteredGrayImage(img):
-        img = OCR.labexpt(img)
-        gray_image = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-        show_image(gray_image)
-        # gray_image = cv2.inRange(gray_image, 10, 205)
-        # gray_image = ~gray_image
-        thresh = cv2.adaptiveThreshold(gray_image, 255, 1, 1, 11, 2)
-        show_image(thresh, 'threash')
-        # gray_image = cv2.medianBlur(gray_image, 5)
-        # show_image(gray_image)
+    def removeSmallObjects(img):
+        # find all your connected components (white blobs in your image)
+        """
+        Args:
+            img:
+        """
+        nb_components, output, stats, centroids = cv2.connectedComponentsWithStats(
+            img, connectivity=4)
+        # connectedComponentswithStats yields every seperated component with information on each of them, such as size
+        # the following part is just taking out the background which is also considered a component, but most of the time we don't want that.
+        sizes = stats[1:, -1]
+        nb_components = nb_components - 1
 
-        gray_image = cv2.adaptiveThreshold(gray_image, 255,
-                                           cv2.ADAPTIVE_THRESH_GAUSSIAN_C,
-                                           cv2.THRESH_BINARY, 5, 2)
-        ret, gray_image = cv2.threshold(gray_image, 0, 255, cv2.THRESH_OTSU | cv2.THRESH_BINARY_INV)
-        show_image(gray_image)
+        # minimum size of particles we want to keep (number of pixels)
+        # here, it's a fixed value, but you can set it as you want, eg the mean of the sizes or whatever
+        min_size = 10
 
-        contours,hierarchy = cv2.findContours(thresh,cv2.RETR_LIST,cv2.CHAIN_APPROX_SIMPLE)
-        out = np.zeros(img.shape, np.uint8)
-        for cnt in contours:
-            # if cv2.contourArea(cnt) > 10 and cv2.contourArea(cnt) < 50:
-            if True:
-                [x, y, w, h] = cv2.boundingRect(cnt)
-                if h > 28:
-                    cv2.rectangle(thresh, (x, y), (x + w, y + h), (0, 255, 0), 2)
-
-        cv2.imshow('im', thresh)
-        # cv2.imshow('out', out)
-        cv2.waitKey(0)
-        return gray_image
-
+        # your answer image
+        img2 = np.zeros((output.shape))
+        # for every component in the image, you keep it only if it's above min_size
+        for i in range(0, nb_components):
+            if sizes[i] >= min_size:
+                img2[output == i + 1] = 255
+        show_image(img2)
 
     @staticmethod
-    def getFilteredImageGreen(src):
-        src = OCR.labexpt(src)
-        show_image(src, 'lab')
-        srcH, srcW = src.shape[:2]
-        src = cv2.resize(src, (int(srcW * 1.5), int(srcH * 1.5)))
+    def thresholding(img):
+        img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
-        show_image(src)
+        # applying different thresholding
+        # techniques on the input image
+        # all pixels value above 120 will
+        # be set to 255
 
-        # HSV thresholding to get rid of as much background as possible
-        hsv = cv2.cvtColor(src.copy(), cv2.COLOR_BGR2HSV)
-        lower_blue = np.array([0, 0, 0])
-        upper_blue = np.array([255, 20, 255])
+        img1 = cv2.GaussianBlur(img, (1, 1), 0)
+        cv2.imshow('blur1', img1)
 
-        mask = cv2.inRange(hsv, lower_blue, upper_blue)
-        show_image(cv2.bitwise_and(src, src, mask=mask))
-        show_image(255 - mask)
-        result = cv2.bitwise_and(src, src, mask=mask)
+        img2 = cv2.bilateralFilter(img, 4, 20, 20)
+        cv2.imshow('blur2', img)
 
-        b, g, r = cv2.split(result)
-        b = OCR.clahe(b, 5, (5, 5))
-        inverse = cv2.bitwise_not(r)
-        return inverse
 
-def cleanup_text(text):
-    return "".join([c if ord(c) < 128 else "" for c in text]).strip()
+        ret, thresh4 = cv2.threshold(img1, 120, 255, cv2.THRESH_TOZERO)
+        cv2.imshow('Set to 0', thresh4)
 
-def detect_regions(image):
-    reader = Reader(["en"], gpu=False)
-    results = reader.readtext(image)
+        ret, thresh4 = cv2.threshold(img2, 120, 255, cv2.THRESH_TOZERO)
+        cv2.imshow('Set to 1', thresh4)
+        # the window showing output images
+        # with the corresponding thresholding
+        # techniques applied to the input images
 
-    # loop over the results
-    for (bbox, text, prob) in results:
-        # display the OCR'd text and associated probability
-        print("[INFO] {:.4f}: {}".format(prob, text))
-        # unpack the bounding box
-        (tl, tr, br, bl) = bbox
-        tl = (int(tl[0]), int(tl[1]))
-        tr = (int(tr[0]), int(tr[1]))
-        br = (int(br[0]), int(br[1]))
-        bl = (int(bl[0]), int(bl[1]))
-        text = cleanup_text(text)
-        cv2.rectangle(image, tl, br, (0, 255, 0), 2)
-        cv2.putText(image, text, (tl[0], tl[1] - 10),
-            cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 255, 0), 2)
-    return image
+        # De-allocate any associated memory usage
+        if cv2.waitKey(0) & 0xff == 27:
+            cv2.destroyAllWindows()
 
-def test():
-    img = cv2.imread("Untitled.png")
-    img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
-    hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
-
-    mask = cv2.inRange(hsv, (0, 0, 150), (255, 5, 255))
-    cv2.imshow('mask before and with nzmask', mask)
-
-    # Build mask of non black pixels.
-    nzmask = cv2.inRange(hsv, (0, 0, 5), (255, 255, 255))
-
-    # Erode the mask - all pixels around a black pixels should not be masked.
-    nzmask = cv2.erode(nzmask, np.ones((3, 3)))
-    cv2.imshow('nzmask', nzmask)
-
-    mask = mask & nzmask
-
-    new_img = img.copy()
-    new_img[np.where(mask)] = 255
-
-    cv2.imshow('mask', mask)
-    cv2.imshow('new_img', new_img)
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
 
 if __name__ == "__main__":
-    pyautogui.confirm(
-        text='Press OK to grab image on location({})'.format(
-            lf.get(Locations.TRADE_WINDOW_OTHER)),
-        title='Grab image',
-        buttons=['OK'])
-
-    # image = get_image(lf.get(Locations.TRADE_WINDOW_OTHER))
-    image = cv2.imread("ocr.jpg")
+    image = get_image(lf.get(Locations.SCREEN_FULL))
+    # stash_template = Template.from_registry(TemplateRegistry.STASH)
+    # image, grayscale_image = stash_template.get()
     show_image(image)
-    image_filtered = OCR.getFilteredImage(image)
-    show_image(image_filtered)
+
+    image = OCR.thresholding(image)
+    # image = OCR.getFilteredImage(image)
+    # image = OCR.getFilteredImage0(image)
+    # image = OCR.removeSmallObjects(image)
+
+    # image = OCR.remove_small_objects(image)
+    show_image(image, 'FILTERED IMAGE MAIN')
 
     custom_config = r'-c tessedit_char_whitelist=0123456789 --oem 3 --psm 6 digits'
-    d = pytesseract.image_to_data(image_filtered, config=custom_config,
+    d = pytesseract.image_to_data(image, config=custom_config,
                                   lang='poe',
                                   output_type=Output.DICT)
     print(d)
     for i in range(0, len(d['conf'])):
         print(d['conf'][i], d['text'][i])
+
     # n_boxes = len(d['text'])
     # for i in range(n_boxes):
-    #     if int(d['conf'][i]) > 70:
+    #     if int(d['conf'][i]) > 80:
     #         (x, y, w, h) = (
     #             d['left'][i], d['top'][i], d['width'][i], d['height'][i])
     #         image = cv2.rectangle(image, (x, y), (x + w, y + h), (0, 255, 0), 2)
-    # show_image(image)
+    # show_image(image, 'WITH BOXES')
