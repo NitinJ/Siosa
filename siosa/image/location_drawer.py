@@ -42,6 +42,7 @@ class LocationDrawer:
 
         image_bytes_bgr = cv2.resize(image_bytes_bgr,  (lf.resolution.w//1, lf.resolution.h//1))
 
+        cv2.namedWindow("image", cv2.WINDOW_NORMAL)
         cv2.imshow('image', image_bytes_bgr)
         cv2.waitKey(0)
         cv2.destroyAllWindows()
