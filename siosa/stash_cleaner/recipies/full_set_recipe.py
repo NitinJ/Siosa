@@ -178,7 +178,7 @@ def _try_replace_regal_recipe_item_with_chaos_recipe_item(r, items,
             chaos_recipe_set_items_used = [replacement]
             del r[-1]
     elif item_type == 'one_handed':
-        # Check if recipe has two one handed or one two handed
+        # Check if recipe has two one handed or two one handed weapon
         if len(r) == 9:
             # Recipe has two handed. Remove the two handed and try to
             # add two one handed. This isn't optimal.
