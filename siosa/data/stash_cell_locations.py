@@ -21,7 +21,7 @@ class StashCellLocation:
     def _get_stash_map_file_path(is_quad):
         lf = LocationFactory()
         stash_type = 'quad' if is_quad else 'normal'
-        filename = '{}_{}.json'.format(stash_type, lf.base_resolution)
+        filename = '{}{}.json'.format(stash_type, lf.base_resolution)
         return StashCellLocation._get_path(filename)
 
     @staticmethod
