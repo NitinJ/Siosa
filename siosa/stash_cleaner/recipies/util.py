@@ -7,25 +7,27 @@ logger = logging.getLogger(__name__)
 logger.setLevel('DEBUG')
 
 ITEM_CLASS_WHITELIST = [
-    "AbstractDivinationCard",
-    "AbstractQuestItem",
-    "Incubator",
+    "Map",
+    "FishingRod",
+    "MetamorphosisDNA",
+    "ExpeditionLogbook",
+    "MapFragment",
+    "LabyrinthMapItem",
+    "AtlasRegionUpgradeItem",
+    "DivinationCard",
+    "MiscMapItem",
+    "StackableCurrency",
     "HeistBlueprint",
+    "QuestItem",
     "HeistContract",
-    "AbstractMapFragment",
+    "Incubator",
     "DelveStackableSocketableCurrency",
     "DelveSocketableCurrency",
-    "AbstractFishingRod",
-    "MetamorphosisDNA",
-    "OfferingToTheGoddess",
-    "AbstractCurrency",
-    "ExpeditionSaga",
-    "StackableCurrency",
-    "AtlasRegionUpgrade",
-    "AbstractUniqueFragment",
-    "AbstractMap",
-    "HeistObjective",
-    "AbstractMiscMapItem",
+    "ActiveSkillGem",
+    "UniqueFragment",
+    "Leaguestone",
+    "Currency",
+    "IncubatorStackable"
 ]
 
 

@@ -102,8 +102,8 @@ class Item(object):
 
     def is_flask(self):
         return self.item_class in [
-            "AbstractHybridFlask", "AbstractLifeFlask",
-            "AbstractManaFlask", "AbstractUtilityFlask"]
+            "HybridFlask", "LifeFlask",
+            "ManaFlask", "UtilityFlask"]
 
     def is_gem(self):
         return self.type == ItemType.GEM
@@ -123,45 +123,45 @@ class Item(object):
         return influence in self.item_info['influences']
 
     def is_two_handed_weapon(self):
-        return self.item_class in ["AbstractBow", "AbstractStaff",
-                                   "AbstractWarstaff", "AbstractTwoHandMace",
-                                   "AbstractTwoHandSword", "AbstractTwoHandAxe"]
+        return self.item_class in ["Bow", "Staff",
+                                   "Warstaff", "TwoHandMace",
+                                   "TwoHandSword", "TwoHandAxe"]
 
     def is_one_handed_weapon(self):
-        return self.item_class in ["AbstractRuneDagger", "AbstractSceptre",
-                                   "AbstractWand", "AbstractDagger",
-                                   "AbstractOneHandAxe",
-                                   "AbstractOneHandSword",
-                                   "AbstractOneHandMace",
-                                   "AbstractOneHandSwordThrusting",
-                                   "AbstractClaw"]
+        return self.item_class in ["RuneDagger", "Sceptre",
+                                   "Wand", "Dagger",
+                                   "OneHandAxe",
+                                   "OneHandSword",
+                                   "OneHandMace",
+                                   "OneHandSwordThrusting",
+                                   "Claw"]
 
     def is_shield(self):
-        return self.item_class == "AbstractShield"
+        return self.item_class == "Shield"
 
     def is_helmet(self):
-        return self.item_class == "AbstractHelmet"
+        return self.item_class == "Helmet"
 
     def is_body_armour(self):
-        return self.item_class == "AbstractBodyArmour"
+        return self.item_class == "BodyArmour"
 
     def is_gloves(self):
-        return self.item_class == "AbstractGloves"
+        return self.item_class == "Gloves"
 
     def is_boots(self):
-        return self.item_class == "AbstractBoots"
+        return self.item_class == "Boots"
 
     def is_belt(self):
-        return self.item_class == "AbstractBelt"
+        return self.item_class == "Belt"
 
     def is_amulet(self):
-        return self.item_class == "AbstractAmulet"
+        return self.item_class == "Amulet"
 
     def is_ring(self):
-        return self.item_class == "AbstractRing"
+        return self.item_class == "Ring"
 
     def is_quiver(self):
-        return self.item_class == "AbstractQuiver"
+        return self.item_class == "Quiver"
 
     def get_max_stack_size(self):
         return self.item_info['max_stack_size']
