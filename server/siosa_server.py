@@ -52,6 +52,21 @@ def create_roll_task():
     return {"status": task_service.create_roll_task(config)}
 
 
+@app.route("/task/create/stash_tab_cleaner", methods=['POST'])
+def create_stash_tab_cleaner_task():
+    config = request.get_json()
+    if not config or 'stash_index' not in config.keys():
+        return {"status": False}
+
+    task_service = service_manager.get_service(ServiceType.TASK)
+    if not task_service:
+        return {"status": False}
+
+    return {
+        "status": task_service.create_stash_cleaner_task(config['stash_index'])
+    }
+
+
 @app.route("/task/get", methods=['GET'])
 def get_task():
     task_service = service_manager.get_service(ServiceType.TASK)

@@ -11,6 +11,7 @@ from siosa.data.stash import Stash
 from siosa.network.poe_api import PoeApi
 from siosa.roller.roll_task import RollTask
 from siosa.roller.roller_config import RollerConfig
+from siosa.stash_cleaner.clean_stash_task import CleanStashTask
 from siosa.trader.trade_controller import TradeController
 
 
@@ -78,7 +79,6 @@ class TaskService:
             return {"task": t.value, "state": 1}
         elif self.gc_task:
             # GC task
-            self.logger.debug("Getting task state.")
             return {"task": t.value, "state": self.gc_task.get_state().value}
         else:
             return {"task": None}
@@ -89,6 +89,18 @@ class TaskService:
         self._restart_trade_controller()
 
         self.running_task_type = TaskType.TRADE
+        return True
+
+    def create_stash_cleaner_task(self, stash_index):
+        self._maybe_init()
+        self._stop_trade_controller()
+
+        task = CleanStashTask(stash_index)
+        self.gc_task = task
+        self.running_task_type = TaskType.STASH_TAB_CLEANER
+
+        self._restart_game_controller()
+        self.game_controller.submit_task(task)
         return True
 
     def create_test_task(self):
