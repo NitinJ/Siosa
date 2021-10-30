@@ -36,6 +36,9 @@ class TemplateMatcher:
         self.image_cache = {}
         self.scale = scale
 
+    def get_image_for_location(self, location: InGameLocation):
+        return grab_screenshot(location)
+
     def get_image(self, location: InGameLocation, reuse):
         """
         Args:
@@ -48,7 +51,7 @@ class TemplateMatcher:
             self.logger.info("Screen location image found in cache. Reusing.")
             return self.image_cache[key]
 
-        image_rgb = grab_screenshot(location)
+        image_rgb = self.get_image_for_location(location)
         width = location.get_width()
         height = location.get_height()
 
