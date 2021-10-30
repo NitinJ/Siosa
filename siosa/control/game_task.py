@@ -1,3 +1,5 @@
+import ctypes
+import inspect
 import logging
 import threading
 import time
@@ -34,6 +36,7 @@ def _is_valid_state_transition(state_from, state_to):
 
 
 class Task(threading.Thread):
+    # TODO: Move to stoppable thread.
     """Encapsulates a game task. Game tasks run inside the game and are executed
     via the GameTaskExecutor. A single task is a thread and can have multiple
     reusable components called Steps. Steps of a task are synchronous and are
@@ -82,7 +85,7 @@ class Task(threading.Thread):
         self.set_state(TaskState.STOPPING)
 
     def get_state(self):
-        self.logger.debug("State : {}".format(self.state))
+        self.logger.debug("Task:{}, State : {}".format(self.name, self.state))
         return self.state
 
     @synchronized
@@ -183,3 +186,52 @@ class Task(threading.Thread):
         self.logger.info(
             "Cleaning up task: {} on state: {}".format(self.name, self.state))
         self._cleanup_internal()
+
+    def _get_my_tid(self):
+        """determines this (self's) thread id"""
+        if not self.isAlive():
+            raise threading.ThreadError("the thread is not active")
+
+        # do we have it cached?
+        if hasattr(self, "_thread_id"):
+            return self._thread_id
+
+        # no, look for it in the _active dict
+        for tid, tobj in threading._active.items():
+            if tobj is self:
+                self._thread_id = tid
+                return tid
+
+        raise AssertionError("could not determine the thread's id")
+
+    def raise_exc(self, exctype):
+        """raises the given exception type in the context of this thread"""
+        _async_raise(self._get_my_tid(), exctype)
+
+    def terminate(self):
+        """raises SystemExit in the context of the given thread, which should
+        cause the thread to exit silently (unless caught)"""
+        try:
+            self.raise_exc(SystemExit)
+            # Mark task as complete.
+            self.set_state(TaskState.COMPLETE)
+            self.logger.debug("Task terminated successfully: {}".format(self.name))
+        except Exception as err:
+            self.logger.warning(
+                "Couldn't terminate task: {} err: {}".format(
+                    self.name, err), stack_info=True, exc_info=True)
+
+
+def _async_raise(tid, exctype):
+    """raises the exception, performs cleanup if needed"""
+    if not inspect.isclass(exctype):
+        raise TypeError("Only types can be raised (not instances)")
+    res = ctypes.pythonapi.PyThreadState_SetAsyncExc(tid, ctypes.py_object(exctype))
+    if res == 0:
+        raise ValueError("invalid thread id")
+    elif res != 1:
+        # """if it returns a number greater than one, you're in trouble,
+        # and you should call it again with exc=NULL to revert the effect"""
+        ctypes.pythonapi.PyThreadState_SetAsyncExc(tid, 0)
+        raise SystemError("PyThreadState_SetAsyncExc failed")
+

@@ -4,6 +4,7 @@ import time
 
 from siosa.common.decorations import override
 from siosa.common.stoppable_thread import StoppableThread
+from siosa.control.game_task import Task
 from siosa.control.game_task_store import GameTaskStore
 
 
@@ -20,7 +21,8 @@ class GameTaskExecutor(StoppableThread):
         self.logger.setLevel(logging.DEBUG)
         self.game_state = game_state
         self.task_store = GameTaskStore()
-        self.running_task = None
+        self.running_task: Task = None
+        self.stopping = False
         self.lock = threading.Lock()
 
     def submit_task(self, task):
@@ -33,8 +35,10 @@ class GameTaskExecutor(StoppableThread):
         self.lock.release()
 
     def stop_all_tasks(self):
-        if self.running_task:
-            self.running_task.stop()
+        if self.running_task and self.running_task.is_alive():
+            # If we are already stopping and stop_all_tasks is called again,
+            # terminate instead.
+            self.running_task.terminate()
         self.task_store.remove_all()
 
     @override
