@@ -1,27 +1,24 @@
-import time
-
-import pyautogui
+from cv2 import cv2
 
 from siosa.image.location_drawer import LocationDrawer
-from siosa.location.location_factory import LocationFactory, Locations
+from siosa.location.location_factory import Locations, LocationFactory
+from siosa.location.resolution import Resolution
 
-lf = LocationFactory()
 
-
-def show_location(location_name, location_obj):
-    """
-    Args:
-        location_name:
-        location_obj:
-    """
-    text = pyautogui.confirm(
-        text='Showing location for: {}'.format(location_name),
-        title='Location',
-        buttons=['OK', 'Skip'])
-    if text == 'OK':
-        time.sleep(1)
-        LocationDrawer.draw(location_obj)
+def get_location_factory(image_path):
+    if not image_path:
+        return LocationFactory()
+    image = cv2.imread(image_path)
+    h, w = image.shape[0:2]
+    return LocationFactory(resolution=Resolution(w, h))
 
 
 if __name__ == "__main__":
-    show_location('TRADE_WINDOW_FULL', Locations.TRADE_WINDOW_FULL)
+    # Can be None to show location on screen.
+    image_path = 'images/stash.png'
+
+    # Required to initialize Locations
+    lf = get_location_factory(image_path)
+
+    location = Locations.INVENTORY
+    LocationDrawer.draw(location, image_path)
