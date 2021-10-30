@@ -26,7 +26,7 @@ class CleanStashTask(Task):
         """
         Args: stash_index to clean
         """
-        Task.__init__(self, 6, name='CleanStashTask', stop_on_step_failure=True)
+        Task.__init__(self, 8, name='CleanStashTask', stop_on_step_failure=True)
         self.stash_index = stash_index
         self.stash_tab = Stash().get_stash_tab_by_index(self.stash_index)
         self.recipes = [get_gem_recipe(), get_flask_recipe(), FullSetRecipe(),
@@ -65,9 +65,12 @@ class CleanStashTask(Task):
 
     def get_steps(self):
         if self.stash_tab.get_type() != StashTabType.UNKNOWN:
+            self.logger.debug("Unsupported stash tab type")
             return
+
         yield OpenStash()
         yield ChangeStashTab(self.stash_index)
+        time.sleep(1)
         items = self._get_items()
         for recipe in self.recipes:
             self.logger.debug("Running recipe: {}".format(recipe))
