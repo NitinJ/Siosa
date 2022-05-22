@@ -2,6 +2,7 @@ import itertools
 import logging
 
 from siosa.data.affix import Affix
+from siosa.data.poe_item import ItemRarity
 from siosa.roller.crafting_type import CraftingType, get_crafting_type
 from siosa.roller.item_option import ItemOption
 
@@ -23,7 +24,9 @@ class ValidatorFactory:
         elif crafting_type == CraftingType.CHANCING:
             return ChancingCraftingValidator()
         elif crafting_type == CraftingType.CHAOS:
-            return ChaosCraftingValidator()
+            return RareCraftingValidator()
+        elif crafting_type == CraftingType.ALCHEMY:
+            return RareCraftingValidator()
         return None
 
 
@@ -132,7 +135,7 @@ class AlterationRegalCraftingValidator(AlterationCraftingValidator):
         AlterationCraftingValidator._validate_internal(self, item)
         num_rare_item_options = 0
         for item_option in item['item_options']:
-            if item_option['rarity'] == 'rare':
+            if item_option['rarity'] == 'Rare':
                 num_rare_item_options += 1
         assert num_rare_item_options > 0
 
@@ -154,10 +157,10 @@ class ChancingCraftingValidator(Validator):
         Args:
             item_option:
         """
-        assert item_option['rarity'] == 'unique'
+        assert item_option['rarity'] == 'Unique'
 
 
-class ChaosCraftingValidator(Validator):
+class RareCraftingValidator(Validator):
     def __init__(self):
         Validator.__init__(self)
 
@@ -176,7 +179,7 @@ class ChaosCraftingValidator(Validator):
         """
         prefixes = item_option['prefixes']
         suffixes = item_option['suffixes']
-        assert item_option['rarity'] == 'rare'
+        assert item_option['rarity'] == 'Rare'
         assert (len(prefixes) or len(suffixes))
         for affix in itertools.chain(prefixes, suffixes):
             if affix['name'] and affix['tier']:

@@ -1,6 +1,7 @@
 from typing import List
 
 from siosa.data.affix import Affix
+from siosa.data.poe_item import ItemRarity
 
 
 class ItemOption:
@@ -16,7 +17,7 @@ class ItemOption:
             affixes:
         """
         self.item_class = item_class
-        self.rarity = rarity
+        self.rarity = ItemRarity(rarity)
         self.name = name
         self.affixes = affixes
 

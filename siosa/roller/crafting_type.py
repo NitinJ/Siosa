@@ -6,6 +6,7 @@ class CraftingType(Enum):
     ALTERATION_REGAL = 'alteration_regal'
     CHAOS = 'chaos'
     CHANCING = 'chancing'
+    ALCHEMY = 'alchemy'
 
 
 def get_crafting_type(type_str):

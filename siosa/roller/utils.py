@@ -6,17 +6,6 @@ from siosa.data.poe_item import Item
 from siosa.location.location_factory import Locations, LocationFactory
 
 
-CURRENCY_LOCATIONS = {
-    CurrencyType.AUGMENTATION.value: Locations.CURRENCY_AUGMENTATION,
-    CurrencyType.ALTERATION.value: Locations.CURRENCY_ALTERATION,
-    CurrencyType.TRANSMUTATION.value: Locations.CURRENCY_TRANSMUTATION,
-    CurrencyType.REGAL.value: Locations.CURRENCY_REGAL,
-    CurrencyType.SCOURING.value: Locations.CURRENCY_SCOURING,
-    CurrencyType.CHANCE.value: Locations.CURRENCY_CHANCE,
-    CurrencyType.CHAOS.value: Locations.CURRENCY_CHAOS,
-    CurrencyType.ALCHEMY.value: Locations.CURRENCY_ALCHEMY
-}
-
 
 def item_contains_all_affixes(in_game_item: Item, affixes: List[Affix]):
     """
@@ -84,6 +73,17 @@ def get_currency_location(currency_type: CurrencyType):
     Args:
         currency_type:
     """
+    CURRENCY_LOCATIONS = {
+        CurrencyType.AUGMENTATION.value: Locations.CURRENCY_AUGMENTATION,
+        CurrencyType.ALTERATION.value: Locations.CURRENCY_ALTERATION,
+        CurrencyType.TRANSMUTATION.value: Locations.CURRENCY_TRANSMUTATION,
+        CurrencyType.REGAL.value: Locations.CURRENCY_REGAL,
+        CurrencyType.SCOURING.value: Locations.CURRENCY_SCOURING,
+        CurrencyType.CHANCE.value: Locations.CURRENCY_CHANCE,
+        CurrencyType.CHAOS.value: Locations.CURRENCY_CHAOS,
+        CurrencyType.ALCHEMY.value: Locations.CURRENCY_ALCHEMY
+    }
+
     if currency_type.value not in CURRENCY_LOCATIONS.keys():
         return None
     return LocationFactory().get(CURRENCY_LOCATIONS[currency_type.value])

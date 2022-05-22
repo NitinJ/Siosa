@@ -34,11 +34,16 @@ class RollStep(Step):
         """
         self.roll_controller.reset()
         crafter = CrafterFactory.get_crafter(self.item, self.crafting_type)
+        n_retries = 10
 
         for _ in range(self.max_rolls):
             time.sleep(0.1)
             in_game_item = self.roll_controller.read_item()
             if not in_game_item:
+                if n_retries > 0:
+                    time.sleep(0.1)
+                    n_retries -= 1
+                    continue
                 return self._on_failure(Error.ITEM_NOT_FOUND)
 
             done, next_currency = crafter.done(in_game_item)
