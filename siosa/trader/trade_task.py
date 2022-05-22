@@ -50,7 +50,7 @@ class TradeTask(Task):
         yield TradeStep(self.trade_info, self.log_listener)
         ret = self._get_last_step_result()
         if ret.success:
-            yield Wait(1)
+            yield Wait(3)
             yield OpenStash()
             yield ScanInventory()
             yield CleanInventory()
