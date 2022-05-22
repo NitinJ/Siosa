@@ -21,10 +21,6 @@ class LocateStashStep(Step):
         """
         self.game_state = game_state
 
-        if game_state.get()['stash_location']:
-            # Location already known.
-            return StepStatus(True)
-
         tm = ReusableTemplateMatcher(self.lf.get(Locations.SCREEN_FULL))
         points_s = tm.match_template(TemplateRegistry.STASH.get())
         points_gs = tm.match_template(TemplateRegistry.GUILD_STASH.get())
