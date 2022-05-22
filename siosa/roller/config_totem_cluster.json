@@ -1,0 +1,62 @@
+{
+  "items": [
+    {
+      "base_name": "medium cluster jewel",
+      "inventory_position": [
+        0,
+        0
+      ],
+      "crafting_type": "alteration_regal",
+      "item_options": [
+        {
+          "rarity": "Magic",
+          "prefixes": [
+            {
+              "name": "",
+              "hint": "sentries"
+            }
+          ]
+        },
+        {
+          "rarity": "Rare",
+          "prefixes": [
+            {
+              "name": "",
+              "hint": "sentries"
+            },
+            {
+              "name": "",
+              "hint": "snaring"
+            }
+          ]
+        },
+        {
+          "rarity": "Rare",
+          "prefixes": [
+            {
+              "name": "",
+              "hint": "sentries"
+            },
+            {
+              "name": "",
+              "hint": "echo"
+            }
+          ]
+        },
+                {
+          "rarity": "Rare",
+          "prefixes": [
+            {
+              "name": "",
+              "hint": "sentries"
+            },
+            {
+              "name": "",
+              "hint": "guidance"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,9 +1,9 @@
 {
   "items": [
     {
-      "base_name": "short bow",
+      "base_name": "blizzard crown",
       "inventory_position": [
-        0,
+        1,
         0
       ],
       "crafting_type": "alteration",
@@ -13,7 +13,7 @@
           "suffixes": [
             {
               "name": "",
-              "hint": "attack speed",
+              "hint": "multiplier",
               "tier": 1
             }
           ]

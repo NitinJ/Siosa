@@ -1,19 +1,20 @@
 {
   "items": [
     {
-      "base_name": "short bow",
+      "base_name": "whisper-woven cloak",
       "inventory_position": [
         0,
         0
       ],
-      "crafting_type": "alteration",
+      "crafting_type": "alchemy",
       "item_options": [
         {
-          "rarity": "Magic",
+          "rarity": "Rare",
+          "prefixes": [],
           "suffixes": [
             {
               "name": "",
-              "hint": "attack speed",
+              "hint": "reduced raising of alert level from opening chests",
               "tier": 1
             }
           ]
