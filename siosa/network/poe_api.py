@@ -157,7 +157,7 @@ class PoeApi(metaclass=Singleton):
         """
         url = FETCH_API
         for item_id in item_ids:
-            url = url + item_id + ","
+            url = url + item_id['id'] + ","
         url = url[:-1]
         url = url + "?query=" + search_id
         if exchange:
@@ -182,13 +182,14 @@ class PoeApi(metaclass=Singleton):
         if not have or not want:
             return None
         data = {
-            'exchange': {
+            'query': {
                 'status': {
                     'option': 'online'
                 },
                 'want': [want],
                 'have': [have]
-            }
+            },
+            'engine': 'new'
         }
         self.logger.debug(
             "Getting exchanges for want({}), have({})".format(want, have))
@@ -203,15 +204,15 @@ class PoeApi(metaclass=Singleton):
         response = response.json()
         items = self._items_search(
             response['id'],
-            response['result'][3:MAX_ITEMS_FOR_CALCULATING_EXCHANGE],
+            list(response['result'].values())[3:MAX_ITEMS_FOR_CALCULATING_EXCHANGE],
             exchange=True)
         try:
             rate = self._get_exchange_rate_from_exchange_entries(items)
-        except:
+        except Exception as e:
             self.logger.error(
                 "Error getting exchange rate for want({}), have({})".format(
                     want, have))
-            return None
+            raise e
         self.logger.debug(
             "Getting exchanges for want({}), have({}): {}".format(
                 want, have, rate))
