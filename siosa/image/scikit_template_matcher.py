@@ -6,14 +6,12 @@ import numpy as np
 from skimage.feature import match_template, peak_local_max
 
 
-def plot(image, template, result, all_matches=None, name=''):
+def plot(image, template, result, peak_intensity, all_matches=None, name=''):
     if all_matches is None:
         all_matches = []
 
     res = np.unravel_index(np.argmax(result), result.shape)
     x, y = res[:2]
-    res = np.unravel_index(np.argmin(result), result.shape)
-    ymin, xmin = res[:2]
     template_width, template_height = template.shape[:2]
 
     fig = plt.figure('Debug', figsize=(12, 12), dpi=80)
@@ -30,16 +28,10 @@ def plot(image, template, result, all_matches=None, name=''):
     # Top matched result
     ax2.imshow(image, cmap=plt.cm.gray)
     ax2.set_axis_off()
-    ax2.set_title('image')
+    ax2.set_title('match_template - max match ({})'.format(peak_intensity))
     ax2.add_patch(plt.Rectangle(
         (y - template_height // 2, x - template_width // 2), template_height,
         template_width, edgecolor='r', facecolor='none'))
-    ax2.add_patch(plt.Rectangle(
-        (ymin - template_height // 2, xmin - template_width // 2),
-        template_height,
-        template_width,
-        edgecolor='g',
-        facecolor='none'))
 
     # Result image
     ax3.imshow(result)
@@ -49,7 +41,7 @@ def plot(image, template, result, all_matches=None, name=''):
     # All matches.
     ax4.imshow(image, cmap=plt.cm.gray)
     ax4.set_axis_off()
-    ax4.set_title('match_template - all matches')
+    ax4.set_title('match_template - all matches, (N={})'.format(len(all_matches)))
     for (y, x) in all_matches:
         ax4.add_patch(plt.Rectangle(
             (y - template_height // 2, x - template_width // 2),
@@ -88,9 +80,10 @@ class ScikitTemplateMatcher:
         result = match_template(image, template_image, pad_input=True,
                                 mode='edge')
         all_matches = self._find_all(result)
+        peak_intensity = int(result.max() * 1000) / 1000
         if self.debug:
-            plot(image, template_image, result, all_matches, name)
-        peak_intensity = int(result.max() * 1000 ) / 1000
+            plot(image, template_image, result, peak_intensity,
+                 all_matches=all_matches, name=name)
         self.logger.debug(
             "TemplateMatcher:{}, time: {}ms, npoints: {}, max_match: {}".format(
                 name, int((time.time() - ts1) * 1000), len(all_matches),
@@ -98,4 +91,6 @@ class ScikitTemplateMatcher:
         return all_matches
 
     def _find_all(self, result):
-        return [(r[1], r[0]) for r in peak_local_max(result, threshold_abs=self.threshold, exclude_border=2)]
+        return [(r[1], r[0]) for r in
+                peak_local_max(result, threshold_abs=self.threshold,
+                               exclude_border=2)]

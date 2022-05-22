@@ -160,6 +160,6 @@ if __name__ == "__main__":
              "funcName)s() ] %(message)s "
     logging.basicConfig(level=logging.INFO, format=FORMAT)
     tm = TemplateMatcher(
-        TemplateRegistry.INVENTORY_0_0.get(),
+        TemplateRegistry.STASH.get(),
         debug=True, threshold=0.75)
-    print(tm.match(LocationFactory().get(Locations.INVENTORY)))
+    print(tm.match(LocationFactory().get(Locations.SCREEN_FULL)))
